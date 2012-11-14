@@ -3,7 +3,7 @@
 //===== Por: =================================================
 //= Muad_Dib(The Prometheus Project), Lupus
 //===== Versão Atual: ======================================== 
-//= 2.0a
+//= 2.1
 //===== Descrição: =========================================== 
 //= Muda a classe para Bardo
 //===== Changelog: =========================================== 
@@ -16,7 +16,8 @@
 //============================================================
 
 comodo,226,123,5	script	Bardo Nômade	741,{
-	if (Upper == 1) {
+	if (Upper == 1)
+	{
 		mes "[Lalo]";
 		mes "Escolhidos destinados a virar Deus";
 		mes "são tantos nesta era";
@@ -32,12 +33,14 @@ comodo,226,123,5	script	Bardo Nômade	741,{
 		cutin "job_bard_aiolo01",255;
 		end;
 	}
-	if (BARD_Q == 1) {
+	if (BARD_Q == 1)
+	{
 		mes "[Lalo]";
 		mes "Bem vindo! Amigo Arqueiro.";
 		mes "Você trouxe a Flor? Deixe-me ver.";
 		next;
-		if (countitem(1032) >= 1) { //Item: Maneater_Blossom,
+		if (countitem(1032) >= 1)
+		{
 			mes "[Lalo]";
 			mes "O que é isso?! Por favor, retire-se e coloque-se longe do alcance da minha vista.";
 			mes "Eu realmente odeio flores comuns!!!";
@@ -89,7 +92,8 @@ comodo,226,123,5	script	Bardo Nômade	741,{
 				close;
 			}
 		}
-		if (countitem(712)) { //Item: Flor,
+		if (countitem(712))
+		{
 			mes "[Lalo]";
 			mes "Eh? Esta é apenas uma Flor normal.";
 			mes "Eu gostei dela... mas ela não é o bastante.";
@@ -101,8 +105,11 @@ comodo,226,123,5	script	Bardo Nômade	741,{
 		mes "Eu não gosto de flor em lugar algum.";
 		close;
 	}
-	if (BARD_Q == 2) {
-		if (xmas_npc != 11) { //this var is set in LUTIE.TXT
+	if (BARD_Q == 2)
+	{
+		//this var is set in LUTIE.TXT
+		if (xmas_npc != 11)
+		{
 			mes "[Lalo]";
 			mes "Eu estou esperando pelas boas novas.";
 			mes "Agora vá para Lutie e faça";
@@ -115,7 +122,8 @@ comodo,226,123,5	script	Bardo Nômade	741,{
 		set BARD_Q,3;
 		next;
 	}
-	if (BARD_Q == 3) {
+	if (BARD_Q == 3)
+	{
 		mes "[Lalo]";
 		mes "Então, você quer tentar cantar...?";
 		mes "Eu cantarei uma melodia pequena...";
@@ -160,7 +168,8 @@ comodo,226,123,5	script	Bardo Nômade	741,{
 		if (select ("Obrigado por sua maçã doce!", "Obrigado por suas maçãs doces.", "Obrigado por suas maçãs doces!") == 2)
 			set .@score, .@score + 10;
 		next;
-		if (.@score < 90) {
+		if (.@score < 90)
+		{
 			mes "[Lalo]";
 			mes "Oy, você pegou a letra da música de uma maneira errada!";
 			mes "Você não pode cantar adiante...?";
@@ -179,7 +188,8 @@ comodo,226,123,5	script	Bardo Nômade	741,{
 		mes "Você quer mudar de classe agora?";
 		mes "Ou você vai querer um presente?";
 		next;
-		if (select ("Apenas mude minha classe.", "Eu ficarei agradecido com um presente.") == 2) {
+		if (select ("Apenas mude minha classe.", "Eu ficarei agradecido com um presente.") == 2)
+		{
 			mes "[Lalo]";
 			mes "Hmmm...muito bem, traga-me alguns troncos.";
 			mes "Não precisa se preocupar com o tipo, enquanto";
@@ -192,28 +202,33 @@ comodo,226,123,5	script	Bardo Nômade	741,{
 		}
 		set .@gift, 127;
 	}
-	if (BARD_Q == 4) {
+	if (BARD_Q == 4)
+	{
 		// <requirement>,<gift>,<min. job level>
 		setarray .@gifts[1], 1066,1910,50, 1066,1905,40, 1067,1903,40, 1068,1903,40, 1019,1901,40;
 
-		if (!.@gift) {
+		if (!.@gift)
+		{
 			for (set .@gift, 1; .@gifts[.@gift]; set .@gift, .@gift + 3)
 				if (countitem(.@gifts[.@gift]) >= 60 && JBLVL >= .@gifts[.@gift+2])
 					break;
 
-			if (!.@gifts[.@gift]) {
+			if (!.@gifts[.@gift])
+			{
 				mes "[Lalo]";
 				mes "Mmm? Parece que você não preparou todos os troncos ainda?";
 				mes "Você quer mudar de classe assim mesmo?";	
 				next;
-				if (select ("Sim", "Espere, ainda não") == 2) {
+				if (select ("Sim", "Espere, ainda não") == 2)
+				{
 					mes "[Lalo]";
 					mes "Certo esperarei você aqui.";
 					close;
 				}
 			}
 		}
-		if(skillpoint != 0) {
+		if (skillpoint != 0)
+		{
 			mes "[Lalo]";
 			mes "Hmmm... você parece ter algum ponto de habilidade sobrando.";
 			mes "Use todos eles e depois volte aqui novamente.";
@@ -224,7 +239,8 @@ comodo,226,123,5	script	Bardo Nômade	741,{
 		set BARD_Q, 0;
 
 		mes "[Lalo]";
-		if (.@gifts[.@gift]) {
+		if (.@gifts[.@gift])
+		{
 			mes "Bom trabalho. Eu farei em você";
 			mes "uma mudança de classe com este brinde.";
 			mes "Espere apenas um momento.";
@@ -246,23 +262,27 @@ comodo,226,123,5	script	Bardo Nômade	741,{
 		mes "Espero que cante canções felizes.";
 		next;
 	}
-	if (BaseJob == Job_Bard) {
+	if (BaseJob == Job_Bard)
+	{
 		mes "[Lalo]";
 		mes "Vejo você mais tarde!";
 		close;
 	}
-	if (BaseJob == Job_Archer && Sex == 1) {
+	if (BaseJob == Job_Archer && Sex == 1)
+	{
 		mes "[Lalo]";
 		mes "Olá! Caro Arqueiro.";
 		mes "De que maneira uma pessoa errante como eu pode ajudar você?";
 		next;
-		switch (select("Você tem uma bela voz.", "Você poderia cantar pra mim, por favor?", "Não, obrigado.")) {
+		switch (select("Você tem uma bela voz.", "Você poderia cantar pra mim, por favor?", "Não, obrigado."))
+		{
 		case 1:
 			mes "[Lalo]";
 			mes "Hoho, sua voz é especialmente bela também?";
 			mes "Sempre pensou a respeito de cantar?";
 			next;
-			if (select("Claro que sim!", "Eu não poderia muito possivelmente...") == 2) {
+			if (select("Claro que sim!", "Eu não poderia muito possivelmente...") == 2)
+			{
 				mes "[Lalo]";
 				mes "Haha, que timidez.";
 				mes "Não acredite tão pouco em você mesmo.";
@@ -277,7 +297,8 @@ comodo,226,123,5	script	Bardo Nômade	741,{
 			mes "Você tem que ser assim para se tornar um Bardo.";
 			mes "Eu ajudarei você a se tornar um Bardo então.";
 			next;
-			if(JobLevel >= 40) {
+			if(JobLevel >= 40)
+			{
 				set JBLVL, JobLevel; // used to determine what item to get at the end
 				mes "[Lalo]";
 				mes "Mas antes disso... você acredita que possa trazer para mim uma Flor?";
@@ -336,7 +357,8 @@ comodo,226,123,5	script	Bardo Nômade	741,{
 			mes "Hmm.. para sempre terei uma boa canção para cantar.";
 			mes "Qual sua opinião? Você não acredita que é uma bela canção?";
 			next;
-			if (select("Sim, ela é realmente bela", "Não, realmente...") == 1) {
+			if (select("Sim, ela é realmente bela", "Não, realmente...") == 1)
+			{
 				mes "[Lalo]";
 				mes "Obrigado! Se você se divertiu com minha canção, isso";
 				mes "me faz feliz, também.";
