@@ -18,7 +18,7 @@
 prt_monk,55,249,4	script	Tohobu Monge Guardião	139,0,5,{
 	mes "[Tohobu]";
 	mes "Quem é você?!";
-	mes "Como ousa entrar no salão sagrado de treinamento sem minha permissão!";
+	mes "Como ousa entrar no salão sagrado de treinamento sem minha permissão?";
 	next;
 	mes "[Tohobu]";
 	mes "Saia agora!";
@@ -26,7 +26,8 @@ prt_monk,55,249,4	script	Tohobu Monge Guardião	139,0,5,{
 }
 
 prt_monk,59,247,4	script	Mestre#1	120,{
-	if (Upper == 1) {
+	if (Upper == 1)
+	{
 		mes "[Tohobu]";
 		mes "Hmm? O que te traz aqui?";
 		mes "Se você deseja entrar nesta área sagrada,";
@@ -44,24 +45,28 @@ prt_monk,59,247,4	script	Mestre#1	120,{
 		mes "É estranho... eu nunca confundo as pessoas... oh, bem... tenha um bom dia.";
 		close;
 	}
-	if (MONK_Q == 2) {
+	if (MONK_Q == 2)
+	{
 		mes "[Tohobu]";
 		mes "Olá! Você deveria ir falar com o Ancião Wuhai. Ele irá te guiar.";
 		mes "Ele está no Salão principal do mosteiro, que fica a sudeste daqui.";
 		close;
 	}
-	if (MONK_Q > 2) {
+	if (MONK_Q > 2)
+	{
 		mes "[Tohobu]";
 		mes "Ei! Olá! Como está indo seu treinamento? Você não irá desistir não é?";
 		close;
 	}
-	if (BaseJob == Job_Monk) {
+	if (BaseJob == Job_Monk)
+	{
 		mes "[Tohobu]";
 		mes "Sua presença aqui no ^00FF00Moteiro St. Capitolina^000000 não é desejada.";
 		mes "Mas já que você está aqui, apenas não atrapalhe os Monges que estão em treino, mesmo que você seja um monge!";
 		close;
 	}
-	if (MONK_Q == 0) {
+	if (MONK_Q == 0)
+	{
 		mes "[Tohobu]";
 		mes "Hmmm...? O que você quer de mim?";
 		mes "Antes de ir para área de treino, você terá que me dizer seu Nome, Nível base e seu nível de classe.";
@@ -69,7 +74,8 @@ prt_monk,59,247,4	script	Mestre#1	120,{
 		mes "[Tohobu]";
 		mes "Vamos lá! Qual seu nome?";
 		next;
-		if (select ("Ignore ele.", "Diga o nome.") == 1) {
+		if (select ("Ignore ele.", "Diga o nome.") == 1)
+		{
 			mes "[Tohobu]";
 			mes "Você é muito mal educado, saia daqui!";
 			warp "prt_fild03",357,256;
@@ -85,14 +91,16 @@ prt_monk,59,247,4	script	Mestre#1	120,{
 		next;
 		select ("Eu gosto de ver os monges treinando.", "Eu quero ser um monge.", "Eu gostaria de descansar aqui.");
 	}
-	else { // (MONK_Q == 1)
+	else
+	{
 		mes "[Tohobu]";
 		mes "Bem...Você mudou de idéia depois de olhar em volta?";
 		next;
 		select ("Não.", "Eu quero ser um Monge.", "Eu preciso descansar mais.");
 	}
 
-	switch (@menu) {
+	switch (@menu)
+	{
 	case 1:
 		mes "[Tohobu]";
 		mes "Ah, entendo.";
@@ -102,14 +110,16 @@ prt_monk,59,247,4	script	Mestre#1	120,{
 		close;
 
 	case 2:
-		if (BaseJob != Job_Acolyte) {
+		if (BaseJob != Job_Acolyte)
+		{
 			mes "[Tohobu]";
 			mes "Oh! Você está brincando?";
 			close;
 		}
 		if (JobLevel >= 40)
 		{
-			if (SkillPoint == 0) {
+			if (SkillPoint == 0)
+			{
 				mes "[Tohobu]";
 				mes "Bem... Me parece que você tem as habilidades para se tornar um Monge.";
 				mes "Muito bem, vamos ver... Vá falar com Wuhai, O ancião, ele será seu guia.";
@@ -148,11 +158,13 @@ prt_monk,59,247,4	script	Mestre#1	120,{
 monk_in,99,58,4	script	Ancião Wuhai	60,{
 	function displayItens;
 
-	if (MONK_Q == 2) {
+	if (MONK_Q == 2)
+	{
 		mes "[Ancião Wuhai]";
 		mes "Hmmm... Você é o jovem que quer se tornar Monge, correto?";
 		next;
-		if (select ("Sim.", "Não.") == 2) {
+		if (select ("Sim.", "Não.") == 2)
+		{
 			mes "[Ancião Wuhai]";
 			mes "Hmmm...? Você não quer?";
 			mes "Devo estar ficando velho, eu achei que você queria.";
@@ -185,7 +197,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "[Ancião Wuhai]";
 		mes "Vamos lá começar os testes para ver realmente se você poderá se tornar um Monge.";
 		next;
-		if (JBLVL == 50) {
+		if (JBLVL == 50)
+		{
 			mes "[Ancião Wuhai]";
 			mes "Oh, Seu nível de classe é " + JobLevel +" .";
 			mes "Isso prova suas habilidades.";
@@ -215,8 +228,10 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "Agora vá e que a Benção de Deus esteja contigo.";
 		close;
 	}
-	if (MONK_Q == 3) {
-		switch (JOB_MONK_C) {
+	if (MONK_Q == 3)
+	{
+		switch (JOB_MONK_C)
+		{
 		case 1:
 			setarray .@itens, 913,10, 948,5, 7033,20; //Items: Dente_de_Morcego, Pata_de_Urso, Esporo_Venenoso,
 			break;
@@ -243,7 +258,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		}
 		// Verifica se tem todos os itens
 		for (set .@i, 0; .@itens[.@i]; set .@i, .@i + 2)
-			if (countitem (.@itens[.@i]) < .@itens[.@i+1]) {
+			if (countitem (.@itens[.@i]) < .@itens[.@i+1])
+			{
 				mes "[Ancião Wuhai]";
 				mes "Hmm... não está pronto ainda?";
 				mes "Deixe-me dizer o que você deverá trazer novamente.";
@@ -267,21 +283,25 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "Ele está no Cemitério Antigo, a norte daqui.";
 		close;
 	}
-	if (MONK_Q == 4) {
+	if (MONK_Q == 4)
+	{
 		mes "[Ancião Wuhai]";
 		mes "Agora vejamos como mudar de classe.";
 		mes "Encontre Mestre Wuatao.";
 		mes "Ele está no Cemitério Antigo a norte daqui.";
 		close;
 	}
-	if (MONK_Q >= 5 && MONK_Q < 10) {
+	if (MONK_Q >= 5 && MONK_Q < 10)
+	{
 		mes "[Ancião Wuhai]";
 		mes "Hmm? Você continua fazendo o teste...?";
 		mes "Tente dar o seu melhor então!";
 		close;
 	}
-	if (MONK_Q >= 10) {
-		if (countitem (506) > 0) { //Items: Green_Potion,
+	if (MONK_Q >= 10)
+	{
+		if (countitem (506) > 0)
+		{
 			mes "[Ancião Wuhai]";
 			mes "O que? Você não bebeu a Magic Potion ainda?";
 			mes "Então se apresse para terminar a poção Green-ish!";
@@ -301,7 +321,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "[Ancião Wuhai]";
 		mes "Você irá dedicar toda sua vida para servir a Deus?";
 		next;
-		if (select ("Sim.", "Não.") == 2) {
+		if (select ("Sim.", "Não.") == 2)
+		{
 			mes "[Ancião Wuhai]";
 			mes "......O Que?......";
 			mes "Então você não está pronto para ser um Monge?";
@@ -315,7 +336,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "[Ancião Wuhai]";
 		mes "Você irá usar seus poderes em benefício próprio?";
 		next;
-		if (select ("Sim.", "Não.") == 1) {
+		if (select ("Sim.", "Não.") == 1)
+		{
 			mes "[Ancião Wuhai]";
 			mes "...NÃO NÃO NÃO NÃO NÃO!! Nosso treino não é para benefício próprio!";
 			mes "Como pode os que protegem o mundo se preocuparem mais com seu benefício próprio do que com os outros?!";
@@ -330,7 +352,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "Quando estiver julgando os que foram contra a vontade de Deus,";
 		mes "você irá pensar duas vezes antes de puní-los?";
 		next;
-		if (select ("Não.", "Sim.") == 2) {
+		if (select ("Não.", "Sim.") == 2)
+		{
 			mes "[Ancião Wuhai]";
 			mes "O que você pensa que os Monges são?";
 			mes "Não importa o que eles são, pessoas que fazem mal aos fracos, são como lixo. Eles não têm direito de viver nesse mundo.";
@@ -345,7 +368,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "Você irá ajudar a erradicar todos que se opõem a Deus,";
 		mes "e sacrificar sua vida para o bem dos outros?";
 		next;
-		if (select ("Sim.", "Não.") == 2) {
+		if (select ("Sim.", "Não.") == 2)
+		{
 			mes "[Ancião Wuhai]";
 			mes "Oh...nãoooooooo....";
 			mes "Se se sacrificar pode ser bom para todos os outros e mais inimigos seriam dizimados, então isso é uma ação que conta muito!!!.";
@@ -358,7 +382,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "[Ancião Wuhai]";
 		mes "Você irá manter os monstros te batendo para ajudar outros em batalha?";
 		next;
-		if (select ("Sim.", "Não.") == 1) {
+		if (select ("Sim.", "Não.") == 1)
+		{
 			mes "[Ancião Wuhai]";
 			mes "Isso não está certo! Treinar com os monstros não serve para benefício de todos!";
 			mes "Pelo contrário, isso é um ato egoísta!";
@@ -377,7 +402,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "[Ancião Wuhai]";
 		mes "Em vilas ou nos campos você repetirá as mesmas conversas?";
 		next;
-		if (select ("Sim.", "Não.") == 1) {
+		if (select ("Sim.", "Não.") == 1)
+		{
 			mes "[Ancião Wuhai]";
 			mes "Não! Se você faz isso, um Monge não deve fazer isso pois atrapalha as outras pessoas, e assim ninguem irá prestar atencão em você.";
 			next;
@@ -392,7 +418,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "[Ancião Wuhai]";
 		mes "Você se sente como um mensageiro de Deus e está pronto para morrer por ele?";
 		next;
-		if (select ("Sim.", "Não.") == 2) {
+		if (select ("Sim.", "Não.") == 2)
+		{
 			mes "[Ancião Wuhai]";
 			mes "Você não pode ser um Monge com esse tipo de sentimento!";
 			mes "Como dizem, a morte é temporária se tivermos que dar nossas vidas para proteger a paz do mundo, e isso sim é uma grande ação.";
@@ -406,7 +433,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "[Ancião Wuhai]";
 		mes "Finalmente, você precisa confirmar o juramento que você já fez. Você jura por tudo o que disse antes?";
 		next;
-		if (select ("Eu juro.", "Eu recuso.") == 2) {
+		if (select ("Eu juro.", "Eu recuso.") == 2)
+		{
 			mes "[Ancião Wuhai]";
 			mes "......";
 			next;
@@ -490,7 +518,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		callfunc "F_ClearJobVar";
 		close;
 	}
-	if (BaseJob == Job_Monk) {
+	if (BaseJob == Job_Monk)
+	{
 		mes "[Ancião Wuhai]";
 		mes "Talvez você encontre Deus na Mãe-Natureza!";
 		mes "Bem-vindo jovem! O que posso fazer por você?";
@@ -508,7 +537,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 		mes "Você deve sempre estar atento para todo mal a sua volta. Não deixe o mal te afastar do caminho da luz!";
 		close;
 	}
-	if (BaseJob == Job_Acolyte) {
+	if (BaseJob == Job_Acolyte)
+	{
 		mes "[Ancião Wuhai]";
 		mes "Que você encontre Deus em seus caminhos!";
 		mes "Bem-vindo meu jovem! O que posso fazer por você?";
@@ -526,7 +556,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 	close;
 
 	function	displayItens	{
-		switch (JOB_MONK_C) {
+		switch (JOB_MONK_C)
+		{
 		case 1:
 			mes "[Ancião Wuhai]";
 			mes "Por favor traga-me isso:";
@@ -579,7 +610,8 @@ monk_in,99,58,4	script	Ancião Wuhai	60,{
 }
 
 prt_monk,251,255,4	script	Wutao	79,{
-	if (MONK_Q < 4) {
+	if (MONK_Q < 4)
+	{
 		mes "[Wutao]";
 		mes "Nós somos Monges!";
 		mes "Nós temos poderes ilimitados!";
@@ -602,7 +634,8 @@ prt_monk,251,255,4	script	Wutao	79,{
 		mes "Se você não é meu inimigo, então saia do meu caminho.";
 		close;
 	}
-	if (MONK_Q == 6) {
+	if (MONK_Q == 6)
+	{
 		mes "[Wutao]";
 		mes "O que? Você esqueceu quem você pretende ser?";
 		next;
@@ -617,12 +650,14 @@ prt_monk,251,255,4	script	Wutao	79,{
 		mes "Vá e procure por ^000080Fuhai^000000 e ele te dirá o que fazer.";
 		close;
 	}
-	if (MONK_Q > 6) {
+	if (MONK_Q > 6)
+	{
 		mes "[Wutao]";
 		mes "Que Deus esteja contigo.";
 		close;
 	}
-	if (MONK_Q == 4) {
+	if (MONK_Q == 4)
+	{
 		mes "[Wutao]";
 		mes "O que posso fazer por você?";
 		mes "Você quer falar sobre Deus?";
@@ -644,7 +679,8 @@ prt_monk,251,255,4	script	Wutao	79,{
 		mes "Agora, lembre-se exatamente o que disser e repita para mim.";
 		mes "Limpe sua mente... Você está pronto?";
 		next;
-		if (select ("Sim.", "Não.") == 2) {
+		if (select ("Sim.", "Não.") == 2)
+		{
 			mes "[Wutao]";
 			mes "Então volte mais tarde!";
 			close;
@@ -653,14 +689,16 @@ prt_monk,251,255,4	script	Wutao	79,{
 		mes "Certo, vamos começar.";
 		next;
 	}
-	if (MONK_Q == 5) {
+	if (MONK_Q == 5)
+	{
 		mes "[Wutao]";
 		mes "Muito bem... lá vamos nós novamente.";
 		next;
 	}
 	if (!@JOB_MONK_C2)
 		set @JOB_MONK_C2, rand(1,3);
-	switch (@JOB_MONK_C2) {
+	switch (@JOB_MONK_C2)
+	{
 	case 1:
 		setarray .@monk_str$,
 			"Ajudado pelo dragão e pela Fênix,",//0
@@ -731,7 +769,8 @@ prt_monk,251,255,4	script	Wutao	79,{
 	}
 	mes "[Wutao]";
 	mes "Escute com atenção!";
-	for (set .@i, 0; .@monk_str$[.@i] != ""; set .@i, .@i + 1) {
+	for (set .@i, 0; .@monk_str$[.@i] != ""; set .@i, .@i + 1)
+	{
 		next;
 		mes "[Wutao]";
 		mes .@monk_str$[.@i];
@@ -741,14 +780,16 @@ prt_monk,251,255,4	script	Wutao	79,{
 	mes "Agora " + strcharinfo(0) + ", é sua vez.";
 	next;
 	set .@n, getarraysize(.@monk_str$);
-	for (set .@i, 0; .@answers[.@i]; set .@i, .@i + (.@n + 2)) {
+	for (set .@i, 0; .@answers[.@i]; set .@i, .@i + (.@n + 2))
+	{
 		set .@menu$, "";
 		for (set .@idx, .@i + 2; .@idx < .@i + (.@n + 2); set .@idx, .@idx + 1)
 			set .@menu$, .@menu$ + .@monk_str$[.@answers[.@idx]] + ":";
 		if (select(.@menu$) == .@answers[.@i])
 			set .@mnk_score, .@mnk_score + .@answers[.@i+1];
 	}
-	if(.@mnk_score < 9) {
+	if(.@mnk_score < 9)
+	{
 		mes "[" + strcharinfo(0) + "]";
 		mes "Well...";
 		next;
@@ -805,7 +846,8 @@ prt_monk,251,255,4	script	Wutao	79,{
 }
 
 prt_monk,57,179,4	script	Fuhai	110,{
-	if (@Choice_mission) {
+	if (@Choice_mission)
+	{
 		mes "[Fuhai]";
 		mes "Você está pronto?";
 		mes "Na verdade, você não precisa se preparar para nada se você acreditar em si mesmo.";
@@ -824,7 +866,8 @@ prt_monk,57,179,4	script	Fuhai	110,{
 		mes "Vamos! O que você esperando?";
 		close;
 	}
-	if (MONK_Q == 6) {
+	if (MONK_Q == 6)
+	{
 		mes "[Fuhai]";
 		mes "...";
 		next;
@@ -851,7 +894,8 @@ prt_monk,57,179,4	script	Fuhai	110,{
 		mes "Por que você está aqui?";
 		mes "Explique-se!";
 		next;
-		if (select("Alguém chamado [Wutao] me enviou aqui.", "Bem... nada...") == 2) {
+		if (select("Alguém chamado [Wutao] me enviou aqui.", "Bem... nada...") == 2)
+		{
 			mes "[Fuhai]";
 			mes "......";
 			mes "...Que tal comprar uma caixão para você?";
@@ -868,7 +912,8 @@ prt_monk,57,179,4	script	Fuhai	110,{
 		mes "[Fuhai]";
 		mes "É claro, que o que você aprendeu de [Wutao]?";
 		next;
-		if (select("Hmmm...Bem...Isso é...", "Eu repeti o que ele me disse e ele me enviou aqui.", "Ele testou meu estado mental e me enviou aqui.") != 2) {
+		if (select("Hmmm...Bem...Isso é...", "Eu repeti o que ele me disse e ele me enviou aqui.", "Ele testou meu estado mental e me enviou aqui.") != 2)
+		{
 			mes "[Fuhai]";
 			mes "Seu tolo!";
 			mes "Não me interrompa mais! Vá embora!";
@@ -878,7 +923,8 @@ prt_monk,57,179,4	script	Fuhai	110,{
 		mes "Bem...Então?";
 		mes "Ele fez algo por você?";
 		next;
-		switch (select("Ah...Isso...Eu não posso dizer...", "Examinou meu corpo", "Me disse algumas regras para obedecer", "Fortaleceu meu estado mental")) {
+		switch (select("Ah...Isso...Eu não posso dizer...", "Examinou meu corpo", "Me disse algumas regras para obedecer", "Fortaleceu meu estado mental"))
+		{
 		case 1:
 			mes "[Fuhai]";
 			mes "Seu tolo!";
@@ -894,7 +940,8 @@ prt_monk,57,179,4	script	Fuhai	110,{
 		}
 		set MONK_Q, 7;
 	}
-	if (MONK_Q == 7) {
+	if (MONK_Q == 7)
+	{
 		mes "[Fuhai]";
 		mes "Muito bem. No mínimo você sabe o que mudou em seu corpo.";
 		mes "Agora, vamos começar o próximo teste.";
@@ -921,13 +968,15 @@ prt_monk,57,179,4	script	Fuhai	110,{
 }
 
 prt_monk,199,169,4	script	Guarda#2	746,{
-	if (MONK_Q <= 7) {
+	if (MONK_Q <= 7)
+	{
 		mes "[Guarda ChaoLi]";
 		mes "Esta é a...";
 		mes "Área de Treino dos Monges.";
 		next;
 	}
-	if (MONK_Q == 7) {
+	if (MONK_Q == 7)
+	{
 		mes "[Guarda ChaoLi]";
 		mes strcharinfo(0) + "... Correto?!";
 		next;
@@ -942,7 +991,8 @@ prt_monk,199,169,4	script	Guarda#2	746,{
 }
 
 monk_test,329,61,4	script	Bashu	753,{
-	if (MONK_Q == 7) {
+	if (MONK_Q == 7)
+	{
 		mes "[Bashu]";
 		if (@Choice_mission == 0)
 			mes "Por favor selecione um teste.";
@@ -952,13 +1002,15 @@ monk_test,329,61,4	script	Bashu	753,{
 			mes "Como eu já sabia, você escolheu a Maratona como seu teste.";
 		mes "Porém se você não completar o teste, poderá mudar para outro sempre que quiser.";
 		next;
-		if (select("A paciência de um Monge - Coletar Cogumelos", "A força de vontade de um Monge - A Maratona") == 1) {
+		if (select("A paciência de um Monge - Coletar Cogumelos", "A força de vontade de um Monge - A Maratona") == 1)
+		{
 			mes "[Bashu]";
 			mes "Você escolheu um bom teste para testar a paciência de um Monge - Coleta de Cogumelos";
 			next;
 			warp "job_monk",225,179;
 		}
-		else {
+		else
+		{
 			mes "[Bashu]";
 			mes "Você escolheu um bom teste para testar a força de vontade de um Monge - A Maratona";	
 			next;
@@ -997,7 +1049,8 @@ monk_test,387,347,4	script	Musha	110,{
 	mes "Você... você quer... quer desistir? ou quer cont... continuar?";
 	mes "Desistir?";
 	next;
-	if (select("Eu quero desistir", "Eu quero correr!") == 1) {
+	if (select("Eu quero desistir", "Eu quero correr!") == 1)
+	{
 		mapannounce "monk_test","Musha: " + strcharinfo(0) + "desistiu do teste...! Ele desistiu do testa da Maratona... Não... Não tem força de vontade... Hahahahahaha!",8;
 		mes "[Musha]";
 		mes strcharinfo(0) + " desistiu... desistiu do teste...";
@@ -1020,7 +1073,8 @@ monk_test,390,387,0	script	monk_warp	45,1,1,{
 	set @run, @run + 1;
 	if (@run+1 == @runtimes)
 		mapannounce "monk_test","Musha: Vamos Lá! A próxima volta é a última!",8;
-	if (@run == @runtimes) {
+	if (@run == @runtimes)
+	{
 		set MONK_Q, 8;
 		mapannounce "monk_test","Musha: Para... Parabéns!" + strcharinfo(0)+ "Passou! Agora procure por [Daowen], ele está na parte mais pronfuda daqui.",8;
 		warp "prt_monk",196,168;
@@ -1138,15 +1192,17 @@ prt_monk,225,179,4	script	XuanWu#01 	89,{
 }
 
 job_monk,225,179,4	script	XuanWu#02	89,{
-	if (MONK_Q == 8) {
+	if (MONK_Q == 8)
+	{
 		mes "[XuanWu]";
 		mes "Você está testando minha paciência?";
 		mes "Vá em [Daowen], fica dentro do edifício.";
 		close;
 	}
-	if (@mission_start == 1) {
-		if ((countitem(1069) >= 30 && countitem(1070) > 0) || //Items: Cogumelo_Venenoso, Cogumelo_Borrachento_,
-			(countitem(1070) >= 30 && countitem(1069) > 0)) { //Items: Cogumelo_Borrachento_, Cogumelo_Venenoso,
+	if (@mission_start == 1)
+	{
+		if ((countitem(1069) >= 30 && countitem(1070) > 0) || (countitem(1070) >= 30 && countitem(1069) > 0))
+		{
 			set MONK_Q, 8;
 			mes "[XuanWu]";
 			mes "Bem, eu acho que você pode fazer melhor que isso...";
@@ -1168,7 +1224,8 @@ job_monk,225,179,4	script	XuanWu#02	89,{
 		if (select ("Continuar coletando", "Desistir") == 1)
 			close;
 	}
-	else {
+	else
+	{
 		mes "[XuanWu]";
 		mes "Bem-vindo! Eu comando a coleta dos cogumelos.";
 		mes "Meu nome é XuanWu.";
@@ -1197,7 +1254,8 @@ job_monk,225,179,4	script	XuanWu#02	89,{
 		mes "[XuanWu]";
 		mes "Você quer desistir?";
 		next;
-		if (select("Começar a coleta de Cogumelos", "Eu irei desistir") == 1) {
+		if (select("Começar a coleta de Cogumelos", "Eu irei desistir") == 1)
+		{
 			mes "[XuanWu]";
 			mes "O que você está esperando? Vamos !!!";
 			set @mission_start, 1;
@@ -1229,7 +1287,8 @@ job_monk,199,169,4	script	Guarda ChaoLi 	746,{
 }
 
 monk_test,319,139,4	script	Daowen	52,{
-	if (MONK_Q == 8) {
+	if (MONK_Q == 8)
+	{
 		mes "[Daowen]";
 		mes "Finalmente!";
 		mes "Este é o último teste e eu estou no comando daqui.";
@@ -1260,14 +1319,16 @@ monk_test,319,139,4	script	Daowen	52,{
 		warp "monk_test",88,73;
 		end;
 	}
-	if (MONK_Q == 9) {
+	if (MONK_Q == 9)
+	{
 		mes "[Daowen]";
 		mes "Muito bem!! HaHaHaHa....!!";
 		mes "Eu sabia que você conseguiria";
 		mes "Eu te darei uma poção especial que irá aumentar seu poder.";
 		next;
 		set MONK_Q, 10;
-		if (countitem(506) == 0){ //Items: Green_Potion,
+		if (countitem(506) == 0)
+		{
 			getitem 506, 1; //Items: Green_Potion,
 			mes "[Daowen]";
 			mes "Beba, assim todos seus orgãos internos ficarão fortes o suficiente para você se tornar um Monge.";
@@ -1280,7 +1341,8 @@ monk_test,319,139,4	script	Daowen	52,{
 			next;
 		}
 	}
-	if (MONK_Q == 10) {
+	if (MONK_Q == 10)
+	{
 		mes "[Daowen]";
 		mes "Vá para Wuhai - o primeiro com quem você conversou.";
 		close;
@@ -1309,7 +1371,8 @@ monk_test,88,91,4	script	Assistente do Teste#01	52,{
 	mes "Claro que existem alguns monstros durante seu caminho... e você terá que lutar contra eles.";
 	mes "Boa sorte! E que Deus esteja contigo.";
 	next;
-	if(getareausers("monk_test",126,161,165,199) > 0) {
+	if(getareausers("monk_test",126,161,165,199) > 0)
+	{
 		mes "[Assistente do Teste]";
 		mes "Oh... tem alguém fazendo o teste, por favor espere um minuto...";
 		close;
@@ -1371,7 +1434,8 @@ monk_test,95,85,4	script	Assistente do Teste#02	79,{
 	mes "Claro que existem alguns monstros durante seu caminho... e você terá que lutar contra eles.";
 	mes "Boa sorte! E que Deus esteja contigo.";
 	next;
-	if (getareausers("monk_test",126,262,165,300) > 0) {
+	if (getareausers("monk_test",126,262,165,300) > 0)
+	{
 		mes "[Assistente do Teste]";
 		mes "Oh... tem alguém fazendo o teste, por favor espere um minuto...";
 		close;
@@ -1433,7 +1497,8 @@ monk_test,82,85,4	script	Assistente do Teste#03	95,{
 	mes "Claro que existem alguns monstros durante seu caminho... e você terá que lutar contra eles.";
 	mes "Boa sorte! E que Deus esteja contigo.";
 	next;
-	if(getareausers("monk_test",233,262,269,300) > 0) {
+	if(getareausers("monk_test",233,262,269,300) > 0)
+	{
 		mes "[Assistente do Teste]";
 		mes "Oh... tem alguém fazendo o teste, por favor espere um minuto...";
 		close;
