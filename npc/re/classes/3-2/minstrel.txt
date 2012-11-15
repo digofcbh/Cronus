@@ -16,6 +16,7 @@
 //=     um trovaor. [JayPee]
 //= 1.2 Otimizado. [Euphy]
 //= 1.3 Traduzido para o Cronus Emulator. [Soraya]
+//= 1.3a Minimas correções realizadas. [Schrwaizer]
 //============================================================
 
 alberta,196,133,4	script	Bardo#job_min	486,{
@@ -75,10 +76,10 @@ alberta,196,133,4	script	Bardo#job_min	486,{
 				next;
 				mes "[Karian]";
 				mes "Mas quando você for para o mar, deverá ter cuidado.";
-				mes "Se você encontrar uma Sereia, então é só uma questão de tempo antes que ela te mate.";
+				mes "Se você encontrar uma Sereia, é só uma questão de tempo antes que ela te mate.";
 				next;
 				mes "[Karian]";
-				mes "Nenhum homem pode sobreviver depois de ouvir ^f57d7da voz da Sereia^000000.";
+				mes "Nenhum homem pode sobreviver depois de ouvir ^F57D7Da voz da Sereia^000000.";
 				next;
 				mes "["+strcharinfo(0)+"]";
 				mes "Eu sou "+strcharinfo(0)+".";
@@ -89,16 +90,16 @@ alberta,196,133,4	script	Bardo#job_min	486,{
 				mes "...";
 				next;
 				mes "[Karian]";
-				mes "Yes!";
+				mes "Sim!";
 				mes "Estou à procura de um '^f57d7dMaestro Musical^000000'.";
 				next;
 				mes "["+strcharinfo(0)+"]";
-				mes "^f57d7d'Maestro Musical'^000000, você quer dizer o poeta da lenda?";
+				mes "^f57d7d'Maestro Musical'^000000? você quer dizer o poeta da lenda?";
 				next;
 				mes "[Karian]";
 				mes "É isso mesmo.";
 				mes "De acordo com um boato que ouvi, ele é um nobre rico.";
-				mes "Mas diferente desse fato, eu não consegui obter mais informação.";
+				mes "Mas diferente desse fato, eu não consegui obter mais informações.";
 				next;
 				mes "["+strcharinfo(0)+"]";
 				mes "Porque você não pode obter mais informações?";
@@ -1986,3 +1987,4 @@ if(job_min >= 27) {
 	mes "[Karian]";
 	mes "Como você chegou aqui?";
 	close;
+}
