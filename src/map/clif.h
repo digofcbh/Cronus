@@ -573,7 +573,7 @@ void clif_displaymessage(const int fd, const char* mes);
 void clif_disp_onlyself(struct map_session_data *sd, const char *mes, int len);
 void clif_disp_message(struct block_list* src, const char* mes, int len, enum send_target target);
 void clif_broadcast(struct block_list* bl, const char* mes, int len, int type, enum send_target target);
-void clif_MainChatMessage(const char* message); //luzza
+void clif_MainChatMessage(const char* message);
 void clif_broadcast2(struct block_list* bl, const char* mes, int len, unsigned long fontColor, short fontType, short fontSize, short fontAlign, short fontY, enum send_target target);
 void clif_heal(int fd,int type,int val);
 void clif_resurrection(struct block_list *bl,int type);
@@ -604,7 +604,7 @@ void clif_weather(int m); // [Valaris]
 void clif_specialeffect(struct block_list* bl, int type, enum send_target target); // special effects [Valaris]
 void clif_specialeffect_single(struct block_list* bl, int type, int fd);
 void clif_messagecolor(struct block_list* bl, unsigned long color, const char* msg); // Mob/Npc color talk [SnakeDrak]
-void clif_message(struct block_list* bl, const char* msg); // messages (from mobs/npcs) [Valaris]
+void clif_message(struct block_list* bl, const char* msg);
 void clif_specialeffect_value(struct block_list* bl, int effect_id, int num, send_target target);
 
 void clif_GM_kickack(struct map_session_data *sd, int id);

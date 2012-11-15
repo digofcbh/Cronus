@@ -919,8 +919,7 @@ int parse_fromchar(int fd)
 //-------------------------------------
 // Make new account
 //-------------------------------------
-int mmo_auth_new(const char* userid, const char* pass, const char sex, const char* last_ip)
-{
+int mmo_auth_new(const char* userid, const char* pass, const char sex, const char* last_ip) {
 	static int num_regs = 0; // registration counter
 	static unsigned int new_reg_tick = 0;
 	unsigned int tick = gettick();
@@ -929,8 +928,7 @@ int mmo_auth_new(const char* userid, const char* pass, const char sex, const cha
 	//Account Registration Flood Protection by [Kevin]
 	if( new_reg_tick == 0 )
 		new_reg_tick = gettick();
-	if( DIFF_TICK(tick, new_reg_tick) < 0 && num_regs >= allowed_regs )
-	{
+	if( DIFF_TICK(tick, new_reg_tick) < 0 && num_regs >= allowed_regs ) {
 		ShowNotice("Registro de conta proibido (limite de registros excedente)\n");
 		return 3;
 	}
@@ -943,8 +941,7 @@ int mmo_auth_new(const char* userid, const char* pass, const char sex, const cha
 		return 0; // 0 = Unregistered ID
 
 	// check if the account doesn't exist already
-	if( accounts->load_str(accounts, &acc, userid) )
-	{
+	if( accounts->load_str(accounts, &acc, userid) ) {
 		ShowNotice("Tentativa de criação de conta pré-existente (conta: %s_%c)\n", userid, sex); //Senha correta e senha recebida retiradas por motivos de segurança
 		return 1; // 1 = Incorrect Password
 	}
@@ -965,8 +962,7 @@ int mmo_auth_new(const char* userid, const char* pass, const char sex, const cha
 
 	ShowNotice("Criação de conta (conta "CL_WHITE"%s"CL_RESET", id: "CL_WHITE"%d"CL_RESET", sexo: "CL_WHITE"%c"CL_RESET")\n", acc.userid, acc.account_id, acc.sex);
 
-	if( DIFF_TICK(tick, new_reg_tick) > 0 )
-	{// Update the registration check.
+	if( DIFF_TICK(tick, new_reg_tick) > 0 ) {// Update the registration check.
 		num_regs = 0;
 		new_reg_tick = tick + time_allowed*1000;
 	}
@@ -978,8 +974,7 @@ int mmo_auth_new(const char* userid, const char* pass, const char sex, const cha
 //-----------------------------------------------------
 // Check/authentication of a connection
 //-----------------------------------------------------
-int mmo_auth(struct login_session_data* sd, bool isServer)
-{
+int mmo_auth(struct login_session_data* sd, bool isServer) {
 	struct mmo_account acc;
 	int len;
 
@@ -987,27 +982,21 @@ int mmo_auth(struct login_session_data* sd, bool isServer)
 	ip2str(session[sd->fd]->client_addr, ip);
 
 	// DNS Blacklist check
-	if( login_config.use_dnsbl )
-	{
+	if( login_config.use_dnsbl ) {
 		char r_ip[16];
 		char ip_dnsbl[256];
 		char* dnsbl_serv;
-		bool matched = false;
 		uint8* sin_addr = (uint8*)&session[sd->fd]->client_addr;
 
 		sprintf(r_ip, "%u.%u.%u.%u", sin_addr[0], sin_addr[1], sin_addr[2], sin_addr[3]);
 
-		for( dnsbl_serv = strtok(login_config.dnsbl_servs,","); !matched && dnsbl_serv != NULL; dnsbl_serv = strtok(NULL,",") )
-		{
+		for( dnsbl_serv = strtok(login_config.dnsbl_servs,","); dnsbl_serv != NULL; dnsbl_serv = strtok(NULL,",") ) {
 			sprintf(ip_dnsbl, "%s.%s", r_ip, trim(dnsbl_serv));
-			if( host2ip(ip_dnsbl) )
-				matched = true;
 		}
 
-		if( matched )
-		{
-			ShowInfo("DNSBL: ("CL_WHITE"%s"CL_RESET") em "CL_RED"lista negra"CL_RESET". Usuário desconectado.\n", r_ip);
-			return 3;
+		if( host2ip(ip_dnsbl) ) { 
+			ShowInfo("DNSBL: (%s) Lista negra. Usuário Desconectado.\n", r_ip); 
+			return 3; 
 		}
 	}
 
@@ -1018,8 +1007,7 @@ int mmo_auth(struct login_session_data* sd, bool isServer)
 	len = strnlen(sd->userid, NAME_LENGTH);
 
 	// Account creation with _M/_F
-	if( login_config.new_account_flag )
-	{
+	if( login_config.new_account_flag ) {
 		if( len > 2 && strnlen(sd->passwd, NAME_LENGTH) > 0 && // valid user and password lengths
 			sd->passwdenc == 0 && // unencoded password
 			sd->userid[len-2] == '_' && memchr("FfMm", sd->userid[len-1], 4) ) // _M/_F suffix
@@ -1036,53 +1024,44 @@ int mmo_auth(struct login_session_data* sd, bool isServer)
 		}
 	}
 	
-	if( !accounts->load_str(accounts, &acc, sd->userid) )
-	{
+	if( !accounts->load_str(accounts, &acc, sd->userid) ) {
 		ShowNotice("Conta "CL_RED"desconhecida"CL_RESET" (conta: "CL_WHITE"%s"CL_RESET", ip: "CL_WHITE"%s"CL_RESET")\n", sd->userid, ip); //Senha recebida retirada de mensagem por motivos de segurança
 		return 0; // 0 = Unregistered ID
 	}
 
-	if( !check_password(sd->md5key, sd->passwdenc, sd->passwd, acc.pass) )
-	{
+	if( !check_password(sd->md5key, sd->passwdenc, sd->passwd, acc.pass) ) {
 		ShowNotice("Senha "CL_RED"incorreta"CL_RESET" (conta: "CL_WHITE"%s"CL_RESET", ip: "CL_WHITE"%s"CL_RESET")\n", sd->userid, ip); // Senha correta e senha recebida retiradas de mensagem por motivos de segurança
 		return 1; // 1 = Incorrect Password
 	}
 
-	if( acc.expiration_time != 0 && acc.expiration_time < time(NULL) )
-	{
+	if( acc.expiration_time != 0 && acc.expiration_time < time(NULL) ) {
 		ShowNotice("Conexão "CL_RED"recusada"CL_RESET" por causa do IP estar expirado (conta: "CL_WHITE"%s"CL_RESET", ip: "CL_WHITE"%s"CL_RESET")\n", sd->userid, sd->passwd, ip);
 		return 2; // 2 = This ID is expired
 	}
 
-	if( acc.unban_time != 0 && acc.unban_time > time(NULL) )
-	{
+	if( acc.unban_time != 0 && acc.unban_time > time(NULL) ) {
 		char tmpstr[24];
 		timestamp2string(tmpstr, sizeof(tmpstr), acc.unban_time, login_config.date_format);
 		ShowNotice("Conexão "CL_RED"recusada"CL_RESET" (conta: "CL_WHITE"%s"CL_RESET", banido até "CL_WHITE"%s"CL_RESET", ip: "CL_WHITE"%s"CL_RESET")\n", sd->userid, tmpstr, ip);
 		return 6; // 6 = Your are Prohibited to log in until %s
 	}
 
-	if( acc.state != 0 )
-	{
+	if( acc.state != 0 ) {
 		ShowNotice("Conexão recusada (conta: "CL_WHITE"%s"CL_RESET", estado: "CL_WHITE"%d"CL_RESET", ip: "CL_WHITE"%s"CL_RESET")\n", sd->userid, acc.state, ip);
 		return acc.state - 1;
 	}
 	
-	if( login_config.client_hash_check && !isServer )
-	{
+	if( login_config.client_hash_check && !isServer ) {
 		struct client_hash_node *node = login_config.client_hash_nodes;
 		bool match = false;
 
-		if( !sd->has_client_hash )
-		{
+		if( !sd->has_client_hash ) {
 			ShowNotice("Cliente não enviou o hash (conta: "CL_WHITE"%s"CL_RESET", ip: "CL_WHITE"%s"CL_RESET")\n", sd->userid, ip);
 			return 5;
 		}
 
-		while( node ) 
-		{
-			if( node->group_id <= acc.group_id && memcmp(node->hash, sd->client_hash, 16) == 0 )
-			{
+		while( node ) {
+			if( node->group_id <= acc.group_id && memcmp(node->hash, sd->client_hash, 16) == 0 ) {
 				match = true;
 				break;
 			}
@@ -1090,8 +1069,7 @@ int mmo_auth(struct login_session_data* sd, bool isServer)
 			node = node->next;
 		}
 
-		if( !match )
-		{
+		if( !match ) {
 			char smd5[33];
 			int i;
 
