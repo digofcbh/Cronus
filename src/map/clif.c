@@ -10301,6 +10301,23 @@ void clif_parse_NpcBuySellSelected(int fd,struct map_session_data *sd)
 	npc_buysellsel(sd,RFIFOL(fd,2),RFIFOB(fd,6));
 }
 
+/// Notification about the result of a purchase attempt from an NPC shop (ZC_PC_PURCHASE_RESULT).
+/// 00ca <result>.B
+/// result:
+///     0 = "The deal has successfully completed."
+///     1 = "You do not have enough zeny."
+///     2 = "You are over your Weight Limit."
+///     3 = "Out of the maximum capacity, you have too many items."
+void clif_npc_buy_result(struct map_session_data* sd, unsigned char result)
+{
+	int fd = sd->fd;
+
+	WFIFOHEAD(fd,packet_len(0xca));
+	WFIFOW(fd,0) = 0xca;
+	WFIFOB(fd,2) = result;
+	WFIFOSET(fd,packet_len(0xca));
+}
+
 /// Request to buy chosen items from npc shop (CZ_PC_PURCHASE_ITEMLIST).
 /// 00c8 <packet len>.W { <amount>.W <name id>.W }*
 void clif_parse_NpcBuyListSend(int fd, struct map_session_data* sd)
