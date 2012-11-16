@@ -10,7 +10,6 @@
 #include "../common/cbasetypes.h"
 #include "../common/malloc.h"
 #include "../common/md5calc.h"
-#include "../common/lock.h"
 #include "../common/nullpo.h"
 #include "../common/random.h"
 #include "../common/showmsg.h"
@@ -636,15 +635,8 @@ static void check_event(struct script_state *st, const char *evt)
 {
 	if( evt && evt[0] && !stristr(evt, "::On") )
 	{
-		if( npc_event_isspecial(evt) )
-		{
-			;  // portable small/large monsters or other attributes
-		}
-		else
-		{
-			ShowWarning("NPC event parameter deprecated! Please use 'NPCNAME::OnEVENT' instead of '%s'.\n", evt);
+		ShowWarning("Par穃etro de evento NPC obsoleto! Por favor use 'NPCNAME::OnEVENT' em vez de '%s'.\n", evt);
 			script_reportsrc(st);
-		}
 	}
 }
 
@@ -7193,10 +7185,8 @@ BUILDIN_FUNC(strnpcinfo)
 			name = aStrdup(map[nd->bl.m].name);
 			break;
 		case 5: // coordinate (x)
-			script_pushint(st, nd->bl.x);
-			return 0;
 		case 6: // coordinate (y)
-			script_pushint(st, nd->bl.y);
+			script_pushint(st, (num==5?nd->bl.x:nd->bl.y));
 			return 0;
 	}
 
@@ -8643,44 +8633,71 @@ BUILDIN_FUNC(guildchangegm)
 
 	return 0;
 }
-
 /*==========================================
- * モンスター発生
+ * Spawn a monster :
+ @mapn,x,y : location 
+ @str : monster name
+ @class_ : mob_id
+ @amount : nb to spawn
+ @event : event to attach to mob
  *------------------------------------------*/
 BUILDIN_FUNC(monster)
 {
-	const char* mapn  = script_getstr(st,2);
-	int x             = script_getnum(st,3);
-	int y             = script_getnum(st,4);
-	const char* str   = script_getstr(st,5);
-	int class_        = script_getnum(st,6);
-	int amount        = script_getnum(st,7);
-	const char* event = "";
+	const char* mapn	= script_getstr(st,2);
+	int x				= script_getnum(st,3);
+	int y				= script_getnum(st,4);
+	const char* str		= script_getstr(st,5);
+	int class_			= script_getnum(st,6);
+	int amount			= script_getnum(st,7);
+	const char* event	= "";
+	unsigned int size	= SZ_SMALL;
+	unsigned int ai		= AI_NONE;
 
 	struct map_session_data* sd;
 	int m;
 
-	if( script_hasdata(st,8) )
+	if (script_hasdata(st, 8))
 	{
-		event = script_getstr(st,8);
+		event = script_getstr(st, 8);
 		check_event(st, event);
 	}
+	
+	if (script_hasdata(st, 9))
+	{
+		size = script_getnum(st, 9);
+		if (size > 3)
+		{
+			ShowWarning("buildin_monster: Attempted to spawn non-existing size %d for monster class %d\n", size, class_);
+			return 1;
+		}
+	}
+	
+	if (script_hasdata(st, 10))
+	{
+		ai = script_getnum(st, 10);
+		if (ai > 4)
+		{
+			ShowWarning("buildin_monster: Attempted to spawn non-existing ai %d for monster class %d\n", ai, class_);
+			return 1;
+		}
+	}
 
-	if (class_ >= 0 && !mobdb_checkid(class_)) {
+	if (class_ >= 0 && !mobdb_checkid(class_))
+	{
 		ShowWarning("buildin_monster: Attempted to spawn non-existing monster class %d\n", class_);
 		return 1;
 	}
 
 	sd = map_id2sd(st->rid);
 
-	if( sd && strcmp(mapn,"this") == 0 )
+	if (sd && strcmp(mapn, "this") == 0)
 		m = sd->bl.m;
 	else
 	{
 		m = map_mapname2mapid(mapn);
-		if( map[m].flag.src4instance && st->instance_id )
+		if (map[m].flag.src4instance && st->instance_id)
 		{ // Try to redirect to the instance map, not the src map
-			if( (m = instance_mapid2imapid(m, st->instance_id)) < 0 )
+			if ((m = instance_mapid2imapid(m, st->instance_id)) < 0)
 			{
 				ShowError("buildin_monster: Trying to spawn monster (%d) on instance map (%s) without instance attached.\n", class_, mapn);
 				return 1;
@@ -8688,7 +8705,7 @@ BUILDIN_FUNC(monster)
 		}
 	}
 
-	mob_once_spawn(sd,m,x,y,str,class_,amount,event);
+	mob_once_spawn(sd, m, x, y, str, class_, amount, event, size, ai);
 	return 0;
 }
 /*==========================================
@@ -8727,39 +8744,61 @@ BUILDIN_FUNC(getmobdrops)
 	return 0;
 }
 /*==========================================
- * モンスター発生
+ * Same as monster but randomize location in x0,x1,y0,y1 area
  *------------------------------------------*/
 BUILDIN_FUNC(areamonster)
 {
-	const char* mapn  = script_getstr(st,2);
-	int x0            = script_getnum(st,3);
-	int y0            = script_getnum(st,4);
-	int x1            = script_getnum(st,5);
-	int y1            = script_getnum(st,6);
-	const char* str   = script_getstr(st,7);
-	int class_        = script_getnum(st,8);
-	int amount        = script_getnum(st,9);
-	const char* event = "";
+	const char* mapn	= script_getstr(st,2);
+	int x0				= script_getnum(st,3);
+	int y0				= script_getnum(st,4);
+	int x1				= script_getnum(st,5);
+	int y1				= script_getnum(st,6);
+	const char* str		= script_getstr(st,7);
+	int class_			= script_getnum(st,8);
+	int amount			= script_getnum(st,9);
+	const char* event	= "";
+	unsigned int size	= SZ_SMALL;
+	unsigned int ai		= AI_NONE;
 
 	struct map_session_data* sd;
 	int m;
 
-	if( script_hasdata(st,10) )
+	if (script_hasdata(st,10))
 	{
-		event = script_getstr(st,10);
+		event = script_getstr(st, 10);
 		check_event(st, event);
+	}
+	
+	if (script_hasdata(st, 11))
+	{
+		size = script_getnum(st, 11);
+		if (size > 3)
+		{
+			ShowWarning("buildin_monster: Attempted to spawn non-existing size %d for monster class %d\n", size, class_);
+			return 1;
+		}
+	}
+	
+	if (script_hasdata(st, 12))
+	{
+		ai = script_getnum(st, 12);
+		if (ai > 4)
+		{
+			ShowWarning("buildin_monster: Attempted to spawn non-existing ai %d for monster class %d\n", ai, class_);
+			return 1;
+		}
 	}
 
 	sd = map_id2sd(st->rid);
 
-	if( sd && strcmp(mapn,"this") == 0 )
+	if (sd && strcmp(mapn, "this") == 0)
 		m = sd->bl.m;
 	else
 	{
 		m = map_mapname2mapid(mapn);
-		if( map[m].flag.src4instance && st->instance_id )
+		if (map[m].flag.src4instance && st->instance_id)
 		{ // Try to redirect to the instance map, not the src map
-			if( (m = instance_mapid2imapid(m, st->instance_id)) < 0 )
+			if ((m = instance_mapid2imapid(m, st->instance_id)) < 0)
 			{
 				ShowError("buildin_areamonster: Trying to spawn monster (%d) on instance map (%s) without instance attached.\n", class_, mapn);
 				return 1;
@@ -8767,7 +8806,7 @@ BUILDIN_FUNC(areamonster)
 		}
 	}
 	
-	mob_once_spawn_area(sd,m,x0,y0,x1,y1,str,class_,amount,event);
+	mob_once_spawn_area(sd, m, x0, y0, x1, y1, str, class_, amount, event, size, ai);
 	return 0;
 }
 /*==========================================
@@ -13008,10 +13047,10 @@ BUILDIN_FUNC(summon)
 
 	clif_skill_poseffect(&sd->bl,AM_CALLHOMUN,1,sd->bl.x,sd->bl.y,tick);
 
-	md = mob_once_spawn_sub(&sd->bl, sd->bl.m, sd->bl.x, sd->bl.y, str, _class, event);
+	md = mob_once_spawn_sub(&sd->bl, sd->bl.m, sd->bl.x, sd->bl.y, str, _class, event, SZ_SMALL, AI_NONE);
 	if (md) {
 		md->master_id=sd->bl.id;
-		md->special_state.ai=1;
+		md->special_state.ai= AI_ATTACK;
 		if( md->deletetimer != INVALID_TIMER )
 			delete_timer(md->deletetimer, mob_timer_delete);
 		md->deletetimer = add_timer(tick+(timeout>0?timeout*1000:60000),mob_timer_delete,md->bl.id,0);
@@ -17248,9 +17287,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(itemskill,"vi"),
 	BUILDIN_DEF(produce,"i"),
 	BUILDIN_DEF(cooking,"i"),
-	BUILDIN_DEF(monster,"siisii?"),
+	BUILDIN_DEF(monster,"siisii???"),
 	BUILDIN_DEF(getmobdrops,"i"),
-	BUILDIN_DEF(areamonster,"siiiisii?"),
+	BUILDIN_DEF(areamonster,"siiiisii???"),
 	BUILDIN_DEF(killmonster,"ss?"),
 	BUILDIN_DEF(killmonsterall,"s?"),
 	BUILDIN_DEF(clone,"siisi????"),

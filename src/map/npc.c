@@ -383,15 +383,6 @@ int npc_event_doall_id(const char* name, int rid)
 	return c;
 }
 
-
-/// Checks whether or not the event name is used as transport for
-/// special flags.
-bool npc_event_isspecial(const char* eventname)
-{
-	return (bool)( eventname && ISDIGIT(eventname[0]) && !strstr(eventname, "::") );
-}
-
-
 /*==========================================
  * Clock event execution 
  * OnMinute/OnClock/OnHour/OnDay/OnDDHHMM
@@ -1537,11 +1528,16 @@ int npc_buylist(struct map_session_data* sd, int n, unsigned short* item_list)
 		int amount = item_list[i*2+0];
 		struct item item_tmp;
 
-		memset(&item_tmp,0,sizeof(item_tmp));
-		item_tmp.nameid = nameid;
-		item_tmp.identify = 1;
+		if (itemdb_type(nameid) == IT_PETEGG)
+			pet_create_egg(sd, nameid);
+		else 
+ 		{
+			memset(&item_tmp,0,sizeof(item_tmp));
+			item_tmp.nameid = nameid;
+			item_tmp.identify = 1;
 
-		pc_additem(sd,&item_tmp,amount,LOG_TYPE_NPC);
+			pc_additem(sd,&item_tmp,amount,LOG_TYPE_NPC);
+		} 
 	}
 
 	// custom merchant shop exp bonus
