@@ -54,6 +54,7 @@ _ReSharper.*
 char-server_sql
 login-server_sql
 map-server_sql
+mapcache
 config.log
 config.status
 Makefile
