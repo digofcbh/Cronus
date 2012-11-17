@@ -23,21 +23,21 @@ Equipe
 ------
 ### Administradores
 - Roberto		- Roberto Lima
+- SBK			- Romulo de Sousa Mangueira
 
 ### Coordenadores
-- Raizen		- Carlos
-- Devliz		- Fernando
+- Raizen		- Carlos Lain
+- Devliz		- Fernando Cezarro
 - GreenBox		- Jonathan Lima
 
 ### Desenvolvedores
 - Axl			- José Góis
 - MaminhA		- Marcelo Liberato
-- Snails		- Humberto Machado
-- SBK			- Romulo
 - NightWolf		- Gabriel
-- socramjunio	- Marcos
-- Matheus     - Matheus Silva
-- Holdur      - José
-- Rafael      - Rafael
-- Schrwaizer  - Thiago
-- Merakk      - Renan
+- socramjunio		- Marcos Moraes
+- Matheus		- Matheus Silva
+- Holdur		- José Westin
+- Rafael		- Rafael
+- Schrwaizer		- Thiago Schrwaizer
+- Merakk		- Renan Mesquita
+- Leonardo		- Leonardo
