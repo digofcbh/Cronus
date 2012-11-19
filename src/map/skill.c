@@ -6303,7 +6303,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_LEADERSHIP:		case SC_GLORYWOUNDS:	case SC_SOULCOLD:
 				case SC_HAWKEYES:		case SC_GUILDAURA:		case SC_PUSH_CART:
 				case SC_RAISINGDRAGON:	case SC_GT_ENERGYGAIN:	case SC_GT_CHANGE:
-				case SC_GT_REVITALIZE:
+				case SC_GT_REVITALIZE:	case SC_REFLECTDAMAGE:	case SC_INSPIRATION:
+				case SC_EXEEDBREAK:		case SC_FORCEOFVANGUARD:	case SC_BANDING:
+				case SC_DUPLELIGHT:		case SC_EXPIATIO:		case SC_LAUDAAGNUS:
+				case SC_LAUDARAMUS:		case SC_GATLINGFEVER:	case SC_INCREASING:
+				case SC_ADJUSTMENT:		case SC_MADNESSCANCEL:
 #ifdef RENEWAL
 				case SC_EXTREMITYFIST2:
 #endif
@@ -10786,6 +10790,7 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 /*==========================================
  *
  *------------------------------------------*/
+void ext_skill_unit_onplace(struct skill_unit *src, struct block_list *bl, unsigned int tick){skill_unit_onplace(src, bl, tick);}
 static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, unsigned int tick)
 {
 	struct skill_unit_group *sg;

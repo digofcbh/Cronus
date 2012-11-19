@@ -1360,7 +1360,6 @@ int pc_calc_skilltree(struct map_session_data *sd)
 				case LG_OVERBRAND_BRANDISH:
 				case LG_OVERBRAND_PLUSATK:
 				case WM_SEVERE_RAINSTORM_MELEE:
-				case ALL_BUYING_STORE:
 					continue;
 				default:
 					break;
@@ -1414,10 +1413,6 @@ int pc_calc_skilltree(struct map_session_data *sd)
 					(inf2&INF2_SPIRIT_SKILL && !sd->sc.data[SC_SPIRIT])
 				))
 					continue; //Cannot be learned via normal means. Note this check DOES allows raising already known skills.
-				
-				/* This thing is present in all skill trees (for whatever reason) and it crashes if gm w/o PC_PERM_ALL_SKILL uses @allskills */
-				if( id == ALL_BUYING_STORE )
-					continue;
 
 				sd->status.skill[id].id = id;
 
@@ -7464,7 +7459,7 @@ int pc_setcart(struct map_session_data *sd,int type) {
 	if( type < 0 || type > MAX_CARTS )
 		return 1;// Never trust the values sent by the client! [Skotlex]
 
-	if( pc_checkskill(sd,MC_PUSHCART) <= 0 )
+	if( pc_checkskill(sd,MC_PUSHCART) <= 0 && type != 0 )
 		return 1;// Push cart is required
 
 	if( type == 0 && pc_iscarton(sd) )
