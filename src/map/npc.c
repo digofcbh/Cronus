@@ -1516,12 +1516,8 @@ int npc_buylist(struct map_session_data* sd, int n, unsigned short* item_list)
 	if( pc_inventoryblank(sd) < new_ )
 		return 3;	// Not enough space to store items
 
-	//Logs (S)hopping Zeny [Lupus]
-	log_zeny(sd, LOG_TYPE_NPC, sd, -(int)z);
-	//Logs
-
-	pc_payzeny(sd,(int)z);
-
+	pc_payzeny(sd,(int)z,LOG_TYPE_NPC, NULL);
+	
 	for( i = 0; i < n; ++i )
 	{
 		int nameid = item_list[i*2+1];
@@ -1692,11 +1688,7 @@ int npc_selllist(struct map_session_data* sd, int n, unsigned short* item_list)
 	if( z > MAX_ZENY )
 		z = MAX_ZENY;
 
-	//Logs (S)hopping Zeny [Lupus]
-	log_zeny(sd, LOG_TYPE_NPC, sd, (int)z);
-	//Logs
-
-	pc_getzeny(sd, (int)z);
+	pc_getzeny(sd, (int)z, LOG_TYPE_NPC, NULL);
 
 	// custom merchant shop exp bonus
 	if( battle_config.shop_exp > 0 && z > 0 && ( skill = pc_checkskill(sd,MC_OVERCHARGE) ) > 0)

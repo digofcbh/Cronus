@@ -2530,24 +2530,7 @@ ACMD_FUNC(zeny)
 		return -1;
 	}
 
-	new_zeny = sd->status.zeny + zeny;
-	if (zeny > 0 && (zeny > MAX_ZENY || new_zeny > MAX_ZENY)) // fix positiv overflow
-		new_zeny = MAX_ZENY;
-	else if (zeny < 0 && (zeny < -MAX_ZENY || new_zeny < 0)) // fix negativ overflow
-		new_zeny = 0;
-
-	if (new_zeny != sd->status.zeny) {
-		sd->status.zeny = new_zeny;
-		clif_updatestatus(sd, SP_ZENY);
-		clif_displaymessage(fd, msg_txt(176)); // Current amount of zeny changed.
-	} else {
-		if (zeny < 0)
-			clif_displaymessage(fd, msg_txt(41)); // Unable to decrease the number/value.
-		else
-			clif_displaymessage(fd, msg_txt(149)); // Unable to increase the number/value.
-		return -1;
-	}
-
+	pc_getzeny(sd,zeny,LOG_TYPE_COMMAND,NULL);
 	return 0;
 }
 
@@ -3410,7 +3393,7 @@ ACMD_FUNC(spiritball)
 	if( sd->spiritball > 0 )
 		pc_delspiritball(sd, sd->spiritball, 1);
 	sd->spiritball = number;
-	clif_spiritball(sd);
+	clif_spiritball(&sd->bl);
 	// no message, player can look the difference
 
 	return 0;
