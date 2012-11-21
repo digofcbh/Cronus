@@ -2154,10 +2154,10 @@ static void add_buildin_func(void)
 			str_data[n].val = i;
 			str_data[n].func = buildin_func[i].func;
 
-			if( !strcmp(buildin_func[i].name, "set") ) buildin_set_ref = n; else
-			if( !strcmp(buildin_func[i].name, "callsub") ) buildin_callsub_ref = n; else
-			if( !strcmp(buildin_func[i].name, "callfunc") ) buildin_callfunc_ref = n; else
-			if( !strcmp(buildin_func[i].name, "getelementofarray") ) buildin_getelementofarray_ref = n;
+            if (!strcmp(buildin_func[i].name, "set")) buildin_set_ref = n;
+            else if (!strcmp(buildin_func[i].name, "callsub")) buildin_callsub_ref = n;
+            else if (!strcmp(buildin_func[i].name, "callfunc")) buildin_callfunc_ref = n;
+            else if( !strcmp(buildin_func[i].name, "getelementofarray") ) buildin_getelementofarray_ref = n;
 		}
 	}
 }

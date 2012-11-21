@@ -23,7 +23,6 @@ Equipe
 ------
 ### Administradores
 - Roberto		- Roberto Lima
-- SBK			- Romulo de Sousa Mangueira
 
 ### Coordenadores
 - Raizen		- Carlos Lain
@@ -32,12 +31,11 @@ Equipe
 
 ### Desenvolvedores
 - Axl			- José Góis
-- MaminhA		- Marcelo Liberato
-- NightWolf		- Gabriel
-- socramjunio		- Marcos Moraes
-- Matheus		- Matheus Silva
 - Holdur		- José Westin
-- Rafael		- Rafael
-- Schrwaizer		- Thiago Schrwaizer
+- I am Cold		- Marcio Montenegro
+- Leonardo Brito		- Leonardo Brito
+- MaminhA		- Marcelo Liberato
 - Merakk		- Renan Mesquita
-- Leonardo		- Leonardo
+- Matheus		- Matheus Silva
+- Rafael		- Rafael
+- Schrwaizer	- Thiago Schrwaizer

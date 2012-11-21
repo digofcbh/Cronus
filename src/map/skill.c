@@ -9138,17 +9138,15 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr_t data)
 				if( ((TBL_MOB*)target)->class_ == MOBID_EMPERIUM )
 					break;
 			}
-			else
-			if (inf && battle_check_target(src, target, inf) <= 0){
+			else if (inf && battle_check_target(src, target, inf) <= 0){
 				if (sd) clif_skill_fail(sd,ud->skillid,USESKILL_FAIL_LEVEL,0);
 				break;
 			}
 
 			if(inf&BCT_ENEMY && (sc = status_get_sc(target)) &&
 				sc->data[SC_FOGWALL] &&
-				rnd()%100 < 75)
-		  	{	//Fogwall makes all offensive-type targetted skills fail at 75%
-				if (sd) clif_skill_fail(sd,ud->skillid,USESKILL_FAIL_LEVEL,0);
+				rnd() % 100 < 75) { //Fogwall makes all offensive-type targetted skills fail at 75% 
+				if (sd) clif_skill_fail(sd, ud->skillid, USESKILL_FAIL_LEVEL, 0);
 				break;
 			}
 		}
@@ -12855,6 +12853,15 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			}
 			break;
 		case SR_CURSEDCIRCLE:
+			if (map_flag_gvg(sd->bl.m)) {
+			    if (map_foreachinrange(mob_count_sub, &sd->bl, skill_get_splash(skill, lv), BL_MOB,
+				    MOBID_EMPERIUM, MOBID_GUARIDAN_STONE1, MOBID_GUARIDAN_STONE2)) {
+				char output[128];
+				sprintf(output, "You're too close to a stone or emperium to do this skill");
+				clif_colormes(sd, COLOR_RED, output);
+				return 0;
+			    }
+			}
 			if( sd->spiritball > 0 )
 				sd->spiritball_old = require.spiritball = sd->spiritball;
 			else {
@@ -13383,6 +13390,8 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 	if( sc ) {
 		if( sc->data[SC__LAZINESS] )
 			req.sp += req.sp + sc->data[SC__LAZINESS]->val1 * 10;
+		if (sc->data[SC_UNLIMITEDHUMMINGVOICE])
+			req.sp += req.sp * sc->data[SC_UNLIMITEDHUMMINGVOICE]->val2 / 100;
 		if( sc->data[SC_RECOGNIZEDSPELL] )
 			req.sp += req.sp / 4;
 	}
