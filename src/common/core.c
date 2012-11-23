@@ -206,9 +206,8 @@ const char* get_svn_revision(void)
 				}
 			} else {
 				// Bin File format
-				bool fgresult;
-				fgresult = ( fgets(line, sizeof(line), fp) != NULL ); // Get the name
-				fgresult = ( fgets(line, sizeof(line), fp) != NULL ); // Get the entries kind
+				if ( fgets(line, sizeof(line), fp) == NULL ) { printf("Can't get bin name\n"); }
+				if ( fgets(line, sizeof(line), fp) == NULL ) { printf("Can't get entries kind\n"); }
 				if(fgets(line, sizeof(line), fp)) // Get the rev numver
 				{
 					snprintf(rA_svn_version, sizeof(rA_svn_version), "%d", atoi(line));

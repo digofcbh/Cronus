@@ -3344,6 +3344,9 @@ int mob_clone_spawn(struct map_session_data *sd, int m, int x, int y, const char
 
 	nullpo_ret(sd);
 
+	if(pc_isdead(sd) && master_id && flag&1)
+		return 0;
+
 	ARR_FIND( MOB_CLONE_START, MOB_CLONE_END, class_, mob_db_data[class_] == NULL );
 	if(class_ >= MOB_CLONE_END)
 		return 0;
