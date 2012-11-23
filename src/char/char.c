@@ -1324,11 +1324,7 @@ int mmo_char_fromsql(int char_id, struct mmo_charstatus* p, bool load_everything
 int mmo_char_sql_init(void) {
 	char_db_= idb_alloc(DB_OPT_RELEASE_DATA);
 
-	if(char_per_account == 0) {
-		ShowStatus("Personagens por Conta: '"CL_WHITE"Ilimitado"CL_RESET"'.\n");
-	} else {
-		ShowStatus("Personagens por Conta: '"CL_WHITE"%d"CL_RESET"'.\n", char_per_account);
-	}
+	ShowStatus("Chars por conta: '%d'.\n", char_per_account);
 
 	//the 'set offline' part is now in check_login_conn ...
 	//if the server connects to loginserver
@@ -4494,6 +4490,11 @@ int char_config_read(const char* cfgName) {
 			safestrncpy(char_name_letters, w2, sizeof(char_name_letters));
 		} else if (strcmpi(w1, "chars_per_account") == 0) { //maxchars per account [Sirius]
 			char_per_account = atoi(w2);
+			if( char_per_account == 0 || char_per_account > MAX_CHARS ) {
+				if( char_per_account > MAX_CHARS )
+					ShowWarning("Máx. de chars por conta '%d' excedeu o limite. Definindo em '%d'.\n", char_per_account, MAX_CHARS);
+				char_per_account = MAX_CHARS;
+			}
 		} else if (strcmpi(w1, "char_del_level") == 0) { //disable/enable char deletion by its level condition [Lupus]
 			char_del_level = atoi(w2);
 		} else if (strcmpi(w1, "char_del_delay") == 0) {
