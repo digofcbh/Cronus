@@ -7,6 +7,7 @@
 #include "map.h" // struct block_list
 #include "status.h" // struct status_change
 #include "unit.h" // struct unit_data
+
 struct block_list;
 struct npc_data;
 struct view_data;
@@ -15,10 +16,12 @@ struct view_data;
 struct npc_timerevent_list {
 	int timer,pos;
 };
+
 struct npc_label_list {
 	char name[NPC_NAME_LENGTH];
 	int pos;
 };
+
 struct npc_item_list {
 	unsigned int nameid,value;
 };
@@ -71,8 +74,6 @@ struct npc_data {
 	} u;
 };
 
-
-
 #define START_NPC_NUM 110000000
 
 enum actor_classes
@@ -120,7 +121,7 @@ int npc_buysellsel(struct map_session_data* sd, int id, int type);
 int npc_buylist(struct map_session_data* sd,int n, unsigned short* item_list);
 int npc_selllist(struct map_session_data* sd, int n, unsigned short* item_list);
 void npc_parse_mob2(struct spawn_data* mob);
-struct npc_data* npc_add_warp(short from_mapid, short from_x, short from_y, short xs, short ys, unsigned short to_mapindex, short to_x, short to_y);
+struct npc_data* npc_add_warp(char* name, short from_mapid, short from_x, short from_y, short xs, short ys, unsigned short to_mapindex, short to_x, short to_y);
 int npc_globalmessage(const char* name,const char* mes);
 
 void npc_setcells(struct npc_data* nd);
