@@ -1286,7 +1286,7 @@ int map_clearflooritem_timer(int tid, unsigned int tick, int id, intptr_t data)
 	return 0;
 }
 
-/* 
+/*
  * clears a single bl item out of the bazooonga.
  */
 void map_clearflooritem(struct block_list *bl) {

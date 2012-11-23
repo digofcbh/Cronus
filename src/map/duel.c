@@ -134,7 +134,7 @@ void duel_leave(const unsigned int did, struct map_session_data* sd)
 	duel_list[did].members_count--;
 
 	if(duel_list[did].members_count == 0) {
-		map_foreachpc(duel_leave_sub, did); 
+		map_foreachpc(duel_leave_sub, did);
 		duel_count--;
 	}
 

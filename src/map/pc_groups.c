@@ -195,7 +195,7 @@ static void read_config(void)
 				int j, inherit_count = 0, done = 0;
 
 				if (group_settings->inheritance_done) // group already processed
-					continue; 
+					continue;
 
 				if ((inherit = group_settings->inherit) == NULL ||
 				    (inherit_count = config_setting_length(inherit)) <= 0) { // this group does not inherit from others
@@ -366,7 +366,7 @@ void pc_group_pc_load(struct map_session_data * sd) {
 bool pc_group_has_permission(int group_id, int permission)
 {
 	GroupSettings *group = NULL;
-	if ((group = id2group(group_id)) == NULL) 
+	if ((group = id2group(group_id)) == NULL)
 		return false;
 	return ((group->e_permissions&permission) != 0);
 }
@@ -378,7 +378,7 @@ bool pc_group_has_permission(int group_id, int permission)
 bool pc_group_should_log_commands(int group_id)
 {
 	GroupSettings *group = NULL;
-	if ((group = id2group(group_id)) == NULL) 
+	if ((group = id2group(group_id)) == NULL)
 		return false;
 	return group->log_commands;
 }

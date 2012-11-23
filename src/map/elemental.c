@@ -586,7 +586,7 @@ static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_
 			return 0; //Already walking to him
 		if( DIFF_TICK(tick, ed->ud.canmove_tick) < 0 )
 			return 0; //Can't move yet.
-		if( map_search_freecell(&ed->bl, sd->bl.m, &x, &y, MIN_ELEDISTANCE, MIN_ELEDISTANCE, 1) 
+		if( map_search_freecell(&ed->bl, sd->bl.m, &x, &y, MIN_ELEDISTANCE, MIN_ELEDISTANCE, 1)
 		   && unit_walktoxy(&ed->bl, x, y, 0) )
 			return 0;
 	}
@@ -748,7 +748,7 @@ int read_elemental_skilldb(void) {
 			continue;
 
 		if( line[0] == '\0' || line[0] == '\n' || line[0] == '\r')
-			continue; 
+			continue;
 
 		i = 0;
 		p = strtok(line, ",");

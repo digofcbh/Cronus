@@ -361,9 +361,9 @@ bool path_search(struct walkpath_data *wpd,int m,int x0,int y0,int x1,int y1,int
 			break;
 
 		// dc[0] : Incremental cost at the time
-		// dc[1] : 
-		// dc[2] : 
-		// dc[3] : 
+		// dc[1] :
+		// dc[2] :
+		// dc[3] :
 
 		if(y < ys && !map_getcellp(md,x  ,y+1,cell)) {
 			f |= 1; dc[0] = (y >= y1 ? 20 : 0);

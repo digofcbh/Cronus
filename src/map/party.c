@@ -36,7 +36,7 @@ static unsigned long party_booking_nextid = 1;
 int party_send_xy_timer(int tid, unsigned int tick, int id, intptr_t data);
 
 /*==========================================
- * Fills the given party_member structure according to the sd provided. 
+ * Fills the given party_member structure according to the sd provided.
  * Used when creating/adding people to a party. [Skotlex]
  *------------------------------------------*/
 static void party_fill_member(struct party_member* member, struct map_session_data* sd, unsigned int leader)
@@ -103,7 +103,7 @@ static TBL_PC* party_sd_check(int party_id, int account_id, int char_id)
 }
 
 /*==========================================
- * Destructor 
+ * Destructor
  * Called in map shutdown, cleanup var
  *------------------------------------------*/
 void do_final_party(void)
@@ -741,7 +741,7 @@ void party_send_movemap(struct map_session_data *sd)
 
 	if (sd->fd) { // synchronize minimap positions with the rest of the party
 		for(i=0; i < MAX_PARTY; i++) {
-			if (p->data[i].sd && 
+			if (p->data[i].sd &&
 				p->data[i].sd != sd &&
 				p->data[i].sd->bl.m == sd->bl.m)
 			{
@@ -944,7 +944,7 @@ int party_exp_share(struct party_data* p, struct block_list* src, unsigned int b
 		int rate = pc_level_penalty_mod(sd[i], (TBL_MOB*)src, 1);
 		base_exp = (unsigned int)cap_value(base_exp * rate / 100, 1, UINT_MAX);
 		job_exp = (unsigned int)cap_value(job_exp * rate / 100, 1, UINT_MAX);
-	} 
+	}
 #endif
 		pc_gainexp(sd[i], src, base_exp, job_exp, false);
 
@@ -1008,7 +1008,7 @@ int party_share_loot(struct party_data* p, struct map_session_data* sd, struct i
 		}
 	}
 
-	if (!target) { 
+	if (!target) {
 		target = sd; //Give it to the char that picked it up
 		if ((i=pc_additem(sd,item_data,item_data->amount,LOG_TYPE_PICKDROP_PLAYER)))
 			return i;
@@ -1073,7 +1073,7 @@ int party_foreachsamemap(int (*func)(struct block_list*,va_list),struct map_sess
 			(psd->bl.x<x0 || psd->bl.y<y0 ||
 			 psd->bl.x>x1 || psd->bl.y>y1 ) )
 			continue;
-		list[blockcount++]=&psd->bl; 
+		list[blockcount++]=&psd->bl;
 	}
 
 	map_freeblock_lock();

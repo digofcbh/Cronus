@@ -69,7 +69,7 @@ enum size {
 	SZ_BIG,
 };
 
-enum ai { 
+enum ai {
 	AI_NONE = 0,
 	AI_ATTACK,
 	AI_SPHERE,
@@ -100,7 +100,7 @@ struct spawn_info {
 	unsigned short mapindex;
 	unsigned short qty;
 };
- 
+
 struct mob_db {
 	char sprite[NAME_LENGTH],name[NAME_LENGTH],jname[NAME_LENGTH];
 	unsigned int base_exp,job_exp;
@@ -151,7 +151,7 @@ struct mob_data {
 		unsigned char attacked_count; //For rude attacked.
 		int provoke_flag; // Celest
 	} state;
-	struct guardian_data* guardian_data; 
+	struct guardian_data* guardian_data;
 	struct {
 		int id;
 		unsigned int dmg;

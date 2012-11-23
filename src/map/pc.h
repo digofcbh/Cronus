@@ -74,7 +74,7 @@ struct s_addeffectonskill {
 	unsigned char target;
 };
 
-struct s_add_drop { 
+struct s_add_drop {
 	short id, group;
 	int race, rate;
 };
@@ -351,7 +351,7 @@ struct map_session_data {
 	struct script_regstr *regstr;
 
 	int trade_partner;
-	struct { 
+	struct {
 		struct {
 			short index, amount;
 		} item[10];
@@ -534,7 +534,7 @@ enum ammo_type {
 
 //Equip position constants
 enum equip_pos {
-	EQP_HEAD_LOW = 0x0001, 
+	EQP_HEAD_LOW = 0x0001,
 	EQP_HEAD_MID = 0x0200, //512
 	EQP_HEAD_TOP = 0x0100, //256
 	EQP_HAND_R   = 0x0002,
@@ -609,7 +609,7 @@ enum equip_index {
 #define pc_is50overweight(sd) ( (sd)->weight*100 >= (sd)->max_weight*battle_config.natural_heal_weight_rate )
 #define pc_is90overweight(sd) ( (sd)->weight*10 >= (sd)->max_weight*9 )
 #define pc_maxparameter(sd)   ( ((((sd)->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO) || (sd)->class_&JOBL_THIRD ? ((sd)->class_&JOBL_BABY ? battle_config.max_baby_third_parameter : battle_config.max_third_parameter) : ((sd)->class_&JOBL_BABY ? battle_config.max_baby_parameter : battle_config.max_parameter)) )
-/** 
+/**
  * Ranger
  **/
 #define pc_iswug(sd)       ( (sd)->sc.option&OPTION_WUG )

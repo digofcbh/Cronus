@@ -944,7 +944,7 @@ int guild_recv_memberinfoshort(int guild_id,int account_id,int char_id,int onlin
 	//Ensure validity of pointer (ie: player logs in/out, changes map-server)
 	g->member[idx].sd = guild_sd_check(guild_id, account_id, char_id);
 
-	if(oldonline!=online) 
+	if(oldonline!=online)
 		clif_guild_memberlogin_notice(g, idx, online);
 
 	if(!g->member[idx].sd)
@@ -965,7 +965,7 @@ int guild_recv_memberinfoshort(int guild_id,int account_id,int char_id,int onlin
 	return 0;
 }
 
-/*==================================================== 
+/*====================================================
 * Send a message to whole guild
 *---------------------------------------------------*/
 int guild_send_message(struct map_session_data *sd,const char *mes,int len)
@@ -1341,12 +1341,12 @@ void guild_block_skill(struct map_session_data *sd, int time)
 		skill_blockpc_start_(sd, skill_num[i], time , true);
 }
 
-/*==================================================== 
-*	Check relation between guild_id1 and guild_id2 
-*	flag : 
-*		0 = allied 
-*		1 = ennemy 
-*		return true if yes 
+/*====================================================
+*	Check relation between guild_id1 and guild_id2
+*	flag :
+*		0 = allied
+*		1 = ennemy
+*		return true if yes
 *---------------------------------------------------*/
 int guild_check_alliance(int guild_id1, int guild_id2, int flag)
 {
@@ -1903,7 +1903,7 @@ void guild_castle_reconnect_sub(void *key, void *data, va_list ap)
 }
 
 /**
- * Saves pending guild castle data changes when char-server is 
+ * Saves pending guild castle data changes when char-server is
  * disconnected.
  * On reconnect pushes all changes to char-server for saving.
  */

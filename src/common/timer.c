@@ -125,7 +125,7 @@ static void rdtsc_calibrate(){
 		t1 = _rdtsc();
 		usleep(1000000); //1000 MS
 		t2 = _rdtsc();
-		RDTSC_CLOCK += (t2 - t1) / 1000; 
+		RDTSC_CLOCK += (t2 - t1) / 1000;
 	}
 	RDTSC_CLOCK /= 5;
 

@@ -138,7 +138,7 @@ int npc_ontouch2_event(struct map_session_data *sd, struct npc_data *nd)
 }
 
 /*==========================================
- * sub fonction of npc_enable,  Run OnTouch event when enabled 
+ * sub fonction of npc_enable,  Run OnTouch event when enabled
  *------------------------------------------*/
 int npc_enable_sub(struct block_list *bl, va_list ap)
 {
@@ -301,7 +301,7 @@ static int npc_event_export(struct npc_data *nd, int i)
 int npc_event_sub(struct map_session_data* sd, struct event_data* ev, const char* eventname); //[Lance]
 
 /**
- * Exec name (NPC events) on player or global 
+ * Exec name (NPC events) on player or global
  * Do on all NPC when called with foreach
  * @see DBApply
  */
@@ -384,7 +384,7 @@ int npc_event_doall_id(const char* name, int rid)
 }
 
 /*==========================================
- * Clock event execution 
+ * Clock event execution
  * OnMinute/OnClock/OnHour/OnDay/OnDDHHMM
  *------------------------------------------*/
 int npc_event_do_clock(int tid, unsigned int tick, int id, intptr_t data)
@@ -399,17 +399,17 @@ int npc_event_do_clock(int tid, unsigned int tick, int id, intptr_t data)
 	t = localtime(&timer);
 
 	if (t->tm_min != ev_tm_b.tm_min ) {
-		char* day; 
+		char* day;
 
-		switch (t->tm_wday) { 
-			case 0: day = "Dom"; break; 
-			case 1: day = "Seg"; break; 
-			case 2: day = "Ter"; break; 
-			case 3: day = "Qua"; break; 
-			case 4: day = "Qui"; break; 
-			case 5: day = "Sex"; break; 
-			case 6: day = "Sáb"; break; 
-			default:day = ""; break; 
+		switch (t->tm_wday) {
+			case 0: day = "Dom"; break;
+			case 1: day = "Seg"; break;
+			case 2: day = "Ter"; break;
+			case 3: day = "Qua"; break;
+			case 4: day = "Qui"; break;
+			case 5: day = "Sex"; break;
+			case 6: day = "Sáb"; break;
+			default:day = ""; break;
 		}
 
 		sprintf(buf,"OnMinute%02d",t->tm_min);
@@ -454,7 +454,7 @@ int npc_timerevent_export(struct npc_data *nd, int i)
 	char *lname = nd->u.scr.label_list[i].name;
 	int pos = nd->u.scr.label_list[i].pos;
 	if (sscanf(lname, "OnTimer%d%n", &t, &k) == 1 && lname[k] == '\0') {
-		// Timer event 
+		// Timer event
 		struct npc_timerevent_list *te = nd->u.scr.timer_event;
 		int j, k = nd->u.scr.timeramount;
 		if (te == NULL)
@@ -853,7 +853,7 @@ int npc_touchnext_areanpc(struct map_session_data* sd, bool leavemap)
 	xs = nd->u.scr.xs;
 	ys = nd->u.scr.ys;
 
-	if( sd->bl.m != nd->bl.m || 
+	if( sd->bl.m != nd->bl.m ||
 		sd->bl.x < nd->bl.x - xs || sd->bl.x > nd->bl.x + xs ||
 		sd->bl.y < nd->bl.y - ys || sd->bl.y > nd->bl.y + ys ||
 		pc_ishiding(sd) || leavemap )
@@ -1165,7 +1165,7 @@ int npc_click(struct map_session_data* sd, struct npc_data* nd)
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------*/
 int npc_scriptcont(struct map_session_data* sd, int id)
 {
@@ -1460,7 +1460,7 @@ int npc_buylist(struct map_session_data* sd, int n, unsigned short* item_list)
 		int nameid, amount, value;
 
 		// find this entry in the shop's sell list
-		ARR_FIND( 0, nd->u.shop.count, j, 
+		ARR_FIND( 0, nd->u.shop.count, j,
 			item_list[i*2+1] == nd->u.shop.shop_item[j].nameid || //Normal items
 			item_list[i*2+1] == itemdb_viewid(nd->u.shop.shop_item[j].nameid) //item_avail replacement
 		);
@@ -1526,14 +1526,14 @@ int npc_buylist(struct map_session_data* sd, int n, unsigned short* item_list)
 
 		if (itemdb_type(nameid) == IT_PETEGG)
 			pet_create_egg(sd, nameid);
-		else 
+		else
  		{
 			memset(&item_tmp,0,sizeof(item_tmp));
 			item_tmp.nameid = nameid;
 			item_tmp.identify = 1;
 
 			pc_additem(sd,&item_tmp,amount,LOG_TYPE_NPC);
-		} 
+		}
 	}
 
 	// custom merchant shop exp bonus
@@ -1708,7 +1708,7 @@ int npc_selllist(struct map_session_data* sd, int n, unsigned short* item_list)
 	return 0;
 }
 
-//Atempt to remove an npc from a map 
+//Atempt to remove an npc from a map
 //This doesn't remove it from map_db
 int npc_remove_map(struct npc_data* nd)
 {
@@ -1746,7 +1746,7 @@ static int npc_unload_ev(DBKey key, DBData *data, va_list ap)
 	return 0;
 }
 
-//Chk if npc match src_id then unload 
+//Chk if npc match src_id then unload
 //Sub fonction used to found duplicate
 static int npc_unload_dup_sub(struct npc_data* nd, va_list args)
 {
@@ -1764,7 +1764,7 @@ void npc_unload_duplicates(struct npc_data* nd)
 	map_foreachnpc(npc_unload_dup_sub,nd->bl.id);
 }
 
-//Remove an npc from map and db 
+//Remove an npc from map and db
 //single is to free name (for duplicate one I suppose)
 int npc_unload(struct npc_data* nd, bool single) {
 	nullpo_ret(nd);
@@ -1802,7 +1802,7 @@ int npc_unload(struct npc_data* nd, bool single) {
 		if( single )
 			ev_db->foreach(ev_db,npc_unload_ev,nd->exname); //Clean up all events related
 
-		iter = mapit_geteachpc();  
+		iter = mapit_geteachpc();
 		for( bl = (struct block_list*)mapit_first(iter); mapit_exists(iter); bl = (struct block_list*)mapit_next(iter) ) {
 			struct map_session_data *sd = ((TBL_PC*)bl);
 			if( sd && sd->npc_timer_id != INVALID_TIMER ) {
@@ -1816,13 +1816,13 @@ int npc_unload(struct npc_data* nd, bool single) {
 				delete_timer(sd->npc_timer_id, npc_timerevent);
 				sd->npc_timer_id = INVALID_TIMER;
 			}
-		}  
+		}
 		mapit_free(iter);
 
 		if (nd->u.scr.timerid != INVALID_TIMER) {
 			const struct TimerData *td = NULL;
 			td = get_timer(nd->u.scr.timerid);
-			if (td && td->data) 
+			if (td && td->data)
 				ers_free(timer_event_ers, (void*)td->data);
 			delete_timer(nd->u.scr.timerid, npc_timerevent);
 		}
@@ -2124,7 +2124,7 @@ static const char* npc_parse_warp(char* w1, char* w2, char* w3, char* w4, const 
 /// Parses a shop/cashshop npc.
 static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const char* start, const char* buffer, const char* filepath)
 {
-	//TODO: could be rewritten to NOT need this temp array [ultramage] 
+	//TODO: could be rewritten to NOT need this temp array [ultramage]
 	#define MAX_SHOPITEM 100
 	struct npc_item_list items[MAX_SHOPITEM];
 	char *p;
@@ -2239,7 +2239,7 @@ static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const 
 }
 
 /**
- * NPC???????????? 
+ * NPC????????????
  * Not sure, seem to add label in a chainlink
  * @see DBApply
  */
@@ -3352,7 +3352,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 	return strchr(start,'\n');// continue
 }
 
-//Read file and create npc/func/mapflag/monster.. accordly 
+//Read file and create npc/func/mapflag/monster.. accordly
 //@runOnInit should we exec OnInit when it's done ?
 void npc_parsesrcfile(const char* filepath, bool runOnInit)
 {
@@ -3774,7 +3774,7 @@ int do_init_npc(void)
 	//Stock view data for normal npcs.
 	memset(&npc_viewdb, 0, sizeof(npc_viewdb));
 	npc_viewdb[0].class_ = INVISIBLE_CLASS; //Invisible class is stored here.
-	for( i = 1; i < MAX_NPC_CLASS; i++ ) 
+	for( i = 1; i < MAX_NPC_CLASS; i++ )
 		npc_viewdb[i].class_ = i;
 
 	ev_db = strdb_alloc((DBOptions)(DB_OPT_DUP_KEY|DB_OPT_RELEASE_DATA),2*NPC_NAME_LENGTH+2+1);

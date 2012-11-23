@@ -51,7 +51,7 @@
 #endif
 
 //Remove/Comment this line to disable sc_data saving. [Skotlex]
-#define ENABLE_SC_SAVING 
+#define ENABLE_SC_SAVING
 //Remove/Comment this line to disable server-side hot-key saving support [Skotlex]
 //Note that newer clients no longer save hotkeys in the registry!
 #define HOTKEY_SAVING
@@ -101,7 +101,7 @@
 #define MAX_QUEST_DB 2000 //Max quests that the server will load
 #define MAX_QUEST_OBJECTIVES 3 //Max quest objectives for a quest
 
-//Com este atributo ativo, existirá um delay padrão nas habilidades 
+//Com este atributo ativo, existirá um delay padrão nas habilidades
 //a fim de minimizar o funcionamento de .act scripts.
 //Comente para desativar este delay padrão
 #define NODELAY
@@ -183,7 +183,7 @@ enum item_types {
 	IT_AMMO,    //10
 	IT_DELAYCONSUME,//11
 	IT_CASH = 18,
-	IT_MAX 
+	IT_MAX
 };
 
 

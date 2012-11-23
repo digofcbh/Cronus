@@ -33,7 +33,7 @@ enum refine_type {
 
 int status_get_refine_chance(enum refine_type wlv, int refine);
 
-// Status changes listing. These code are for use by the server. 
+// Status changes listing. These code are for use by the server.
 typedef enum sc_type {
 	SC_NONE = -1,
 
@@ -292,7 +292,7 @@ typedef enum sc_type {
 	SC_SUMMER,
 	SC_EXPBOOST,
 	SC_ITEMBOOST,
-	SC_BOSSMAPINFO, 
+	SC_BOSSMAPINFO,
 	SC_LIFEINSURANCE, //260
 	SC_INCCRI,
 	//SC_INCDEF,
@@ -633,11 +633,11 @@ typedef enum sc_type {
 	SC_AKAITSUKI,
 
 	//homon S
-	SC_STYLE_CHANGE,        
+	SC_STYLE_CHANGE,
     SC_GOLDENE_FERSE,
     SC_ANGRIFFS_MODUS,
     SC_ERASER_CUTTER,
-    SC_OVERED_BOOST,        
+    SC_OVERED_BOOST,
     SC_LIGHT_OF_REGENE,
     SC_ASH,
     SC_GRANITIC_ARMOR,
@@ -1037,10 +1037,10 @@ enum si_type {
 	SI_NEUTRALBARRIER_MASTER = 378,
 	SI_STEALTHFIELD = 379,
 	SI_STEALTHFIELD_MASTER = 380,
-	SI_MANU_ATK = 381, 
-	SI_MANU_DEF = 382, 
-	SI_SPL_ATK = 383, 
-	SI_SPL_DEF = 384, 
+	SI_MANU_ATK = 381,
+	SI_MANU_DEF = 382,
+	SI_SPL_ATK = 383,
+	SI_SPL_DEF = 384,
 	SI_REPRODUCE = 385,
 	SI_MANU_MATK = 386,
 	SI_SPL_MATK = 387,
@@ -1581,7 +1581,7 @@ struct status_data {
 		speed,
 		amotion, adelay, dmotion,
 		mode;
-	short 
+	short
 		hit, flee, cri, flee2,
 		def2, mdef2,
 #ifdef RENEWAL_ASPD

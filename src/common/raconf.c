@@ -1,7 +1,7 @@
-// 
+//
 // Athena style config parser
-// (would be better to have "one" implementation instead of .. 4 :) 
-// 
+// (would be better to have "one" implementation instead of .. 4 :)
+//
 //
 // Author: Florian Wilkemeyer <fw@f-ws.de>
 //
@@ -33,7 +33,7 @@ struct conf_value{
 	int64 intval;
 	bool bval;
 	double floatval;
-	size_t strval_len; // not includung \0 
+	size_t strval_len; // not includung \0
 	char strval[16];
 };
 
@@ -93,7 +93,7 @@ static struct conf_value *makeValue(const char *key, char *val, size_t val_len){
 
 	// Parse number
 	// Supported formats:
-	// prefix: 0x hex . 
+	// prefix: 0x hex .
 	// postix: h for hex
 	//		   b for bin (dual)
 	if( (val_len >= 1 && (val[val_len] == 'h')) || (val_len >= 2 && (val[0] == '0' && val[1] == 'x')) ){//HEX!
@@ -157,7 +157,7 @@ static bool configParse(raconf inst,  const char *fileName){
 	currentSection[0] = '\0';
 	currentSection_len = 0;
 
-	// 
+	//
 	linecnt = 0;
 	while(1){
 		linecnt++;
@@ -172,7 +172,7 @@ static bool configParse(raconf inst,  const char *fileName){
 		_line_begin_skip_whities:
 		c = *p;
 		if(c == ' ' || c == '\t'){
-			p++; 
+			p++;
 			linelen--;
 			goto _line_begin_skip_whities;
 		}
@@ -185,7 +185,7 @@ static bool configParse(raconf inst,  const char *fileName){
 			goto _line_end_skip_whities_and_breaks;
 		}
 
-		// Empty line? 
+		// Empty line?
 		// or line starts with comment (commented out)?
 		if(linelen == 0 || (p[0] == '/' && p[1] == '/') || p[0] == ';')
 			continue;
@@ -200,7 +200,7 @@ static bool configParse(raconf inst,  const char *fileName){
 		// check what we have.. :)
 		if(c == '['){ // got section!
 			// Got Section!
-			// Search for ] 
+			// Search for ]
 			char *start = (p+1);
 
 			while(1){
@@ -234,12 +234,12 @@ static bool configParse(raconf inst,  const char *fileName){
 					return false;
 				}
 
-			}//endwhile: parse section name 
+			}//endwhile: parse section name
 
 
 		}else if( (c >= '0' && c <= '9') || (c == '-') || (c == '_') || (c == '.') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ){
-			// Got variable! 
-			// Search for '=' or ':' wich termiantes the name 
+			// Got variable!
+			// Search for '=' or ':' wich termiantes the name
 			char *start = p;
 			char *valuestart = NULL;
 			size_t start_len;
@@ -260,7 +260,7 @@ static bool configParse(raconf inst,  const char *fileName){
 					break;
 
 				}else if( (c >= '0' && c <= '9') || (c == '-') || (c == '_') || (c == '.') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ){
-					// skip .. allowed char 
+					// skip .. allowed char
 					continue;
 				}else{
 					ShowError("Syntax Error: Invalid Character '%c' in %s:%u (offset %u) for Variable name.\n", c, fileName, linecnt, (p-line));
@@ -282,18 +282,18 @@ static bool configParse(raconf inst,  const char *fileName){
 			}
 
 
-			valuestart = (p+1); 
+			valuestart = (p+1);
 
 
 			// Skip whitespace from begin of value (tab and space)
 			_skip_value_begin_whities:
-			c = *valuestart; 
+			c = *valuestart;
 			if(c == ' ' || c == '\t'){
 				valuestart++;
 				goto _skip_value_begin_whities;
 			}
 
-			// Scan for value termination, 
+			// Scan for value termination,
 			// wich can be \0  or  comment start (// or ; (INI) )
 			//
 			p = valuestart;
@@ -319,7 +319,7 @@ static bool configParse(raconf inst,  const char *fileName){
 			// Strip whitespaces from end of value.
 			if(valuestart != p){ // not empty!
 				p--;
-				_strip_value_end_whities: 
+				_strip_value_end_whities:
 				c = *p;
 				if(c == ' ' || c == '\t'){
 					*p = '\0';
@@ -353,7 +353,7 @@ static bool configParse(raconf inst,  const char *fileName){
 
 				strncpy(&key[section_len+1],  start, start_len);
 
-				key[section_len + start_len + 1] = '\0'; 
+				key[section_len + start_len + 1] = '\0';
 
 
 				v = makeValue(key, valuestart, (p-valuestart) );

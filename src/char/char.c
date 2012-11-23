@@ -1126,7 +1126,7 @@ int mmo_char_fromsql(int char_id, struct mmo_charstatus* p, bool load_everything
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 26, SQLDT_INT,    &p->guild_id, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 27, SQLDT_INT,    &p->pet_id, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 28, SQLDT_INT,    &p->hom_id, 0, NULL, NULL)
-	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 29, SQLDT_INT,	&p->ele_id, 0, NULL, NULL)	   
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 29, SQLDT_INT,	&p->ele_id, 0, NULL, NULL)	
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 30, SQLDT_SHORT,  &p->hair, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 31, SQLDT_SHORT,  &p->hair_color, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 32, SQLDT_SHORT,  &p->clothes_color, 0, NULL, NULL)
@@ -1462,7 +1462,7 @@ int make_new_char_sql(struct char_session_data* sd, char* name_, int str, int ag
 
 	//check other inputs
 #if PACKETVER >= 20120307
-	if(slot >= MAX_CHARS) 
+	if(slot >= MAX_CHARS)
 #else
 	if((slot >= MAX_CHARS) // slots
 	|| (str + agi + vit + int_ + dex + luk != 6*5 ) // stats
@@ -1636,11 +1636,11 @@ int delete_char_sql(int char_id) {
 	if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` USING `%s` JOIN `%s` ON `pet_id` = `card1`|`card2`<<16 WHERE `%s`.char_id = '%d' AND card0 = -256", pet_db, pet_db, cart_db, cart_db, char_id) )
 		Sql_ShowDebug(sql_handle);
 
-	/* remove homunculus */ 
+	/* remove homunculus */
 	if( hom_id )
 		mapif_homunculus_delete(hom_id);
 
-	/* remove mercenary data */ 
+	/* remove mercenary data */
 	mercenary_owner_delete(char_id);
 
 	/* delete char's friends list */
@@ -2014,10 +2014,10 @@ int parse_fromlogin(int fd) {
 		login_fd = -1;
 		loginif_on_disconnect();
 		return 0;
-	} else if ( session[fd]->flag.ping ) {/* we've reached stall time */ 
-		if( DIFF_TICK(last_tick, session[fd]->rdata_tick) > (stall_time * 2) ) {/* we can't wait any longer */ 
-				set_eof(fd); 
-				return 0; 
+	} else if ( session[fd]->flag.ping ) {/* we've reached stall time */
+		if( DIFF_TICK(last_tick, session[fd]->rdata_tick) > (stall_time * 2) ) {/* we can't wait any longer */
+				set_eof(fd);
+				return 0;
 		} else if( session[fd]->flag.ping != 2 ) { /* we haven't sent ping out yet */
 				WFIFOHEAD(fd,2);// sends a ping packet to login server (will receive pong 0x2718)
 				WFIFOW(fd,0) = 0x2719;
@@ -2200,8 +2200,8 @@ int parse_fromlogin(int fd) {
 							class_[i] = (sex ? JOB_KAGEROU : JOB_OBORO);
 					}
 
-					if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `class`='%d', `weapon`='0', `shield`='0', `head_top`='0', `head_mid`='0', `head_bottom`='0' WHERE `char_id`='%d'", char_db, class_[i], char_id[i]) ) 
-						Sql_ShowDebug(sql_handle); 
+					if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `class`='%d', `weapon`='0', `shield`='0', `head_top`='0', `head_mid`='0', `head_bottom`='0' WHERE `char_id`='%d'", char_db, class_[i], char_id[i]) )
+						Sql_ShowDebug(sql_handle);
 
 					if( guild_id[i] )// If there is a guild, update the guild_member data [Skotlex]
 						inter_guild_sex_changed(guild_id[i], acc, char_id[i], sex);
@@ -3195,7 +3195,7 @@ int parse_frommap(int fd) {
 			}
 			if( runflag == CHARSERVER_ST_RUNNING &&
 				cd != NULL &&
-				node != NULL && 
+				node != NULL &&
 				node->account_id == account_id &&
 				node->char_id == char_id &&
 				node->login_id1 == login_id1 &&
@@ -3838,8 +3838,8 @@ int parse_char(int fd) {
 			memcpy(email, RFIFOP(fd,6), 40);
 			RFIFOSKIP(fd,( cmd == 0x68) ? 46 : 56);
 
-			// Check if e-mail is correct 
-			if(strcmpi(email, sd->email) && //email does not matches and 
+			// Check if e-mail is correct
+			if(strcmpi(email, sd->email) && //email does not matches and
 			(
 				strcmp("a@a.com", sd->email) || //it is not default email, or
 				(strcmp("a@a.com", email) && strcmp("", email)) //email sent does not matches default
@@ -3917,7 +3917,7 @@ int parse_char(int fd) {
 					i = 1;
 					safestrncpy(sd->new_name, name, NAME_LENGTH);
 				}
-				else 
+				else
 					i = 0;
 
 				WFIFOHEAD(fd, 4);

@@ -113,7 +113,7 @@ int inter_guild_tosql(struct guild *g,int flag)
 	// GS_POSITION `guild_position` (`guild_id`,`position`,`name`,`mode`,`exp_mode`)
 	// GS_ALLIANCE `guild_alliance` (`guild_id`,`opposition`,`alliance_id`,`name`)
 	// GS_EXPULSION `guild_expulsion` (`guild_id`,`account_id`,`name`,`mes`)
-	// GS_SKILL `guild_skill` (`guild_id`,`id`,`lv`) 
+	// GS_SKILL `guild_skill` (`guild_id`,`id`,`lv`)
 
 	// temporary storage for str convertion. They must be twice the size of the
 	// original string to ensure no overflows will occur. [Skotlex]
@@ -180,7 +180,7 @@ int inter_guild_tosql(struct guild *g,int flag)
 			StringBuf_Printf(&buf, "`emblem_len`=%d, `emblem_id`=%d, `emblem_data`='%s'", g->emblem_len, g->emblem_id, emblem_data);
 			add_comma = true;
 		}
-		if (flag & GS_BASIC) 
+		if (flag & GS_BASIC)
 		{
 			strcat(t_info, " basic");
 			if( add_comma )
@@ -274,8 +274,8 @@ int inter_guild_tosql(struct guild *g,int flag)
 
 	if (flag&GS_ALLIANCE)
 	{
-		// Delete current alliances 
-		// NOTE: no need to do it on both sides since both guilds in memory had 
+		// Delete current alliances
+		// NOTE: no need to do it on both sides since both guilds in memory had
 		// their info changed, not to mention this would also mess up oppositions!
 		// [Skotlex]
 		//if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `guild_id`='%d' OR `alliance_id`='%d'", guild_alliance_db, g->guild_id, g->guild_id) )
@@ -635,7 +635,7 @@ int inter_guild_CharOnline(int char_id, int guild_id)
 {
    struct guild *g;
    int i;
-   
+
 	if (guild_id == -1) {
 		//Get guild_id from the database
 		if( SQL_ERROR == Sql_Query(sql_handle, "SELECT guild_id FROM `%s` WHERE char_id='%d'", char_db, char_id) )
@@ -745,7 +745,7 @@ int inter_guild_sql_init(void)
 
    //Read exp file
 	inter_guild_ReadEXP();
-   
+
 	add_timer_func_list(guild_save_timer, "guild_save_timer");
 	add_timer(gettick() + 10000, guild_save_timer, 0, 0);
 	return 0;
@@ -855,7 +855,7 @@ int guild_calcinfo(struct guild *g)
 	g->next_exp = nextexp;
 
 	// Set the max number of members, Guild Extention skill - currently adds 6 to max per skill lv.
-	g->max_member = 16 + guild_checkskill(g, GD_EXTENSION) * 6; 
+	g->max_member = 16 + guild_checkskill(g, GD_EXTENSION) * 6;
 	if(g->max_member > MAX_GUILD)
 	{
 		ShowError("Clã %d:%s tem capacidade de muitos usuários (%d). O máximo suportado é %d\n", g->guild_id, g->name, g->max_member, MAX_GUILD);
@@ -1441,7 +1441,7 @@ int mapif_parse_GuildMessage(int fd,int guild_id,int account_id,char *mes,int le
 	return mapif_guild_message(guild_id,account_id,mes,len, fd);
 }
 
-// Modification of the guild 
+// Modification of the guild
 int mapif_parse_GuildBasicInfoChange(int fd,int guild_id,int type,const char *data,int len)
 {
 	struct guild * g;
@@ -1471,7 +1471,7 @@ int mapif_parse_GuildBasicInfoChange(int fd,int guild_id,int type,const char *da
 	return 0;
 }
 
-// Modification of the guild 
+// Modification of the guild
 int mapif_parse_GuildMemberInfoChange(int fd,int guild_id,int account_id,int char_id,int type,const char *data,int len)
 {
 	// Could make some improvement in speed, because only change guild_member

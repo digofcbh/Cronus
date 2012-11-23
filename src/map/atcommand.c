@@ -2533,7 +2533,7 @@ ACMD_FUNC(zeny)
 	if(zeny > 0) {
 		if((ret=pc_getzeny(sd,zeny,LOG_TYPE_COMMAND,NULL)) == 1)
 			clif_displaymessage(fd, msg_txt(149)); // Unable to increase the number/value.
-	} 
+	}
 	else if((ret=pc_payzeny(sd,-zeny,LOG_TYPE_COMMAND,NULL)) == 1) {
 		clif_displaymessage(fd, msg_txt(41)); // Unable to decrease the number/value.
 	}

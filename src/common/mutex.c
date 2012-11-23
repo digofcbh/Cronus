@@ -116,7 +116,7 @@ void ramutex_unlock( ramutex m ){
 
 ///////////////
 // Condition Variables
-// 
+//
 // Implementation:
 //
 

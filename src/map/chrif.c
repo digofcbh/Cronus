@@ -276,7 +276,7 @@ int chrif_save(struct map_session_data *sd, int flag) {
 	if (flag)
 		sd->state.storage_flag = 0; //Force close it.
 
-	//Saving of registry values. 
+	//Saving of registry values.
 	if (sd->state.reg_dirty&4)
 		intif_saveregistry(sd, 3); //Save char regs
 	if (sd->state.reg_dirty&2)
@@ -834,13 +834,13 @@ int chrif_changedsex(int fd) {
 		ShowNotice("chrif_changedsex %d.\n", acc);
 	sd = map_id2sd(acc);
 	if (sd) { //Normally there should not be a char logged on right now!
-		if (sd->status.sex == sex) 
+		if (sd->status.sex == sex)
 			return 0; //Do nothing? Likely safe.
 		sd->status.sex = !sd->status.sex;
 
 		// reset skill of some job
 		if ((sd->class_&MAPID_UPPERMASK) == MAPID_BARDDANCER) {
-			// remove specifical skills of Bard classes 
+			// remove specifical skills of Bard classes
 			for(i = 315; i <= 322; i++) {
 				if (sd->status.skill[i].id > 0 && sd->status.skill[i].flag == SKILL_FLAG_PERMANENT) {
 					sd->status.skill_point += sd->status.skill[i].lv;
@@ -848,7 +848,7 @@ int chrif_changedsex(int fd) {
 					sd->status.skill[i].lv = 0;
 				}
 			}
-			// remove specifical skills of Dancer classes 
+			// remove specifical skills of Dancer classes
 			for(i = 323; i <= 330; i++) {
 				if (sd->status.skill[i].id > 0 && sd->status.skill[i].flag == SKILL_FLAG_PERMANENT) {
 					sd->status.skill_point += sd->status.skill[i].lv;
@@ -973,7 +973,7 @@ int chrif_accountban(int fd) {
 			clif_displaymessage(sd->fd, msg_txt(420));
 	}
 	else if (RFIFOB(fd,6) == 1) // 0: change of statut, 1: ban
-	{ 
+	{
 		time_t timestamp;
 		char tmpstr[2048];
 		timestamp = (time_t)RFIFOL(fd,7); // status or final date of a banishment

@@ -184,7 +184,7 @@ static int online_data_cleanup(int tid, unsigned int tick, int id, intptr_t data
 {
 	online_db->foreach(online_db, online_data_cleanup_sub);
 	return 0;
-} 
+}
 
 
 //--------------------------------------------------------------------
@@ -993,9 +993,9 @@ int mmo_auth(struct login_session_data* sd, bool isServer) {
 			sprintf(ip_dnsbl, "%s.%s", r_ip, trim(dnsbl_serv));
 		}
 
-		if( host2ip(ip_dnsbl) ) { 
-			ShowInfo("DNSBL: (%s) Lista negra. Usuário Desconectado.\n", r_ip); 
-			return 3; 
+		if( host2ip(ip_dnsbl) ) {
+			ShowInfo("DNSBL: (%s) Lista negra. Usuário Desconectado.\n", r_ip);
+			return 3;
 		}
 	}
 
@@ -1602,7 +1602,7 @@ int login_config_read(const char* cfgName)
 			stdout_with_ansisequence = config_switch(w2);
 		else if(!strcmpi(w1,"console_silent")) {
 			msg_silent = atoi(w2);
-			if( msg_silent ) /* only bother if we actually have this enabled */ 
+			if( msg_silent ) /* only bother if we actually have this enabled */
 				ShowInfo("Configuração de silenciosidade do console: "CL_WHITE"%d"CL_RESET"\n", atoi(w2));
 		}
 		else if( !strcmpi(w1, "bind_ip") ) {

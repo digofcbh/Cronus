@@ -311,7 +311,7 @@ extern struct Battle_Config
 	int pk_level_range;
 
 	int manner_system; // end additions [Valaris]
-	int show_mob_info; 
+	int show_mob_info;
 
 	int gx_allhit;
 	int gx_disptype;

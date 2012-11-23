@@ -102,7 +102,7 @@ int pet_attackskill(struct pet_data *pd, int target_id)
 {
 	struct block_list *bl;
 
-	if (!battle_config.pet_status_support || !pd->a_skill || 
+	if (!battle_config.pet_status_support || !pd->a_skill ||
 		(battle_config.pet_equip_required && !pd->pet.equip))
 		return 0;
 
@@ -110,7 +110,7 @@ int pet_attackskill(struct pet_data *pd, int target_id)
 		return 0;
 
 	if (rnd()%100 < (pd->a_skill->rate +pd->pet.intimate*pd->a_skill->bonusrate/1000))
-	{	//Skotlex: Use pet's skill 
+	{	//Skotlex: Use pet's skill
 		int inf;
 
 		bl=map_id2bl(target_id);
@@ -161,7 +161,7 @@ int pet_target_check(struct map_session_data *sd,struct block_list *bl,int type)
 		if(pd->petDB->defence_attack_rate > 0 && rate <= 0)
 			rate = 1;
 	}
-	if(rnd()%10000 < rate) 
+	if(rnd()%10000 < rate)
 	{
 		if(pd->target_id == 0 || rnd()%10000 < pd->petDB->change_target_rate)
 			pd->target_id = bl->id;
@@ -323,7 +323,7 @@ int pet_data_init(struct map_session_data *sd, struct s_pet *pet)
 
 	nullpo_retr(1, sd);
 
-	Assert((sd->status.pet_id == 0 || sd->pd == 0) || sd->pd->msd == sd); 
+	Assert((sd->status.pet_id == 0 || sd->pd == 0) || sd->pd->msd == sd);
 
 	if(sd->status.account_id != pet->account_id || sd->status.char_id != pet->char_id) {
 		sd->status.pet_id = 0;
@@ -389,7 +389,7 @@ int pet_birth_process(struct map_session_data *sd, struct s_pet *pet)
 {
 	nullpo_retr(1, sd);
 
-	Assert((sd->status.pet_id == 0 || sd->pd == 0) || sd->pd->msd == sd); 
+	Assert((sd->status.pet_id == 0 || sd->pd == 0) || sd->pd->msd == sd);
 
 	if(sd->status.pet_id && pet->incuvate == 1) {
 		sd->status.pet_id = 0;
@@ -417,7 +417,7 @@ int pet_birth_process(struct map_session_data *sd, struct s_pet *pet)
 		clif_pet_equip_area(sd->pd);
 		clif_send_petstatus(sd);
 	}
-	Assert((sd->status.pet_id == 0 || sd->pd == 0) || sd->pd->msd == sd); 
+	Assert((sd->status.pet_id == 0 || sd->pd == 0) || sd->pd->msd == sd);
 
 	return 0;
 }
@@ -901,7 +901,7 @@ static int pet_ai_sub_hard(struct pet_data *pd, struct map_session_data *sd, uns
 		(pd->ud.attacktimer != INVALID_TIMER || pd->ud.walktimer != INVALID_TIMER))
 		return 0; //Target already locked.
 
-	if (target->type != BL_ITEM) 
+	if (target->type != BL_ITEM)
 	{ //enemy targetted
 		if(!battle_check_range(&pd->bl,target,pd->status.rhw.range))
 		{	//Chase
@@ -923,7 +923,7 @@ static int pet_ai_sub_hard(struct pet_data *pd, struct map_session_data *sd, uns
 				memcpy(&pd->loot->item[pd->loot->count++],&fitem->item_data,sizeof(pd->loot->item[0]));
 				pd->loot->weight += itemdb_weight(fitem->item_data.nameid)*fitem->item_data.amount;
 				map_clearflooritem(target);
-			} 
+			}
 			//Target is unlocked regardless of whether it was picked or not.
 			pet_unlocktarget(pd);
 		}
@@ -1042,7 +1042,7 @@ int pet_lootitem_drop(struct pet_data *pd,struct map_session_data *sd)
 
 /*==========================================
  * pet bonus giving skills [Valaris] / Rewritten by [Skotlex]
- *------------------------------------------*/ 
+ *------------------------------------------*/
 int pet_skill_bonus_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
 	struct map_session_data *sd=map_id2sd(id);
@@ -1084,7 +1084,7 @@ int pet_skill_bonus_timer(int tid, unsigned int tick, int id, intptr_t data)
 
 /*==========================================
  * pet recovery skills [Valaris] / Rewritten by [Skotlex]
- *------------------------------------------*/ 
+ *------------------------------------------*/
 int pet_recovery_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
 	struct map_session_data *sd=map_id2sd(id);
@@ -1101,7 +1101,7 @@ int pet_recovery_timer(int tid, unsigned int tick, int id, intptr_t data)
 	}
 
 	if(sd->sc.data[pd->recovery->type])
-	{	//Display a heal animation? 
+	{	//Display a heal animation?
 		//Detoxify is chosen for now.
 		clif_skill_nodamage(&pd->bl,&sd->bl,TF_DETOXIFY,1,1);
 		status_change_end(&sd->bl, pd->recovery->type, INVALID_TIMER);
@@ -1150,7 +1150,7 @@ int pet_heal_timer(int tid, unsigned int tick, int id, intptr_t data)
 
 /*==========================================
  * pet support skills [Skotlex]
- *------------------------------------------*/ 
+ *------------------------------------------*/
 int pet_skill_support_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
 	struct map_session_data *sd=map_id2sd(id);
@@ -1195,15 +1195,15 @@ int pet_skill_support_timer(int tid, unsigned int tick, int id, intptr_t data)
 }
 
 /*==========================================
- * Pet read db data 
- * pet_db.txt 
+ * Pet read db data
+ * pet_db.txt
  * pet_db2.txt
- *------------------------------------------*/ 
+ *------------------------------------------*/
 int read_petdb()
 {
 	char* filename[] = {"pet_db.txt","pet_db2.txt"};
 	FILE *fp;
-	int nameid,i,j,k; 
+	int nameid,i,j,k;
 
 	// Remove any previous scripts in case reloaddb was invoked.
 	for( j = 0; j < MAX_PET_DB; j++ )

@@ -857,7 +857,7 @@ int intif_homunculus_requestdelete(int homun_id)
 
 // Wisp/Page reception // rewritten by [Yor]
 int intif_parse_WisMessage(int fd)
-{ 
+{
 	struct map_session_data* sd;
 	char *wisp_source;
 	char name[NAME_LENGTH];
@@ -1422,7 +1422,7 @@ int intif_parse_questlog(int fd)
 		sd->quest_index[i] = quest_search_db(sd->quest_log[i].quest_id);
 
 		if( sd->quest_index[i] < 0 )
-		{  
+		{
 			ShowError("intif_parse_questlog: quest %d not found in DB.\n",sd->quest_log[i].quest_id);
 			sd->avail_quests--;
 			sd->num_quests--;

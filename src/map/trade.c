@@ -74,7 +74,7 @@ void trade_traderequest(struct map_session_data *sd, struct map_session_data *ta
 		clif_displaymessage(sd->fd, msg_txt(246));
 		clif_tradestart(sd, 2); // GM is not allowed to trade
 		return;
-	} 
+	}
 
 	// Players can not request trade from far away, unless they are allowed to use @trade.
 	if (!pc_can_use_command(sd, "trade", COMMAND_ATCOMMAND) &&
@@ -622,7 +622,7 @@ void trade_tradecommit(struct map_session_data *sd)
 	// save both player to avoid crash: they always have no advantage/disadvantage between the 2 players
 	if (save_settings&1)
   	{
-		chrif_save(sd,0); 
+		chrif_save(sd,0);
 		chrif_save(tsd,0);
 	}
 }

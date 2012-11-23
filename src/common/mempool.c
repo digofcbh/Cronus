@@ -77,7 +77,7 @@ struct mempool{
 	SPIN_LOCK nodeLock;
 
 
-	// Internal 
+	// Internal
 	struct pool_segment *segments;
 	struct node	*free_list;
 
@@ -87,7 +87,7 @@ struct mempool{
 	volatile int64	num_segments;
 	volatile int64	num_bytes_total;
 
-	volatile int64	peak_nodes_used;		// Peak Node Usage 
+	volatile int64	peak_nodes_used;		// Peak Node Usage
 	volatile int64	num_realloc_events; 	// Number of reallocations done. (allocate additional nodes)
 
 	// list (used for global management such as allocator..)
@@ -95,7 +95,7 @@ struct mempool{
 } ra_align(8); // Dont touch the alignment, otherwise interlocked functions are broken ..
 
 
-/// 
+///
 // Implementation:
 //
 static void segment_allocate_add(mempool p,  uint64 count);
@@ -180,7 +180,7 @@ void mempool_final(){
 	ramutex_destroy( l_async_lock );
 
 	// Free remaining mempools
-	// ((bugged code! this should halppen, every mempool should 
+	// ((bugged code! this should halppen, every mempool should
 	//		be freed by the subsystem that has allocated it.)
 	//
 	EnterSpinLock(&l_mempoolListLock);
@@ -204,12 +204,12 @@ void mempool_final(){
 static void segment_allocate_add(mempool p,  uint64 count){
 
 	// Required Memory:
-	//	sz( segment ) 
+	//	sz( segment )
 	//  count * sz( real_node_size )
-	// 
+	//
 	//  where real node size is:
-	//		ALIGN_TO_16( sz( node ) ) + p->elem_size 
-	//  so the nodes usable address is  nodebase + ALIGN_TO_16(sz(node)) 
+	//		ALIGN_TO_16( sz( node ) ) + p->elem_size
+	//  so the nodes usable address is  nodebase + ALIGN_TO_16(sz(node))
 	//
 	size_t total_sz;
 	struct pool_segment *seg = NULL;
@@ -218,7 +218,7 @@ static void segment_allocate_add(mempool p,  uint64 count){
 	char *ptr = NULL;
 	uint64 i;
 
-	total_sz = ALIGN_TO_16( sizeof(struct pool_segment) ) 
+	total_sz = ALIGN_TO_16( sizeof(struct pool_segment) )
 				+ ( (size_t)count * (sizeof(struct node) + (size_t)p->elem_size) ) ;
 
 #ifdef MEMPOOL_DEBUG
@@ -240,7 +240,7 @@ static void segment_allocate_add(mempool p,  uint64 count){
 			sleep(1);
 #endif
 		}else{
-			rathread_yield(); /// allow/force vuln. ctxswitch 
+			rathread_yield(); /// allow/force vuln. ctxswitch
 		}
 	}//endwhile: allocation spinloop.
 
@@ -256,8 +256,8 @@ static void segment_allocate_add(mempool p,  uint64 count){
 	seg->num_bytes = total_sz;
 
 
-	// Initialze nodes! 
-	nodeList = NULL; 
+	// Initialze nodes!
+	nodeList = NULL;
 	for(i = 0; i < count; i++){
 		node = (struct node*)ptr;
 		ptr += sizeof(struct node);
@@ -322,7 +322,7 @@ mempool mempool_create(const char *name,
 		realloc_count = 50;
 
 	// Set Reallocation threshold to 5% of realloc_count, at least 10.
-	realloc_thresh = (realloc_count/100)*5; // 
+	realloc_thresh = (realloc_count/100)*5; //
 	if(realloc_thresh < 10)
 		realloc_thresh = 10;
 
@@ -350,7 +350,7 @@ mempool mempool_create(const char *name,
 	ShowDebug("Mempool [%s] Init (ElemSize: %u,  Initial Count: %u,  Realloc Count: %u)\n", pool->name,  pool->elem_size,  initial_count,  pool->elem_realloc_step);
 #endif
 
-	// Allocate first segment directly :) 
+	// Allocate first segment directly :)
 	segment_allocate_add(pool, initial_count);
 
 
@@ -375,7 +375,7 @@ void mempool_destroy(mempool p){
 #ifdef MEMPOOL_DEBUG
     ShowDebug("Mempool [%s] Destroy\n", p->name);
 #endif
-    
+
 	// Unlink from global list.
 	EnterSpinLock(&l_mempoolListLock);
 		piter = l_mempoolList;
@@ -387,7 +387,7 @@ void mempool_destroy(mempool p){
 
 			if(piter == p){
 				// unlink from list,
-				// 
+				//
 				if(pprev == l_mempoolList){
 					// this (p) is list begin. so set next as head.
 					l_mempoolList = p->next;
@@ -451,7 +451,7 @@ void mempool_destroy(mempool p){
 		seg = segnext;
 	}
 
-	// Clear node ptr 
+	// Clear node ptr
 	p->free_list = NULL;
 	InterlockedExchange64(&p->num_nodes_free, 0);
 	InterlockedExchange64(&p->num_nodes_total, 0);
@@ -514,7 +514,7 @@ void mempool_node_put(mempool p, void *data){
 #ifdef MEMPOOLASSERT
 	if(node->magic != NODE_MAGIC){
 		ShowError("Mempool [%s] node_put failed, given address (%p) has invalid magic.\n", p->name,  data);
-		return; // lost, 
+		return; // lost,
 	}
 
 	{
@@ -529,7 +529,7 @@ void mempool_node_put(mempool p, void *data){
 	node->used = false;
 #endif
 
-	// 
+	//
 	EnterSpinLock(&p->nodeLock);
 		node->next = p->free_list;
 		p->free_list = node;
