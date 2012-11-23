@@ -1478,6 +1478,9 @@ int make_new_char_sql(struct char_session_data* sd, char* name_, int str, int ag
 #endif
 		return -2; // invalid input
 
+	if (hair_style > 17 || hair_color > 8)
+		return -2;
+
 	// check the number of already existing chars in this account
 	if( char_per_account != 0 ) {
 		if( SQL_ERROR == Sql_Query(sql_handle, "SELECT 1 FROM `%s` WHERE `account_id` = '%d'", char_db, sd->account_id) )

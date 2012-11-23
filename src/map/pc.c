@@ -3599,6 +3599,7 @@ int pc_payzeny(struct map_session_data *sd,int zeny, enum e_log_pick_type type, 
 {
 	nullpo_ret(sd);
 
+	zeny = cap_value(zeny,-MAX_ZENY,MAX_ZENY); //prevent command UB
 	if( zeny < 0 )
 	{
 		ShowError("pc_payzeny: Paying negative Zeny (zeny=%d, account_id=%d, char_id=%d).\n", zeny, sd->status.account_id, sd->status.char_id);
@@ -3625,16 +3626,17 @@ int pc_payzeny(struct map_session_data *sd,int zeny, enum e_log_pick_type type, 
  * Cash Shop
  *------------------------------------------*/
 
-void pc_paycash(struct map_session_data *sd, int price, int points)
+int pc_paycash(struct map_session_data *sd, int price, int points)
 {
 	char output[128];
 	int cash;
-	nullpo_retv(sd);
+	nullpo_retr(-1,sd);
 
+	points = cap_value(points,-MAX_ZENY,MAX_ZENY); //prevent command UB
 	if( price < 0 || points < 0 )
 	{
 		ShowError("pc_paycash: Paying negative points (price=%d, points=%d, account_id=%d, char_id=%d).\n", price, points, sd->status.account_id, sd->status.char_id);
-		return;
+		return -2;
 	}
 
 	if( points > price )
@@ -3648,7 +3650,7 @@ void pc_paycash(struct map_session_data *sd, int price, int points)
 	if( sd->cashPoints < cash || sd->kafraPoints < points )
 	{
 		ShowError("pc_paycash: Not enough points (cash=%d, kafra=%d) to cover the price (cash=%d, kafra=%d) (account_id=%d, char_id=%d).\n", sd->cashPoints, sd->kafraPoints, cash, points, sd->status.account_id, sd->status.char_id);
-		return;
+		return -1;
 	}
 
 	pc_setaccountreg(sd, "#CASHPOINTS", sd->cashPoints-cash);
@@ -3659,13 +3661,17 @@ void pc_paycash(struct map_session_data *sd, int price, int points)
 		sprintf(output, msg_txt(504), points, cash, sd->kafraPoints, sd->cashPoints);
 		clif_disp_onlyself(sd, output, strlen(output));
 	}
+	
+	return cash+points;
 }
 
-void pc_getcash(struct map_session_data *sd, int cash, int points)
+int pc_getcash(struct map_session_data *sd, int cash, int points)
 {
 	char output[128];
-	nullpo_retv(sd);
+	nullpo_retr(-1,sd);
 
+	cash = cap_value(cash,-MAX_ZENY,MAX_ZENY); //prevent command UB
+	points = cap_value(points,-MAX_ZENY,MAX_ZENY); //prevent command UB
 	if( cash > 0 )
 	{
 		if( cash > MAX_ZENY-sd->cashPoints )
@@ -3681,10 +3687,12 @@ void pc_getcash(struct map_session_data *sd, int cash, int points)
 			sprintf(output, msg_txt(505), cash, sd->cashPoints);
 			clif_disp_onlyself(sd, output, strlen(output));
 		}
+		return cash;
 	}
 	else if( cash < 0 )
 	{
 		ShowError("pc_getcash: Obtaining negative cash points (cash=%d, account_id=%d, char_id=%d).\n", cash, sd->status.account_id, sd->status.char_id);
+		return -1;	
 	}
 
 	if( points > 0 )
@@ -3702,11 +3710,14 @@ void pc_getcash(struct map_session_data *sd, int cash, int points)
 			sprintf(output, msg_txt(506), points, sd->kafraPoints);
 			clif_disp_onlyself(sd, output, strlen(output));
 		}
+		return points;
 	}
 	else if( points < 0 )
 	{
 		ShowError("pc_getcash: Obtaining negative kafra points (points=%d, account_id=%d, char_id=%d).\n", points, sd->status.account_id, sd->status.char_id);
+		return -1;
 	}
+	return -2; //shouldn't happen but jsut in case
 }
 
 /*==========================================
@@ -3717,6 +3728,7 @@ int pc_getzeny(struct map_session_data *sd,int zeny, enum e_log_pick_type type, 
 {
 	nullpo_ret(sd);
 
+	zeny = cap_value(zeny,-MAX_ZENY,MAX_ZENY); //prevent command UB
 	if( zeny < 0 )
 	{
 		ShowError("pc_getzeny: Obtaining negative Zeny (zeny=%d, account_id=%d, char_id=%d).\n", zeny, sd->status.account_id, sd->status.char_id);
@@ -3729,7 +3741,7 @@ int pc_getzeny(struct map_session_data *sd,int zeny, enum e_log_pick_type type, 
 	sd->status.zeny += zeny;
 	clif_updatestatus(sd,SP_ZENY);
 
-	if(!sd) tsd = sd;
+	if(!tsd) tsd = sd;
 		log_zeny(sd, type, tsd, zeny);
 	if( zeny > 0 && sd->state.showzeny ) {
 		char output[255];
@@ -5458,14 +5470,12 @@ int pc_follow_timer(int tid, unsigned int tick, int id, intptr_t data)
 	}
 
 	sd->followtimer = INVALID_TIMER;
-	if (pc_isdead(sd))
+	tbl = map_id2bl(sd->followtarget);
+	
+	if (tbl == NULL || pc_isdead(sd) || status_isdead(tbl)) {
+		pc_stop_following(sd);
 		return 0;
-
-	if ((tbl = map_id2bl(sd->followtarget)) == NULL)
-		return 0;
-
-	if(status_isdead(tbl))
-		return 0;
+	}
 
 	// either player or target is currently detached from map blocks (could be teleporting),
 	// but still connected to this map, so we'll just increment the timer and check back later
@@ -7486,6 +7496,8 @@ int pc_setcart(struct map_session_data *sd,int type) {
 			clif_updatestatus(sd, SP_CARTINFO);
 			sc_start(&sd->bl, SC_PUSH_CART, 100, type, 0);
 			clif_status_load_notick(&sd->bl, SI_ON_PUSH_CART,   2 , type, 0, 0);
+			if( sd->sc.data[SC_PUSH_CART] )/* forcefully update */
+				sd->sc.data[SC_PUSH_CART]->val1 = type;
 			break;
 	}
 	
