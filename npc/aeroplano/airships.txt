@@ -60,7 +60,7 @@ OnTimer60000:
 	mapannounce "airplane","Bem-vindo a Einbroch. Faça uma boa viagem.",bc_map,"0x00ff00";
 	end;
 OnTimer70000:
-	mapannounce "airplane","No momento estamos em Einbroch. O Aeroplano vai decolar logo.",bc_map,"0x00ff00";
+	mapannounce "airplane","No momento, estamos em Einbroch. O Aeroplano vai decolar logo.",bc_map,"0x00ff00";
 	end;
 OnTimer80000:
 	donpcevent "#AirshipWarp-1::OnHide";
@@ -80,7 +80,7 @@ OnTimer140000:
 	mapannounce "airplane","Bem-vindo a Lighthalzen. Faça uma boa viagem.",bc_map,"0x70dbdb";
 	end;
 OnTimer150000:
-	mapannounce "airplane","No momento estamos em Lighthalzen. O Aeroplano vai decolar logo.",bc_map,"0x70dbdb";
+	mapannounce "airplane","No momento, estamos em Lighthalzen. O Aeroplano vai decolar logo.",bc_map,"0x70dbdb";
 	end;
 OnTimer160000:
 	donpcevent "#AirshipWarp-1::OnHide";
@@ -100,7 +100,7 @@ OnTimer220000:
 	mapannounce "airplane","Bem-vindo a Einbroch. Faça uma boa viagem.",bc_map,"0x00ff00";
 	end;
 OnTimer230000:
-	mapannounce "airplane","No momento estamos em Einbroch. O Aeroplano vai decolar logo.",bc_map,"0x00ff00";
+	mapannounce "airplane","No momento, estamos em Einbroch. O Aeroplano vai decolar logo.",bc_map,"0x00ff00";
 	end;
 OnTimer240000:
 	donpcevent "#AirshipWarp-1::OnHide";
@@ -120,7 +120,7 @@ OnTimer300000:
 	mapannounce "airplane","Bem-vindo a Juno. Faça uma boa viagem.",bc_map,"0xff8200";
 	end;
 OnTimer310000:
-	mapannounce "airplane","No momento estamos em Juno. O Aeroplano vai decolar logo.",bc_map,"0xff8200";
+	mapannounce "airplane","No momento, estamos em Juno. O Aeroplano vai decolar logo.",bc_map,"0xff8200";
 	end;
 OnTimer320000:
 	donpcevent "#AirshipWarp-1::OnHide";
@@ -140,7 +140,7 @@ OnTimer380000:
 	mapannounce "airplane","Bem-vindo a Hugel. Faça uma boa viagem.",bc_map,"0xca4bf3";
 	end;
 OnTimer390000:
-	mapannounce "airplane","No momento estamos em Hugel. O Aeroplano vai decolar logo.",bc_map,"0xca4bf3";
+	mapannounce "airplane","No momento, estamos em Hugel. O Aeroplano vai decolar logo.",bc_map,"0xca4bf3";
 	end;
 OnTimer400000:
 	donpcevent "#AirshipWarp-1::OnHide";
@@ -160,7 +160,7 @@ OnTimer460000:
 	mapannounce "airplane","Bem-vindo a Juno. Faça uma boa viagem.",bc_map,"0xff8200";
 	end;
 OnTimer470000:
-	mapannounce "airplane","No momento estamos em Juno. O Aeroplano vai decolar logo.",bc_map,"0xff8200";
+	mapannounce "airplane","No momento, estamos em Juno. O Aeroplano vai decolar logo.",bc_map,"0xff8200";
 	end;
 OnTimer480000:
 	donpcevent "#AirshipWarp-1::OnHide";
@@ -179,9 +179,9 @@ airplane,247,40,1	duplicate(ExitAirplane)	Saída#airplane2b	857
 
 airplane,100,69,3	script	Tripulação#ein-1	852,{
 	mes "[Tripulação do Aeroplano]";
-	mes "Se chegamos ao seu destino e";
-	mes "você deseja desembarcar do Aeroplano,";
-	mes "por favor use as escadas.";
+	mes "Se chegarmos ao seu destino e";
+	mes "você desejar desembarcar do Aeroplano,";
+	mes "por favor, use as escadas.";
 	mes "Agradecemos a preferência.";
 	close;
 }
@@ -227,24 +227,24 @@ airplane,71,91,7	script	Homem de Umbala#ein_p	789,{
 	if (event_umbala >= 3) {
 		mes "[Chrmlim]";
 		mes "Olá, como vai?";
-		mes "Olhando para você";
-		mes "Vejo que você me entende.";
+		mes "Olhando para você,";
+		mes "vejo que você me entende.";
 		mes "^333333*Whew...!*^000000";
 		next;
 		emotion e_pif;
 		mes "[Chrmlim]";
-		mes "I've been helping the";
-		mes "Airship enterprise by";
-		mes "having the Airship Crewmen";
-		mes "train in Umbala to overcome";
-		mes "any acrophobia they might have through bungee jumping. Neat, eh?";
+		mes "Eu estive ajudando a";
+		mes "companhia de Voo treinando";
+		mes "sua tripulação em Umbala para";
+		mes "superar qualquer acrofobia que";
+		mes "eles possam ter ao fazer bungee-jump. Maneiro, hein?";
 		next;
 		mes "[Chrmlim]";
-		mes "But...";
-		mes "Some of them couldn't";
-		mes "overcome their fear of";
-		mes "heights. And a few even";
-		mes "ended up, um, ^333333in Nifflheim^000000.";
+		mes "Mas...";
+		mes "Alguns não poderam";
+		mes "seu medo de alturas.";
+		mes "E alguns deles terminaram em";
+		mes "^333333Nifflheim^000000.";
 	}
 	else {
 		mes "[Chrmlim]";
