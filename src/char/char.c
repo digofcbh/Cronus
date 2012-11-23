@@ -1322,12 +1322,11 @@ int mmo_char_fromsql(int char_id, struct mmo_charstatus* p, bool load_everything
 
 //==========================================================================================================
 int mmo_char_sql_init(void) {
-	ShowInfo("Iniciando.......\n");
 	char_db_= idb_alloc(DB_OPT_RELEASE_DATA);
 
-	if(char_per_account == 0){
-	  ShowStatus("Personagens por Conta: '"CL_WHITE"Ilimitado"CL_RESET"'.\n");
-	}else{
+	if(char_per_account == 0) {
+		ShowStatus("Personagens por Conta: '"CL_WHITE"Ilimitado"CL_RESET"'.\n");
+	} else {
 		ShowStatus("Personagens por Conta: '"CL_WHITE"%d"CL_RESET"'.\n", char_per_account);
 	}
 
@@ -1339,8 +1338,6 @@ int mmo_char_sql_init(void) {
 	// Force all users offline in sql when starting char-server
 	// (useful when servers crashs and don't clean the database)
 	set_all_offline_sql();
-
-	ShowInfo("Finalizada inicialização.\n");
 
 	return 0;
 }
@@ -4262,10 +4259,7 @@ int char_lan_config_read(const char *lancfgName) {
 		return 1;
 	}
 
-	ShowInfo("Lendo arquivo de configuração "CL_WHITE"%s"CL_RESET"...\n", lancfgName);
-
-	while(fgets(line, sizeof(line), fp))
-	{
+	while(fgets(line, sizeof(line), fp)) {
 		line_num++;
 		if ((line[0] == '/' && line[1] == '/') || line[0] == '\n' || line[1] == '\n')
 			continue;
@@ -4296,8 +4290,9 @@ int char_lan_config_read(const char *lancfgName) {
 			subnet_count++;
 		}
 	}
-
-	ShowStatus("Lendo informações sobre %d sub-redes.\n", subnet_count);
+	
+	if( subnet_count > 1 ) /* only useful if there is more than 1 */
+		ShowStatus("Lendo informações sobre %d sub-redes.\n", subnet_count);
 
 	fclose(fp);
 	return 0;
@@ -4307,15 +4302,12 @@ void sql_config_read(const char* cfgName) {
 	char line[1024], w1[1024], w2[1024];
 	FILE* fp;
 
-	ShowInfo("Lendo arquivo "CL_WHITE"%s"CL_RESET"...\n", cfgName);
-
 	if ((fp = fopen(cfgName, "r")) == NULL) {
 		ShowError("Arquivo não encontrado: "CL_WHITE"%s"CL_RESET"\n", cfgName);
 		return;
 	}
 
-	while(fgets(line, sizeof(line), fp))
-	{
+	while(fgets(line, sizeof(line), fp)) {
 		if(line[0] == '/' && line[1] == '/')
 			continue;
 
@@ -4397,9 +4389,7 @@ int char_config_read(const char* cfgName) {
 		return 1;
 	}
 
-	ShowInfo("Lendo arquivo de configuração "CL_WHITE"%s"CL_RESET"...\n", cfgName);
-	while(fgets(line, sizeof(line), fp))
-	{
+	while(fgets(line, sizeof(line), fp)) {
 		if (line[0] == '/' && line[1] == '/')
 			continue;
 
@@ -4410,9 +4400,10 @@ int char_config_read(const char* cfgName) {
 		remove_control_chars(w2);
 		if(strcmpi(w1,"timestamp_format") == 0) {
 			safestrncpy(timestamp_format, w2, sizeof(timestamp_format));
-		} else if(strcmpi(w1,"console_silent")==0){
-			ShowInfo("Configuração de silenciosidade do console: %d\n", atoi(w2));
+		} else if(strcmpi(w1,"console_silent")==0) {
 			msg_silent = atoi(w2);
+			if( msg_silent ) /* only bother if its actually enabled */
+				ShowInfo("Configuração de silenciosidade do console: %d\n", atoi(w2));
 		} else if(strcmpi(w1,"stdout_with_ansisequence")==0){
 			stdout_with_ansisequence = config_switch(w2);
 		} else if (strcmpi(w1, "userid") == 0) {
@@ -4421,7 +4412,6 @@ int char_config_read(const char* cfgName) {
 			safestrncpy(passwd, w2, sizeof(passwd));
 		} else if (strcmpi(w1, "server_name") == 0) {
 			safestrncpy(server_name, w2, sizeof(server_name));
-			ShowStatus("Servidor '"CL_WHITE"%s"CL_RESET"' foi inicializado\n", w2);
 		} else if (strcmpi(w1, "wisp_server_name") == 0) {
 			if (strlen(w2) >= 4) {
 				safestrncpy(wisp_server_name, w2, sizeof(wisp_server_name));
@@ -4621,12 +4611,8 @@ int do_init(int argc, char **argv) {
 		return 0;
 	}
 
-	ShowInfo("Finalizada leitura da configuração do char-server.\n");
-
 	inter_init_sql((argc > 2) ? argv[2] : inter_cfgName);
-	ShowInfo("Finalizada leitura da configuração do inter-server.\n");
 	
-	ShowInfo("Inicializando char-server.\n");
 	auth_db = idb_alloc(DB_OPT_RELEASE_DATA);
 	online_char_db = idb_alloc(DB_OPT_RELEASE_DATA);
 	mmo_char_sql_init();
@@ -4673,25 +4659,20 @@ int do_init(int argc, char **argv) {
 	
 	//Cleaning the tables for NULL entrys @ startup [Sirius]
 	//Chardb clean
-	ShowInfo("Limpando tabela '"CL_WHITE"%s"CL_RESET"'...\n", char_db);
 	if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `account_id` = '0'", char_db) )
 		Sql_ShowDebug(sql_handle);
 
 	//guilddb clean
-    ShowInfo("Limpando tabela '"CL_WHITE"%s"CL_RESET"'...\n", guild_db);
 	if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `guild_lv` = '0' AND `max_member` = '0' AND `exp` = '0' AND `next_exp` = '0' AND `average_lv` = '0'", guild_db) )
 		Sql_ShowDebug(sql_handle);
 
 	//guildmemberdb clean
-	ShowInfo("Limpando tabela '"CL_WHITE"%s"CL_RESET"'...\n", guild_member_db);
 	if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `guild_id` = '0' AND `account_id` = '0' AND `char_id` = '0'", guild_member_db) )
 		Sql_ShowDebug(sql_handle);
 
-	ShowInfo("Final da inicialização do char-server.\n");
-
 	set_defaultparse(parse_char);
 	char_fd = make_listen_bind(bind_ip, char_port);
-	ShowStatus("O char-server está "CL_GREEN"pronto"CL_RESET" (Funcionando pela porta "CL_GREEN"%d"CL_RESET").\n\n", char_port);
+	ShowStatus("O char-server está "CL_GREEN"pronto"CL_RESET" e funcionando pela porta "CL_GREEN"%d"CL_RESET").\n\n", char_port);
 	
 	if( runflag != CORE_ST_STOP )
 	{

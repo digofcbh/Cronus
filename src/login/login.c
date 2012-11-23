@@ -324,8 +324,6 @@ int login_lan_config_read(const char *lancfgName)
 		return 1;
 	}
 
-	ShowInfo("Lendo arquivo de configuração %s...\n", lancfgName);
-
 	while(fgets(line, sizeof(line), fp))
 	{
 		line_num++;
@@ -353,8 +351,9 @@ int login_lan_config_read(const char *lancfgName)
 			subnet_count++;
 		}
 	}
-
-	ShowStatus("Lida informação sobre "CL_WHITE"%d"CL_RESET" sub-redes.\n", subnet_count);
+	
+	if( subnet_count > 1 ) /* only useful if there is more than 1 available */
+		ShowStatus("Lida informação sobre "CL_WHITE"%d"CL_RESET" sub-redes.\n", subnet_count);
 
 	fclose(fp);
 	return 0;
@@ -1590,9 +1589,7 @@ int login_config_read(const char* cfgName)
 		ShowError("Arquivo de configuração ("CL_WHITE"%s"CL_RESET") não encontrado.\n", cfgName);
 		return 1;
 	}
-	ShowInfo("Lendo arquivo de configuração "CL_WHITE"%s"CL_RESET"...\n", cfgName);
-	while(fgets(line, sizeof(line), fp))
-	{
+	while(fgets(line, sizeof(line), fp)) {
 		if (line[0] == '/' && line[1] == '/')
 			continue;
 
@@ -1604,8 +1601,9 @@ int login_config_read(const char* cfgName)
 		else if(!strcmpi(w1,"stdout_with_ansisequence"))
 			stdout_with_ansisequence = config_switch(w2);
 		else if(!strcmpi(w1,"console_silent")) {
-			ShowInfo("Configuração de silenciosidade do console: "CL_WHITE"%d"CL_RESET"\n", atoi(w2));
 			msg_silent = atoi(w2);
+			if( msg_silent ) /* only bother if we actually have this enabled */ 
+				ShowInfo("Configuração de silenciosidade do console: "CL_WHITE"%d"CL_RESET"\n", atoi(w2));
 		}
 		else if( !strcmpi(w1, "bind_ip") ) {
 			char ip_str[16];
@@ -1615,7 +1613,6 @@ int login_config_read(const char* cfgName)
 		}
 		else if( !strcmpi(w1, "login_port") ) {
 			login_config.login_port = (uint16)atoi(w2);
-			ShowStatus("Definida porta do login-server: "CL_WHITE"%s"CL_RESET"\n",w2);
 		}
 		else if(!strcmpi(w1, "log_login"))
 			login_config.log_login = (bool)config_switch(w2);
@@ -1854,17 +1851,11 @@ int do_init(int argc, char** argv)
 
 	// Account database init
 	accounts = get_account_engine();
-	if( accounts == NULL )
-	{
+	if( accounts == NULL ) {
 		ShowFatalError("do_init: método de contas '"CL_WHITE"%s"CL_RESET"' não encontrado.\n", login_config.account_engine);
 		exit(EXIT_FAILURE);
-	}
-	else
-	{
-		ShowInfo("Usando método de contas '"CL_WHITE"%s"CL_RESET"'.\n", login_config.account_engine);
-
-		if(!accounts->init(accounts))
-		{
+	} else {
+		if(!accounts->init(accounts)) {
 			ShowFatalError("do_init: Falha ao iniciar método de contas '"CL_WHITE"%s"CL_RESET"'.\n", login_config.account_engine);
 			exit(EXIT_FAILURE);
 		}
