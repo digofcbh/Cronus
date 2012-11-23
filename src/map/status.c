@@ -1334,14 +1334,14 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 	else
 	if(flag&2) //remove from map
 		unit_remove_map(target,CLR_DEAD);
-	else
-	{ //Some death states that would normally be handled by unit_remove_map
+	else { //Some death states that would normally be handled by unit_remove_map
 		unit_stop_attack(target);
 		unit_stop_walking(target,1);
 		unit_skillcastcancel(target,0);
 		clif_clearunit_area(target,CLR_DEAD);
 		skill_unit_move(target,gettick(),4);
 		skill_cleartimerskill(target);
+
 	}
 
 	return hp+sp;
@@ -7464,10 +7464,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				sc_start(bl,SC_BLEEDING,100,val1,skill_get_time2(status_sc2skill(type),val1));
 			break;
 
-		case SC__BLOODYLUST:
 		case SC_BERSERK:
 			if (!sc->data[SC_ENDURE] || !sc->data[SC_ENDURE]->val4)
 				sc_start4(bl, SC_ENDURE, 100,10,0,0,2, tick);
+		case SC__BLOODYLUST:
 			//HP healing is performing after the calc_status call.
 			//Val2 holds HP penalty
 			if (!val4) val4 = skill_get_time2(status_sc2skill(type),val1);
@@ -8602,8 +8602,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			opt_flag = 0;
 			break;
 		case SC_BERSERK:
-			sc->opt3 |= OPT3_BERSERK;
 			opt_flag = 0;
+//		case SC__BLOODYLUST:
+			sc->opt3 |= OPT3_BERSERK;
 			break;
 //		case ???: // doesn't seem to do anything
 //			sc->opt3 |= OPT3_LIGHTBLADE;
@@ -8895,6 +8896,16 @@ int status_change_clear(struct block_list* bl, int type)
 		case SC_PUSH_CART:
 			continue;
 
+		}
+
+		if( type == 3 ) {
+			switch (i) {
+				case SC_WEIGHT50:
+				case SC_WEIGHT90:
+				case SC_NOCHAT:
+				case SC_PUSH_CART:
+					continue;
+			}
 		}
 
 		status_change_end(bl, (sc_type)i, INVALID_TIMER);
@@ -9229,17 +9240,17 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 			}
 			break;
 
-		case SC__BLOODYLUST:
 		case SC_BERSERK:
 		case SC_SATURDAYNIGHTFEVER:
 			//If val2 is removed, no HP penalty (dispelled?) [Skotlex]
-			if (status->hp > 100 && sce->val2 && type != SC__BLOODYLUST)
+			if (status->hp > 100 && sce->val2)
 				status_set_hp(bl, 100, 0);
 			if(sc->data[SC_ENDURE] && sc->data[SC_ENDURE]->val4 == 2)
 			{
 				sc->data[SC_ENDURE]->val4 = 0;
 				status_change_end(bl, SC_ENDURE, INVALID_TIMER);
 			}
+		case SC__BLOODYLUST:
 			sc_start4(bl, SC_REGENERATION, 100, 10,0,0,(RGN_HP|RGN_SP), skill_get_time(LK_BERSERK, sce->val1));
 			if( type == SC_SATURDAYNIGHTFEVER ) //Sit down force of Saturday Night Fever has the duration of only 3 seconds.
 				sc_start(bl,SC_SITDOWN_FORCE,100,sce->val1,skill_get_time2(WM_SATURDAY_NIGHT_FEVER,sce->val1));
@@ -9521,8 +9532,9 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 		opt_flag = 0;
 		break;
 	case SC_BERSERK:
-		sc->opt3 &= ~OPT3_BERSERK;
 		opt_flag = 0;
+//	case SC__BLOODYLUST:
+		sc->opt3 &= ~OPT3_BERSERK;
 		break;
 //	case ???: // doesn't seem to do anything
 //		sc->opt3 &= ~OPT3_LIGHTBLADE;

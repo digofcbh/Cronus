@@ -3354,7 +3354,7 @@ static void script_check_buildin_argtype(struct script_state* st, int func)
 		}
 		else if( type == 0 )
 		{// more arguments than necessary ( should not happen, as it is checked before )
-			ShowWarning("Found more arguments than necessary. unexpected arg type %s\n",script_op2name(data->type)");
+			ShowWarning("Found more arguments than necessary. unexpected arg type %s\n",script_op2name(data->type));
 			invalid++;
 			break;
 		}
@@ -6085,90 +6085,191 @@ BUILDIN_FUNC(countitem2)
 }
 
 /*==========================================
- * 重量チェック
+ * Check if item with this amount can fit in inventory
+ * Checking : weight, stack amount >32k, slots amount >(MAX_INVENTORY)
+ * Return
+ *	0 : fail
+ *	1 : success (npc side only)
  *------------------------------------------*/
 BUILDIN_FUNC(checkweight)
 {
-	int nameid, amount, slots;
-	unsigned int weight;
+	int nameid, amount, slots, amount2=0;
+	unsigned int weight=0, i, nbargs;
 	struct item_data* id = NULL;
 	struct map_session_data* sd;
 	struct script_data* data;
 
-	if( ( sd = script_rid2sd(st) ) == NULL )
-	{
+	if( ( sd = script_rid2sd(st) ) == NULL ){
 		return 0;
 	}
-
-	data = script_getdata(st,2);
-	get_val(st, data);  // convert into value in case of a variable
-
-	if( data_isstring(data) )
-	{// item name
-		id = itemdb_searchname(conv_str(st, data));
+	nbargs = script_lastdata(st)+1;
+	ShowInfo("nb args = %d\n",nbargs);
+	if(nbargs%2){
+	    ShowError("buildin_checkweight: Invalid nb of args should be a multiple of 2.\n");  // returns string, regardless of what it was
+	    script_pushint(st,0);
+	    return 1;
 	}
-	else
-	{// item id
-		id = itemdb_exists(conv_num(st, data));
+	slots = pc_inventoryblank(sd); //nb of empty slot
+
+	for(i=2; i<nbargs; i=i+2){
+	    data = script_getdata(st,i);
+	    get_val(st, data);  // convert into value in case of a variable
+	    if( data_isstring(data) ){// item name
+		    id = itemdb_searchname(conv_str(st, data));
+	    } else {// item id
+		    id = itemdb_exists(conv_num(st, data));
+	    }
+	    if( id == NULL ) {
+		    ShowError("buildin_checkweight: Invalid item '%s'.\n", script_getstr(st,i));  // returns string, regardless of what it was
+		    script_pushint(st,0);
+		    return 1;
+	    }
+	    nameid = id->nameid;
+
+	    amount = script_getnum(st,i+1);
+	    if( amount < 1 ) {
+		    ShowError("buildin_checkweight: Invalid amount '%d'.\n", amount);
+		    script_pushint(st,0);
+		    return 1;
+	    }
+
+	    weight += itemdb_weight(nameid)*amount; //total weight for all chk
+	    if( weight + sd->weight > sd->max_weight )
+	    {// too heavy
+		    script_pushint(st,0);
+		    return 0;
+	    }
+
+	    switch( pc_checkadditem(sd, nameid, amount) )
+	    {
+		    case ADDITEM_EXIST:
+			    // item is already in inventory, but there is still space for the requested amount
+			    break;
+		    case ADDITEM_NEW:
+			    if( itemdb_isstackable(nameid) ) {// stackable
+				    amount2++;
+				    if( slots < amount2 ) {
+					    script_pushint(st,0);
+					    return 0;
+				    }
+			    }
+			    else {// non-stackable
+				    amount2 += amount;
+				    if( slots < amount2){
+					    script_pushint(st,0);
+					    return 0;
+				    }
+			    }
+			    break;
+		    case ADDITEM_OVERAMOUNT:
+			    script_pushint(st,0);
+			    return 0;
+	    }
 	}
-
-	if( id == NULL )
-	{
-		ShowError("buildin_checkweight: Invalid item '%s'.\n", script_getstr(st,2));  // returns string, regardless of what it was
-		script_pushint(st,0);
-		return 1;
-	}
-
-	nameid = id->nameid;
-	amount = script_getnum(st,3);
-
-	if( amount < 1 )
-	{
-		ShowError("buildin_checkweight: Invalid amount '%d'.\n", amount);
-		script_pushint(st,0);
-		return 1;
-	}
-
-	weight = itemdb_weight(nameid)*amount;
-
-	if( weight + sd->weight > sd->max_weight )
-	{// too heavy
-		script_pushint(st,0);
-		return 0;
-	}
-
-	switch( pc_checkadditem(sd, nameid, amount) )
-	{
-		case ADDITEM_EXIST:
-			// item is already in inventory, but there is still space for the requested amount
-			break;
-		case ADDITEM_NEW:
-			slots = pc_inventoryblank(sd);
-
-			if( itemdb_isstackable(nameid) )
-			{// stackable
-				if( slots < 1 )
-				{
-					script_pushint(st,0);
-					return 0;
-				}
-			}
-			else
-			{// non-stackable
-				if( slots < amount )
-				{
-					script_pushint(st,0);
-					return 0;
-				}
-			}
-			break;
-		case ADDITEM_OVERAMOUNT:
-			script_pushint(st,0);
-			return 0;
-	}
-
 	script_pushint(st,1);
 	return 0;
+}
+
+BUILDIN_FUNC(checkweight2)
+{
+        //variable sub checkweight
+        int32 nameid=-1, amount=-1;
+        int i=0, amount2=0, slots=0, weight=0;
+	short fail=0;
+
+        //variable for array parsing
+        struct script_data* data_it;
+        struct script_data* data_nb;
+        const char* name_it;
+        const char* name_nb;
+        int32 id_it, id_nb;
+        int32 idx_it, idx_nb;
+        int nb_it, nb_nb; //array size
+
+        TBL_PC *sd = script_rid2sd(st);
+        nullpo_retr(1,sd);
+
+        data_it = script_getdata(st, 2);
+        data_nb = script_getdata(st, 3);
+
+        if( !data_isreference(data_it) || !data_isreference(data_nb))
+        {
+                ShowError("script:checkweight3: parameter not a variable\n");
+                script_pushint(st,0);
+                return 1;// not a variable
+        }
+        id_it = reference_getid(data_it);
+        id_nb = reference_getid(data_nb);
+        idx_it = reference_getindex(data_it);
+        idx_nb = reference_getindex(data_nb);
+        name_it = reference_getname(data_it);
+        name_nb = reference_getname(data_nb);
+
+        if( not_array_variable(*name_it) || not_array_variable(*name_nb))
+        {
+                ShowError("script:checkweight3: illegal scope\n");
+                script_pushint(st,0);
+                return 1;// not supported
+        }
+        if(is_string_variable(name_it) || is_string_variable(name_nb)){
+                ShowError("script:checkweight3: illegal type, need int\n");
+                script_pushint(st,0);
+                return 1;// not supported
+        }
+        nb_it = getarraysize(st, id_it, idx_it, 0, reference_getref(data_it));
+        nb_nb = getarraysize(st, id_nb, idx_nb, 0, reference_getref(data_nb));
+        if(nb_it != nb_nb){
+                ShowError("Size mistmatch: nb_it=%d, nb_nb=%d\n",nb_it,nb_nb);
+		fail = 1;
+        }
+
+        slots = pc_inventoryblank(sd);
+        for(i=0; i<nb_it; i++){
+            nameid = (int32)__64BPRTSIZE(get_val2(st,reference_uid(id_it,idx_it+i),reference_getref(data_it)));
+	    script_removetop(st, -1, 0);
+	    amount = (int32)__64BPRTSIZE(get_val2(st,reference_uid(id_nb,idx_nb+i),reference_getref(data_nb)));
+	    script_removetop(st, -1, 0);
+	    if(fail) continue; //cpntonie to depop rest
+
+            if(itemdb_exists(nameid) == NULL ){
+		ShowError("buildin_checkweight3: Invalid item '%d'.\n", nameid);
+		fail=1;
+		continue;
+            }
+            if(amount < 0 ){
+                ShowError("buildin_checkweight3: Invalid amount '%d'.\n", amount);
+                fail = 1;
+		continue;
+            }
+	    weight += itemdb_weight(nameid)*amount;
+	    if( weight + sd->weight > sd->max_weight ){
+		fail = 1;
+		continue;
+	    }
+	    switch( pc_checkadditem(sd, nameid, amount) ) {
+		    case ADDITEM_EXIST:
+			// item is already in inventory, but there is still space for the requested amount
+			    break;
+		    case ADDITEM_NEW:
+			    if( itemdb_isstackable(nameid) ){// stackable
+				    amount2++;
+				    if( slots < amount2 )
+					    fail = 1;
+			    }
+			    else {// non-stackable
+				    amount2 += amount;
+				    if( slots < amount2 ){
+					    fail = 1;
+				    }
+			    }
+			    break;
+		    case ADDITEM_OVERAMOUNT:
+			    fail = 1;
+	    } //end switch
+	} //end loop DO NOT break it prematurly we need to depop all stack
+
+        fail?script_pushint(st,0):script_pushint(st,1);
+        return 0;
 }
 
 /*==========================================
@@ -9508,8 +9609,10 @@ BUILDIN_FUNC(getusersname)
 		if (pc_has_permission(pl_sd, PC_PERM_HIDE_SESSION) && pc_get_group_level(pl_sd) > group_level)
 			continue; // skip hidden sessions
 
+		/* Temporary fix for bugreport:1023.
+		 * Do not uncomment unless you want thousands of 'next' buttons.
 		if((disp_num++)%10==0)
-			clif_scriptnext(sd,st->oid);
+			clif_scriptnext(sd,st->oid);*/
 		clif_scriptmes(sd,st->oid,pl_sd->status.name);
 	}
 	mapit_free(iter);
@@ -9816,13 +9919,25 @@ BUILDIN_FUNC(sc_end)
 	if( type >= 0 && type < SC_MAX )
 	{
 		struct status_change *sc = status_get_sc(bl);
-		struct status_change_entry *sce = sc?sc->data[type]:NULL;
-		if (!sce) return 0;
+		struct status_change_entry *sce = sc ? sc->data[type] : NULL;
+
+		if (!sce)
+			return 0;
+
+		switch (type) {
+			case SC_WEIGHT50:
+			case SC_WEIGHT90:
+			case SC_NOCHAT:
+			case SC_PUSH_CART:
+				return 0;
+			default:
+				break;
+		}
 		//This should help status_change_end force disabling the SC in case it has no limit.
 		sce->val1 = sce->val2 = sce->val3 = sce->val4 = 0;
 		status_change_end(bl, (sc_type)type, INVALID_TIMER);
 	} else
-		status_change_clear(bl, 2);// remove all effects
+		status_change_clear(bl, 3);// remove all effects
 	return 0;
 }
 
@@ -10959,16 +11074,15 @@ BUILDIN_FUNC(flagemblem)
 	TBL_NPC* nd;
 	int g_id = script_getnum(st,2);
 
-	if(g_id < 0)
-		return 0;
+	if(g_id < 0) return 0;
 
 	nd = (TBL_NPC*)map_id2nd(st->oid);
-
 	if( nd == NULL ) {
 		ShowError("script:flagemblem: npc %d not found\n", st->oid);
 	} else if( nd->subtype != SCRIPT ) {
 		ShowError("script:flagemblem: unexpected subtype %d for npc %d '%s'\n", nd->subtype, st->oid, nd->exname);
 	} else {
+		bool changed = ( nd->u.scr.guild_id != g_id )?true:false;
 		nd->u.scr.guild_id = g_id;
 		clif_guild_emblem_area(&nd->bl);
 		/* guild flag caching */
@@ -17224,7 +17338,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(rand,"i?"),
 	BUILDIN_DEF(countitem,"v"),
 	BUILDIN_DEF(countitem2,"viiiiiii"),
-	BUILDIN_DEF(checkweight,"vi"),
+	BUILDIN_DEF(checkweight,"vi*"),
+	BUILDIN_DEF(checkweight2,"rr"),
 	BUILDIN_DEF(readparam,"i?"),
 	BUILDIN_DEF(getcharid,"i?"),
 	BUILDIN_DEF(getnpcid,"i?"),
