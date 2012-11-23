@@ -58,7 +58,7 @@ char* jstrescapecpy (char* pt, const char* spt)
 		pt[0] = '\0';
 		return &pt[0];
 	}
-	
+
 	while (spt[i] != '\0') {
 		switch (spt[i]) {
 			case '\'':

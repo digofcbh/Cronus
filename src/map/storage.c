@@ -96,13 +96,13 @@ int storage_storageopen(struct map_session_data *sd)
 
 	if(sd->state.storage_flag)
 		return 1; //Already open?
-	
+
 	if( !pc_can_give_items(sd) )
   	{ //check is this GM level is allowed to put items to storage
 		clif_displaymessage(sd->fd, msg_txt(246));
 		return 1;
 	}
-	
+
 	sd->state.storage_flag = 1;
 	storage_sortitem(sd->status.storage.items, ARRAYLENGTH(sd->status.storage.items));
 	clif_storagelist(sd, sd->status.storage.items, ARRAYLENGTH(sd->status.storage.items));
@@ -137,7 +137,7 @@ static int storage_additem(struct map_session_data* sd, struct item* item_data, 
 
 	if( item_data->nameid <= 0 || amount <= 0 )
 		return 1;
-	
+
 	data = itemdb_search(item_data->nameid);
 
 	if( data->stack.storage && amount > data->stack.amount )
@@ -150,7 +150,7 @@ static int storage_additem(struct map_session_data* sd, struct item* item_data, 
 		clif_displaymessage (sd->fd, msg_txt(264));
 		return 1;
 	}
-	
+
 	if( itemdb_isstackable2(data) )
 	{//Stackable
 		for( i = 0; i < MAX_STORAGE; i++ )
@@ -237,7 +237,7 @@ int storage_storageget(struct map_session_data* sd, int index, int amount)
 
 	if( sd->status.storage.items[index].nameid <= 0 )
 		return 0; //Nothing there
-	
+
 	if( amount < 1 || amount > sd->status.storage.items[index].amount )
 		return 0;
 
@@ -264,7 +264,7 @@ int storage_storageaddfromcart(struct map_session_data* sd, int index, int amoun
 
 	if( sd->status.cart[index].nameid <= 0 )
 		return 0; //No item there.
-	
+
 	if( amount < 1 || amount > sd->status.cart[index].amount )
 		return 0;
 
@@ -283,13 +283,13 @@ int storage_storagegettocart(struct map_session_data* sd, int index, int amount)
 
 	if( index < 0 || index >= MAX_STORAGE )
 		return 0;
-	
+
 	if( sd->status.storage.items[index].nameid <= 0 )
 		return 0; //Nothing there.
-	
+
 	if( amount < 1 || amount > sd->status.storage.items[index].amount )
 		return 0;
-	
+
 	if( pc_cart_additem(sd,&sd->status.storage.items[index],amount,LOG_TYPE_STORAGE) == 0 )
 		storage_delitem(sd,index,amount);
 
@@ -318,7 +318,7 @@ void storage_storageclose(struct map_session_data* sd)
 void storage_storage_quit(struct map_session_data* sd, int flag)
 {
 	nullpo_retv(sd);
-	
+
 	if (save_settings&4)
 		chrif_save(sd, flag); //Invokes the storage saving as well.
 
@@ -366,7 +366,7 @@ int storage_guild_storageopen(struct map_session_data* sd)
 
 	if(sd->state.storage_flag)
 		return 1; //Can't open both storages at a time.
-	
+
 	if( !pc_can_give_items(sd) ) { //check is this GM level can open guild storage and store items [Lupus]
 		clif_displaymessage(sd->fd, msg_txt(246));
 		return 1;
@@ -378,7 +378,7 @@ int storage_guild_storageopen(struct map_session_data* sd)
 	}
 	if(gstor->storage_status)
 		return 1;
-	
+
 	gstor->storage_status = 1;
 	sd->state.storage_flag = 2;
 	storage_sortitem(gstor->items, ARRAYLENGTH(gstor->items));
@@ -426,10 +426,10 @@ int guild_storage_additem(struct map_session_data* sd, struct guild_storage* sto
 	}
 	//Add item
 	for(i=0;i<MAX_GUILD_STORAGE && stor->items[i].nameid;i++);
-	
+
 	if(i>=MAX_GUILD_STORAGE)
 		return 1;
-	
+
 	memcpy(&stor->items[i],item_data,sizeof(stor->items[0]));
 	stor->items[i].amount=amount;
 	stor->storage_amount++;
@@ -464,16 +464,16 @@ int storage_guild_storageadd(struct map_session_data* sd, int index, int amount)
 
 	nullpo_ret(sd);
 	nullpo_ret(stor=guild2storage2(sd->status.guild_id));
-		
+
 	if( !stor->storage_status || stor->storage_amount > MAX_GUILD_STORAGE )
 		return 0;
-	
+
 	if( index<0 || index>=MAX_INVENTORY )
 		return 0;
 
 	if( sd->status.inventory[index].nameid <= 0 )
 		return 0;
-	
+
 	if( amount < 1 || amount > sd->status.inventory[index].amount )
 		return 0;
 
@@ -493,13 +493,13 @@ int storage_guild_storageget(struct map_session_data* sd, int index, int amount)
 
 	if(!stor->storage_status)
   		return 0;
-	
+
 	if(index<0 || index>=MAX_GUILD_STORAGE)
 		return 0;
 
 	if(stor->items[index].nameid <= 0)
 		return 0;
-	
+
 	if(amount < 1 || amount > stor->items[index].amount)
 	  	return 0;
 
@@ -527,7 +527,7 @@ int storage_guild_storageaddfromcart(struct map_session_data* sd, int index, int
 
 	if( sd->status.cart[index].nameid <= 0 )
 		return 0;
-	
+
 	if( amount < 1 || amount > sd->status.cart[index].amount )
 		return 0;
 
@@ -549,10 +549,10 @@ int storage_guild_storagegettocart(struct map_session_data* sd, int index, int a
 
 	if(index<0 || index>=MAX_GUILD_STORAGE)
 	  	return 0;
-	
+
 	if(stor->items[index].nameid<=0)
 		return 0;
-	
+
 	if(amount < 1 || amount > stor->items[index].amount)
 		return 0;
 
@@ -618,7 +618,7 @@ int storage_guild_storage_quit(struct map_session_data* sd, int flag)
 
 	nullpo_ret(sd);
 	nullpo_ret(stor=guild2storage2(sd->status.guild_id));
-	
+
 	if(flag)
 	{	//Only during a guild break flag is 1 (don't save storage)
 		sd->state.storage_flag = 0;

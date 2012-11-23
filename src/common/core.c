@@ -174,7 +174,7 @@ const char* get_git_revision(void)
 	} else {
 		snprintf(rA_git_version, sizeof(rA_git_version), "no");
 	}
-	
+
 	if (!(*rA_git_version)) {
 		snprintf(rA_git_version, sizeof(rA_git_version), "Desconhecido");
 	}
@@ -344,7 +344,7 @@ int main (int argc, char **argv)
 	timer_final();
 	socket_final();
 	db_final();
-	mempool_final();	
+	mempool_final();
 	rathread_final();
 #endif
 

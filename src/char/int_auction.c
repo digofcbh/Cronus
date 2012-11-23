@@ -89,7 +89,7 @@ unsigned int auction_create(struct auction_data *auction)
 	for( j = 0; j < MAX_SLOTS; j++ )
 		StringBuf_Printf(&buf, ",'%d'", auction->item.card[j]);
 	StringBuf_AppendStr(&buf, ")");
-	
+
 	stmt = SqlStmt_Malloc(sql_handle);
 	if( SQL_SUCCESS != SqlStmt_PrepareStr(stmt, StringBuf_Value(&buf))
 	||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, auction->seller_name, strnlen(auction->seller_name, NAME_LENGTH))
@@ -127,7 +127,7 @@ unsigned int auction_create(struct auction_data *auction)
 static void mapif_Auction_message(int char_id, unsigned char result)
 {
 	unsigned char buf[74];
-	
+
 	WBUFW(buf,0) = 0x3854;
 	WBUFL(buf,2) = char_id;
 	WBUFL(buf,6) = result;
@@ -147,7 +147,7 @@ static int auction_end_timer(int tid, unsigned int tick, int id, intptr_t data)
 		}
 		else
 			mail_sendmail(0, "Auction Manager", auction->seller_id, auction->seller_name, "Auction", "No buyers have been found for your auction.", 0, &auction->item);
-		
+
 		ShowInfo("Leilão Finalizado: id %u.\n", auction->auction_id);
 
 		auction->auction_end_timer = INVALID_TIMER;

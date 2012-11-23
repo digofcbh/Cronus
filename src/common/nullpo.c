@@ -12,12 +12,12 @@ nullpo_info_core(const char *file, int line, const char *func, const char *fmt,
 {
 	if (file == NULL)
 		file = "??";
-	
+
 	func =
 		func == NULL    ? "unknown":
 		func[0] == '\0' ? "unknown":
 		                  func;
-	
+
 	printf ("--- nullpo info --------------------------------------------\n");
 	printf ("%s:%d: in func `%s'\n", file, line, func);
 	if (fmt != NULL)
@@ -38,10 +38,10 @@ nullpo_chk_f(const char *file, int line, const char *func, const void *target,
 			 const char *fmt, ...)
 {
 	va_list ap;
-	
+
 	if (target != NULL)
 		return 0;
-	
+
 	va_start(ap, fmt);
 	nullpo_info_core(file, line, func, fmt, ap);
 	va_end(ap);
@@ -53,7 +53,7 @@ nullpo_chk(const char *file, int line, const char *func, const void *target)
 {
 	if (target != NULL)
 		return 0;
-	
+
 	nullpo_info_core(file, line, func, NULL, NULL);
 	return 1;
 }
@@ -63,7 +63,7 @@ nullpo_info_f(const char *file, int line, const char *func, const char *fmt,
 			  ...)
 {
 	va_list ap;
-	
+
 	va_start(ap, fmt);
 	nullpo_info_core(file, line, func, fmt, ap);
 	va_end(ap);

@@ -117,8 +117,8 @@ bool loginlog_init(void)
 		Sql_ShowDebug(sql_handle);
 
 	ShowStatus("Conectado ao banco de dados loginlog '"CL_WHITE"%s"CL_RESET"'.\n", database);
-	Sql_PrintExtendedInfo(sql_handle);	
-		
+	Sql_PrintExtendedInfo(sql_handle);
+
 	enabled = true;
 
 	return true;

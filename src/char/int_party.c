@@ -165,7 +165,7 @@ int inter_party_tosql(struct party *p, int flag, int index)
 			party_db, p->member[index].account_id, p->member[index].char_id, party_id) )
 			Sql_ShowDebug(sql_handle);
 	}
-	
+
 	if( flag & PS_ADDMEMBER )
 	{// Add one party member.
 		if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `party_id`='%d' WHERE `account_id`='%d' AND `char_id`='%d'",
@@ -201,7 +201,7 @@ struct party_data *inter_party_fromsql(int party_id)
 #endif
 	if( party_id <= 0 )
 		return NULL;
-	
+
 	//Load from memory
 	p = (struct party_data*)idb_get(party_db_, party_id);
 	if( p != NULL )
@@ -487,7 +487,7 @@ int mapif_parse_CreateParty(int fd, char *name, int item, int item2, struct part
 	}
 
 	p = (struct party_data*)aCalloc(1, sizeof(struct party_data));
-	
+
 	memcpy(p->party.name,name,NAME_LENGTH);
 	p->party.exp=0;
 	p->party.item=(item?1:0)|(item2?2:0);
@@ -628,7 +628,7 @@ int mapif_parse_PartyLeave(int fd, int party_id, int account_id, int char_id)
 			int_party_check_lv(p);
 		}
 	}
-		
+
 	if (party_check_empty(p) == 0)
 		mapif_party_info(-1, &p->party, 0);
 	return 0;
@@ -790,7 +790,7 @@ int inter_party_CharOnline(int char_id, int party_id)
 	}
 	if (party_id == 0)
 		return 0; //No party...
-	
+
 	p = inter_party_fromsql(party_id);
 	if(!p) {
 		ShowError("Character %d's party %d not found!\n", char_id, party_id);
@@ -836,7 +836,7 @@ int inter_party_CharOffline(int char_id, int party_id) {
 	}
 	if (party_id == 0)
 		return 0; //No party...
-	
+
 	//Character has a party, set character offline and check if they were the only member online
 	if ((p = inter_party_fromsql(party_id)) == NULL)
 		return 0;

@@ -75,7 +75,7 @@ typedef struct ers_cache
 
 	// Free objects count
 	unsigned int Free;
-	
+
 	// Used objects count
 	unsigned int Used;
 
@@ -87,7 +87,7 @@ typedef struct
 {
 	// Interface to ERS
 	struct eri VTable;
-	
+
 	// Name, used for debbuging purpouses
 	char *Name;
 
@@ -121,7 +121,7 @@ static ers_cache_t *ers_find_cache(unsigned int size)
 	cache->Free = 0;
 	cache->Used = 0;
 	cache->Max = 0;
-	
+
 	if (CacheList == NULL)
 	{
 		CacheList = cache;
@@ -284,7 +284,7 @@ void ers_report(void)
 void ers_force_destroy_all(void)
 {
 	ers_cache_t *cache;
-	
+
 	for (cache = CacheList; cache; cache = cache->Next)
 			ers_free_cache(cache, false);
 }

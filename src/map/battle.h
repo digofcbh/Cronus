@@ -312,7 +312,7 @@ extern struct Battle_Config
 
 	int manner_system; // end additions [Valaris]
 	int show_mob_info; 
-	
+
 	int gx_allhit;
 	int gx_disptype;
 	int devotion_level_difference;
@@ -335,7 +335,7 @@ extern struct Battle_Config
 	int night_duration; // added by [Yor]
 	int ban_hack_trade; // added by [Yor]
 	int packet_ver_flag; // added by [Yor]
-	
+
 	int min_hair_style; // added by [MouseJstr]
 	int max_hair_style; // added by [MouseJstr]
 	int min_hair_color; // added by [MouseJstr]
@@ -348,7 +348,7 @@ extern struct Battle_Config
 	int area_size; // added by [MouseJstr]
 
 	int max_def, over_def_bonus; //added by [Skotlex]
-	
+
 	int zeny_from_mobs; // [Valaris]
 	int mobs_level_up; // [Valaris]
 	int mobs_level_up_exp_rate; // [Valaris]
@@ -403,7 +403,7 @@ extern struct Battle_Config
 	int duel_autoleave_when_die; // [LuzZza]
 	int duel_time_interval; // [LuzZza]
 	int duel_only_on_same_map; // [Toms]
-	
+
 	int skip_teleport_lv1_menu; // possibility to disable (skip) Teleport Lv1 menu, that have only two lines `Random` and `Cancel` [LuzZza]
 
 	int allow_skill_without_day; // [Komurka]
@@ -478,7 +478,7 @@ extern struct Battle_Config
 	int vcast_stat_scale;
 
 	int mvp_tomb_enabled;
-	
+
 	int atcommand_suggestions_enabled;
     int min_npc_vending_distance;
 	int atcommand_mobinfo_type;

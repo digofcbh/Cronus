@@ -1781,7 +1781,7 @@ enum {
 	UNT_ZENKAI_WIND,
 	UNT_MAKIBISHI,
 	UNT_VENOMFOG,
-	
+
 	/**
 	 * Guild Auras
 	 **/

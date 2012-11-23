@@ -561,7 +561,7 @@ int map_foreachinrange(int (*func)(struct block_list*,va_list), struct block_lis
 				}
 			}
 		}
-	
+
 	if( type&BL_MOB )
 		for( by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++ ) {
 			for(bx=x0/BLOCK_SIZE;bx<=x1/BLOCK_SIZE;bx++) {
@@ -605,7 +605,7 @@ int map_foreachinshootrange(int (*func)(struct block_list*,va_list),struct block
 	int blockcount = bl_list_count, i;
 	int x0, x1, y0, y1;
 	va_list ap;
-	
+
 	m = center->m;
 	if ( m < 0 )
 		return 0;
@@ -675,15 +675,15 @@ int map_foreachinarea(int (*func)(struct block_list*,va_list), int m, int x0, in
 	struct block_list *bl;
 	int blockcount = bl_list_count, i;
 	va_list ap;
-	
+
 	if ( m < 0 )
 		return 0;
-	
+
 	if ( x1 < x0 )
 		swap(x0, x1);
 	if ( y1 < y0 )
 		swap(y0, y1);
-	
+
 	x0 = max(x0, 0);
 	y0 = max(y0, 0);
 	x1 = min(x1, map[ m ].xs - 1);
@@ -730,7 +730,7 @@ int map_forcountinrange(int (*func)(struct block_list*,va_list), struct block_li
 	int blockcount = bl_list_count, i;
 	int x0, x1, y0, y1;
 	va_list ap;
-	
+
 	m = center->m;
 	x0 = max(center->x - range, 0);
 	y0 = max(center->y - range, 0);
@@ -791,15 +791,15 @@ int map_forcountinarea(int (*func)(struct block_list*,va_list), int m, int x0, i
 	struct block_list *bl;
 	int blockcount = bl_list_count, i;
 	va_list ap;
-	
+
 	if ( m < 0 )
 		return 0;
-	
+
 	if ( x1 < x0 )
 		swap(x0, x1);
 	if ( y1 < y0 )
 		swap(y0, y1);
-	
+
 	x0 = max(x0, 0);
 	y0 = max(y0, 0);
 	x1 = min(x1, map[ m ].xs - 1);
@@ -855,7 +855,7 @@ int map_foreachinmovearea(int (*func)(struct block_list*,va_list), struct block_
 
 	if ( !range ) return 0;
 	if ( !dx && !dy ) return 0; //No movement.
-	
+
 	m = center->m;
 
 	x0 = center->x - range;
@@ -867,7 +867,7 @@ int map_foreachinmovearea(int (*func)(struct block_list*,va_list), struct block_
 		swap(x0, x1);
 	if ( y1 < y0 )
 		swap(y0, y1);
-	
+
 	if( dx == 0 || dy == 0 ) {
 		//Movement along one axis only.
 		if( dx == 0 ){
@@ -881,12 +881,12 @@ int map_foreachinmovearea(int (*func)(struct block_list*,va_list), struct block_
 			else //East
 				x1 = x0 + dx - 1;
 		}
-		
+
 		x0 = max(x0, 0);
 		y0 = max(y0, 0);
 		x1 = min(x1, map[ m ].xs - 1);
 		y1 = min(y1, map[ m ].ys - 1);
-		
+
 		for( by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++ ) {
 			for( bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++ ) {
 				if ( type&~BL_MOB ) {
@@ -909,12 +909,12 @@ int map_foreachinmovearea(int (*func)(struct block_list*,va_list), struct block_
 			}
 		}
 	} else { // Diagonal movement
-		
+
 		x0 = max(x0, 0);
 		y0 = max(y0, 0);
 		x1 = min(x1, map[ m ].xs - 1);
 		y1 = min(y1, map[ m ].ys - 1);
-		
+
 		for( by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++ ) {
 			for( bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++ ) {
 				if ( type & ~BL_MOB ) {
@@ -1057,7 +1057,7 @@ int map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int y
 	int k, xi, yi, xu, yu;
 	int mx0 = x0, mx1 = x1, my0 = y0, my1 = y1;
 	va_list ap;
-	
+
 	//Avoid needless calculations by not getting the sqrt right away.
 	#define MAGNITUDE2(x0, y0, x1, y1) ( ( ( x1 ) - ( x0 ) ) * ( ( x1 ) - ( x0 ) ) + ( ( y1 ) - ( y0 ) ) * ( ( y1 ) - ( y0 ) ) )
 
@@ -1113,7 +1113,7 @@ int map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int y
 						yi = bl->y;
 
 						k = ( xi - x0 ) * ( x1 - x0 ) + ( yi - y0 ) * ( y1 - y0 );
-						
+
 						if ( k < 0 || k > len_limit ) //Since more skills use this, check for ending point as well.
 							continue;
 
@@ -1146,7 +1146,7 @@ int map_foreachinpath(int (*func)(struct block_list*,va_list),int m,int x0,int y
 						xi = bl->x;
 						yi = bl->y;
 						k = ( xi - x0 ) * ( x1 - x0 ) + ( yi - y0 ) * ( y1 - y0 );
-						
+
 						if ( k < 0 || k > len_limit )
 							continue;
 
@@ -1197,7 +1197,7 @@ int map_foreachinmap(int (*func)(struct block_list*,va_list), int m, int type,..
 	struct block_list *bl;
 	int blockcount = bl_list_count, i;
 	va_list ap;
-	
+
 	bsize = map[ m ].bxs * map[ m ].bys;
 
 	if( type&~BL_MOB )
@@ -1291,10 +1291,10 @@ int map_clearflooritem_timer(int tid, unsigned int tick, int id, intptr_t data)
  */
 void map_clearflooritem(struct block_list *bl) {
 	struct flooritem_data* fitem = (struct flooritem_data*)bl;
-	
+
 	if( fitem->cleartimer )
 		delete_timer(fitem->cleartimer,map_clearflooritem_timer);
-	
+
 	clif_clearflooritem(fitem, 0);
 	map_deliddb(&fitem->bl);
 	map_delblock(&fitem->bl);

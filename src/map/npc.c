@@ -198,7 +198,7 @@ int npc_enable(const char* name, int flag)
 			clif_spawn(&nd->bl);
 	} else
 		clif_changeoption(&nd->bl);
-		
+
 	if( flag&3 && (nd->u.scr.xs >= 0 || nd->u.scr.ys >= 0) )
 		map_foreachinarea( npc_enable_sub, nd->bl.m, nd->bl.x-nd->u.scr.xs, nd->bl.y-nd->u.scr.ys, nd->bl.x+nd->u.scr.xs, nd->bl.y+nd->u.scr.ys, BL_PC, nd );
 
@@ -537,13 +537,13 @@ int npc_timerevent(int tid, unsigned int tick, int id, intptr_t data)
 			sd->npc_timer_id = INVALID_TIMER;
 		else
 			nd->u.scr.timerid = INVALID_TIMER;
-		
+
 		ers_free(timer_event_ers, ted);
 	}
 
 	// Run the script
 	run_script(nd->u.scr.script,te->pos,nd->u.scr.rid,nd->bl.id);
-	
+
 	nd->u.scr.rid = old_rid; // Attached-rid should be restored anyway.
 	if( sd )
 	{ // Restore previous data, only if this timer is a player-attached one.
@@ -562,7 +562,7 @@ int npc_timerevent_start(struct npc_data* nd, int rid)
 	unsigned int tick = gettick();
 	struct map_session_data *sd = NULL; //Player to whom script is attached.
 	struct timer_event_data *ted;
-		
+
 	nullpo_ret(nd);
 
 	// Check if there is an OnTimer Event
@@ -625,7 +625,7 @@ int npc_timerevent_stop(struct npc_data* nd)
 		ShowError("npc_timerevent_stop: Attached player not found!\n");
 		return 1;
 	}
-	
+
 	tid = sd?&sd->npc_timer_id:&nd->u.scr.timerid;
 	if( *tid == INVALID_TIMER && (sd || !nd->u.scr.timertick) ) // Nothing to stop
 		return 0;
@@ -698,7 +698,7 @@ void npc_timerevent_quit(struct map_session_data* sd)
 			nd->u.scr.rid = sd->bl.id;
 			nd->u.scr.timertick = gettick();
 			nd->u.scr.timer = ted->time;
-		
+
 			//Execute label
 			run_script(nd->u.scr.script,ev->pos,sd->bl.id,nd->bl.id);
 
@@ -1010,7 +1010,7 @@ int npc_check_areanpc(int flag, int m, int x, int y, int range)
 	y0 = max(y-range, 0);
 	x1 = min(x+range, map[m].xs-1);
 	y1 = min(y+range, map[m].ys-1);
-	
+
 	//First check for npc_cells on the range given
 	i = 0;
 	for (ys = y0; ys <= y1 && !i; ys++) {
@@ -1106,7 +1106,7 @@ void run_tomb(struct map_session_data* sd, struct npc_data* nd)
 {
 	char buffer[200];
     char time[10];
-	
+
     strftime(time, sizeof(time), "%H:%M", localtime(&nd->u.tomb.kill_time));
 
 	// TODO: Find exact color?
@@ -1117,7 +1117,7 @@ void run_tomb(struct map_session_data* sd, struct npc_data* nd)
 
     snprintf(buffer, sizeof(buffer), msg_txt(659), time);
     clif_scriptmes(sd, nd->bl.id, buffer);
-	
+
     clif_scriptmes(sd, nd->bl.id, msg_txt(660));
 
 	snprintf(buffer, sizeof(buffer), msg_txt(661), nd->u.tomb.killer_name[0] ? nd->u.tomb.killer_name : "Unknown");
@@ -1179,7 +1179,7 @@ int npc_scriptcont(struct map_session_data* sd, int id)
 		  	nd?(char*)nd->name:"'Unknown NPC'", (int)id);
 		return 1;
 	}
-	
+
 	if(id != fake_nd->bl.id) { // Not item script
 		if ((npc_checknear(sd,map_id2bl(id))) == NULL){
 			ShowWarning("npc_scriptcont: failed npc_checknear test.\n");
@@ -1218,7 +1218,7 @@ int npc_buysellsel(struct map_session_data* sd, int id, int type)
 
 	if ((nd = npc_checknear(sd,map_id2bl(id))) == NULL)
 		return 1;
-	
+
 	if (nd->subtype!=SHOP) {
 		ShowError("no such shop npc : %d\n",id);
 		if (sd->npc_id == id)
@@ -1517,7 +1517,7 @@ int npc_buylist(struct map_session_data* sd, int n, unsigned short* item_list)
 		return 3;	// Not enough space to store items
 
 	pc_payzeny(sd,(int)z,LOG_TYPE_NPC, NULL);
-	
+
 	for( i = 0; i < n; ++i )
 	{
 		int nameid = item_list[i*2+1];
@@ -1581,7 +1581,7 @@ static int npc_selllist_sub(struct map_session_data* sd, int n, unsigned short* 
 		snprintf(card_slot, sizeof(card_slot), "@sold_card%d", j + 1);
 		script_cleararray_pc(sd, card_slot, (void*)0);
 	}
-	
+
 	// save list of to be sold items
 	for( i = 0; i < n; i++ )
 	{
@@ -1595,7 +1595,7 @@ static int npc_selllist_sub(struct map_session_data* sd, int n, unsigned short* 
 			script_setarray_pc(sd, "@sold_refine", i, (void*)(intptr_t)sd->status.inventory[idx].refine, &key_refine);
 			script_setarray_pc(sd, "@sold_attribute", i, (void*)(intptr_t)sd->status.inventory[idx].attribute, &key_attribute);
 			script_setarray_pc(sd, "@sold_identify", i, (void*)(intptr_t)sd->status.inventory[idx].identify, &key_identify);
-		
+
 			for( j = 0; j < MAX_SLOTS; j++ )
 			{// store each of the cards from the equipment in the array
 				snprintf(card_slot, sizeof(card_slot), "@sold_card%d", j + 1);
@@ -1786,13 +1786,13 @@ int npc_unload(struct npc_data* nd, bool single) {
 		if( nd->path && nd->path != npc_last_ref ) {
 			npd = strdb_get(npc_path_db, nd->path);
 		}
-		
+
 		if( npd && --npd->references == 0 ) {
 			strdb_remove(npc_path_db, nd->path);/* remove from db */
 			aFree(nd->path);/* remove now that no other instances exist */
 		}
 	}
-	
+
 	if( (nd->subtype == SHOP || nd->subtype == CASHSHOP) && nd->src_id == 0) //src check for duplicate shops [Orcao]
 		aFree(nd->u.shop.shop_item);
 	else if( nd->subtype == SCRIPT ) {
@@ -1983,20 +1983,20 @@ static void npc_parsename(struct npc_data* nd, const char* name, const char* sta
 		ShowDebug("other npc in '%s' :\n   display name '%s'\n   unique name '%s'\n   map=%s, x=%d, y=%d\n",dnd->path, dnd->name, dnd->exname, other_mapname, dnd->bl.x, dnd->bl.y);
 		safestrncpy(nd->exname, newname, sizeof(nd->exname));
 	}
-	
+
 	if( npc_last_path != filepath ) {
 		struct npc_path_data * npd = NULL;
-		
+
 		if( !(npd = strdb_get(npc_path_db,filepath) ) ) {
 			CREATE(npd, struct npc_path_data, 1);
 			strdb_put(npc_path_db, filepath, npd);
-			
+
 			CREATE(npd->path, char, strlen(filepath)+1);
 			safestrncpy(npd->path, filepath, strlen(filepath)+1);
-			
+
 			npd->references = 0;
 		}
-		
+
 		nd->path = npd->path;
 		npd->references++;
 
@@ -2146,7 +2146,7 @@ static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const 
 			ShowError("npc_parse_shop: Invalid shop definition in file '%s', line '%d'.\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n", filepath, strline(buffer,start-buffer), w1, w2, w3, w4);
 			return strchr(start,'\n');// skip and continue
 		}
-		
+
 		m = map_mapname2mapid(mapname);
 	}
 
@@ -2466,17 +2466,17 @@ static const char* npc_parse_script(char* w1, char* w2, char* w3, char* w4, cons
 	if( runOnInit ) {
 		char evname[EVENT_NAME_LENGTH];
 		struct event_data *ev;
-		
+
 		snprintf(evname, ARRAYLENGTH(evname), "%s::OnInit", nd->exname);
-		
+
 		if( ( ev = (struct event_data*)strdb_get(ev_db, evname) ) ) {
-			
+
 			//Execute OnInit
 			run_script(nd->u.scr.script,ev->pos,0,nd->bl.id);
-			
+
 		}
 	}
-	
+
 	return end;
 }
 
@@ -2632,7 +2632,7 @@ const char* npc_parse_duplicate(char* w1, char* w2, char* w3, char* w4, const ch
 
 int npc_duplicate4instance(struct npc_data *snd, int m) {
 	char newname[NPC_NAME_LENGTH];
-	
+
 	if( map[m].instance_id == 0 )
 		return 1;
 
@@ -2860,9 +2860,9 @@ int npc_do_atcmd_event(struct map_session_data* sd, const char* command, const c
 	// split atcmd parameters based on spaces
 	i = 0;
 	j = 0;
-	
+
 	temp = (char*)aMalloc(strlen(message) + 1);
-	
+
 	while( message[i] != '\0' ) {
 		if( message[i] == ' ' && k < 127 ) {
 			temp[j] = '\0';
@@ -3110,7 +3110,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 	if (w4 && !strcmpi(w4, "off"))
 		state = 0;	//Disable mapflag rather than enable it. [Skotlex]
-	
+
 	if (!strcmpi(w3, "nosave")) {
 		char savemap[32];
 		int savex, savey;
@@ -3558,7 +3558,7 @@ void npc_read_event_script(void)
 				ShowWarning("npc_read_event_script: too many occurences of event '%s'!\n", config[i].event_name);
 				break;
 			}
-			
+
 			if( (p=strchr(p,':')) && p && strcmpi(name,p)==0 )
 			{
 				script_event[i].event[count] = ed;
@@ -3578,13 +3578,13 @@ void npc_read_event_script(void)
 void npc_clear_pathlist(void) {
 	struct npc_path_data *npd = NULL;
 	DBIterator *path_list = db_iterator(npc_path_db);
-	
+
 	/* free all npc_path_data filepaths */
 	for( npd = dbi_first(path_list); dbi_exists(path_list); npd = dbi_next(path_list) ) {
 		if( npd->path )
 			aFree(npd->path);
 	}
-	
+
 	dbi_destroy(path_list);
 }
 
@@ -3600,12 +3600,12 @@ int npc_reload(void) {
 	guild_flags_clear();
 
 	npc_clear_pathlist();
-	
+
 	db_clear(npc_path_db);
 
 	db_clear(npcname_db);
 	db_clear(ev_db);
-	
+
 	//Remove all npcs/mobs. [Skotlex]
 
 	iter = mapit_geteachiddb();
@@ -3666,20 +3666,20 @@ int npc_reload(void) {
 		npc_id - npc_new_min, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob);
 
 	do_final_instance();
-	
+
 	for( i = 0; i < ARRAYLENGTH(instance); ++i )
 		instance_init(instance[i].instance_id);
 
 	//Re-read the NPC Script Events cache.
 	npc_read_event_script();
-	
+
 	/* refresh guild castle flags on both woe setups */
 	npc_event_doall("OnAgitInit");
 	npc_event_doall("OnAgitInit2");
-	
+
 	//Execute the OnInit event for freshly loaded npcs. [Skotlex]
 	ShowStatus("Event '"CL_WHITE"OnInit"CL_RESET"' executed with '"CL_WHITE"%d"CL_RESET"' NPCs.\n",npc_event_doall("OnInit"));
-	
+
 	// Execute rest of the startup events if connected to char-server. [Lance]
 	if(!CheckForCharServer()){
 		ShowStatus("Event '"CL_WHITE"OnInterIfInit"CL_RESET"' executed with '"CL_WHITE"%d"CL_RESET"' NPCs.\n", npc_event_doall("OnInterIfInit"));
@@ -3693,7 +3693,7 @@ bool npc_unloadfile( const char* path ) {
 	DBIterator * iter = db_iterator(npcname_db);
 	struct npc_data* nd = NULL;
 	bool found = false;
-	
+
 	for( nd = dbi_first(iter); dbi_exists(iter); nd = dbi_next(iter) ) {
 		if( nd->path && strcasecmp(nd->path,path) == 0 ) {
 			found = true;
@@ -3701,12 +3701,12 @@ bool npc_unloadfile( const char* path ) {
 			npc_unload(nd, true);
 		}
 	}
-	
+
 	dbi_destroy(iter);
 
 	if( found ) /* refresh event cache */
 			npc_read_event_script();
-	
+
 	return found;
 }
 
@@ -3780,9 +3780,9 @@ int do_init_npc(void)
 	ev_db = strdb_alloc((DBOptions)(DB_OPT_DUP_KEY|DB_OPT_RELEASE_DATA),2*NPC_NAME_LENGTH+2+1);
 	npcname_db = strdb_alloc(DB_OPT_BASE,NPC_NAME_LENGTH);
 	npc_path_db = strdb_alloc(DB_OPT_BASE|DB_OPT_DUP_KEY|DB_OPT_RELEASE_DATA,80);
-	
+
 	timer_event_ers = ers_new(sizeof(struct timer_event_data),"clif.c::timer_event_ers",ERS_OPT_NONE);
-	
+
 	// process all npc files
 	ShowStatus("Carregando NPCs...\r");
 	for( file = npc_src_files; file != NULL; file = file->next ) {

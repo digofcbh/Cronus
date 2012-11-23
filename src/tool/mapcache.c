@@ -201,7 +201,7 @@ int find_map(char *name)
 {
 	int i;
 	struct map_info info;
-	
+
 	fseek(map_cache_fp, sizeof(struct main_header), SEEK_SET);
 
 	for(i = 0; i < header.map_count; i++) {
@@ -265,7 +265,7 @@ int do_init(int argc, char** argv)
 			"pre-re"
 #endif
 			);
-	
+
 	// Process the command-line arguments
 	process_args(argc, argv);
 

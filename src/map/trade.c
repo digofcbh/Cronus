@@ -75,26 +75,26 @@ void trade_traderequest(struct map_session_data *sd, struct map_session_data *ta
 		clif_tradestart(sd, 2); // GM is not allowed to trade
 		return;
 	} 
-	
+
 	// Players can not request trade from far away, unless they are allowed to use @trade.
 	if (!pc_can_use_command(sd, "trade", COMMAND_ATCOMMAND) &&
 	    (sd->bl.m != target_sd->bl.m || !check_distance_bl(&sd->bl, &target_sd->bl, TRADE_DISTANCE))) {
 		clif_tradestart(sd, 0); // too far
 		return ;
 	}
-	
+
 	if( target_sd->weight > target_sd->max_weight || sd->weight > sd->max_weight )
 	{
 		clif_tradestart(sd, 2); // trade failed (overweight)
 		return;
 	}
-	
+
 	if( sd->trade_partner != 0 )
 		trade_tradecancel(sd);
-	
+
 	if( sd->state.vending || target_sd->state.vending )
 		return; // ignore request at the last minute (official)
-	
+
 	target_sd->state.can_tradeack = 1;
 	target_sd->trade_partner = sd->status.account_id;
 	sd->trade_partner = target_sd->status.account_id;
@@ -116,12 +116,12 @@ void trade_tradeack(struct map_session_data *sd, int type)
 {
 	struct map_session_data *tsd;
 	nullpo_retv(sd);
-	
+
 	sd->state.can_tradeack = 0;
 
 	if (sd->state.trading || !sd->trade_partner)
 		return; //Already trading or no partner set.
-	
+
 	if ((tsd = map_id2sd(sd->trade_partner)) == NULL) {
 		clif_tradestart(sd, 1); // character does not exist
 		sd->trade_partner=0;
@@ -192,7 +192,7 @@ int impossible_trade_check(struct map_session_data *sd)
 	int i, index;
 
 	nullpo_retr(1, sd);
-	
+
 	if(sd->deal.zeny > sd->status.zeny)
 	{
 		pc_setglobalreg(sd,"ZENY_HACKER",1);
@@ -235,7 +235,7 @@ int impossible_trade_check(struct map_session_data *sd)
 			} else
 				// message about the ban
 				strcpy(message_to_gm, msg_txt(508)); //  This player hasn't been banned (Ban option is disabled).
-			
+
 			intif_wis_message_to_gm(wisp_server_name, PC_PERM_RECEIVE_HACK_INFO, message_to_gm);
 			return 1;
 		}
@@ -272,7 +272,7 @@ int trade_check(struct map_session_data *sd, struct map_session_data *tsd)
 			n = sd->deal.item[trade_i].index;
 			if (amount > inventory[n].amount)
 				return 0; //qty Exploit?
-			
+
 			data = itemdb_search(inventory[n].nameid);
 			i = MAX_INVENTORY;
 			if (itemdb_isstackable2(data)) { //Stackable item.
@@ -287,7 +287,7 @@ int trade_check(struct map_session_data *sd, struct map_session_data *tsd)
 						break;
 					}
 			}
-			
+
 			if (i == MAX_INVENTORY) {// look for an empty slot.
 				for(i = 0; i < MAX_INVENTORY && inventory2[i].nameid; i++);
 				if (i == MAX_INVENTORY)
@@ -454,7 +454,7 @@ void trade_tradeok(struct map_session_data *sd)
 
 	if(sd->state.deal_locked || !sd->state.trading)
 		return;
-	
+
 	if ((target_sd = map_id2sd(sd->trade_partner)) == NULL) {
 		trade_tradecancel(sd);
 		return;
@@ -487,7 +487,7 @@ void trade_tradecancel(struct map_session_data *sd)
 		clif_tradecancelled(sd);
 		return;
 	}
-	
+
 	for(trade_i = 0; trade_i < 10; trade_i++) { // give items back (only virtual)
 		if (!sd->deal.item[trade_i].amount)
 			continue;
@@ -515,7 +515,7 @@ void trade_tradecancel(struct map_session_data *sd)
 		target_sd->deal.item[trade_i].index = 0;
 		target_sd->deal.item[trade_i].amount = 0;
 	}
-	
+
 	if (target_sd->deal.zeny) {
 		clif_updatestatus(target_sd, SP_ZENY);
 		target_sd->deal.zeny = 0;
@@ -542,9 +542,9 @@ void trade_tradecommit(struct map_session_data *sd)
 		trade_tradecancel(sd);
 		return;
 	}
-	
+
 	sd->state.deal_locked = 2;
-	
+
 	if (tsd->state.deal_locked < 2)
 		return; //Not yet time for trading.
 
@@ -564,7 +564,7 @@ void trade_tradecommit(struct map_session_data *sd)
 		trade_tradecancel(sd);
 		return;
 	}
-	
+
 	// trade is accepted and correct.
 	for( trade_i = 0; trade_i < 10; trade_i++ )
 	{
@@ -607,15 +607,15 @@ void trade_tradecommit(struct map_session_data *sd)
 		pc_getzeny(sd ,tsd->deal.zeny,LOG_TYPE_TRADE, tsd);
 		tsd->deal.zeny = 0;
 	}
-	
+
 	sd->state.deal_locked = 0;
 	sd->trade_partner = 0;
 	sd->state.trading = 0;
-	
+
 	tsd->state.deal_locked = 0;
 	tsd->trade_partner = 0;
 	tsd->state.trading = 0;
-	
+
 	clif_tradecompleted(sd, 0);
 	clif_tradecompleted(tsd, 0);
 

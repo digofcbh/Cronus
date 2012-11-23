@@ -166,7 +166,7 @@ struct map_session_data {
 	int packet_ver;  // 5: old, 6: 7july04, 7: 13july04, 8: 26july04, 9: 9aug04/16aug04/17aug04, 10: 6sept04, 11: 21sept04, 12: 18oct04, 13: 25oct04 ... 18
 	struct mmo_charstatus status;
 	struct registry save_reg;
-	
+
 	struct item_data* inventory_data[MAX_INVENTORY]; // direct pointers to itemdb entries (faster than doing item_id lookups)
 	short equip_index[14];
 	unsigned int weight,max_weight;
@@ -217,7 +217,7 @@ struct map_session_data {
 	unsigned int cansendmail_tick; // [Mail System Flood Protection]
 	unsigned int ks_floodprotect_tick; // [Kill Steal Protection]
 	unsigned int bloodylust_tick;
-	
+
 	struct {
 		short nameid;
 		unsigned int tick;
@@ -227,7 +227,7 @@ struct map_session_data {
 	short disguise; // [Valaris]
 
 	struct weapon_data right_weapon, left_weapon;
-	
+
 	// here start arrays to be globally zeroed at the beginning of status_calc_pc()
 	int param_bonus[6],param_equip[6]; //Stores card/equipment bonuses.
 	int subele[ELE_MAX];
@@ -465,7 +465,7 @@ struct map_session_data {
 		unsigned short *id;/* array of combo ids */
 		unsigned char count;
 	} combos;
-	
+
 	/**
 	 * Guarantees your friend request is legit (for bugreport:4629)
 	 **/
@@ -560,7 +560,7 @@ enum equip_pos {
 /// Equip positions that use a visible sprite
 #if PACKETVER < 20110111
 	#define EQP_VISIBLE EQP_HELM
-#else	
+#else
 	#define EQP_VISIBLE (EQP_HELM|EQP_GARMENT|EQP_COSTUME)
 #endif
 
@@ -650,7 +650,7 @@ enum equip_index {
 	#define pc_leftside_atk(sd) ((sd)->battle_status.batk + (sd)->battle_status.rhw.atk + (sd)->battle_status.lhw.atk)
 	#define pc_rightside_atk(sd) ((sd)->battle_status.rhw.atk2 + (sd)->battle_status.lhw.atk2)
 	#define pc_leftside_def(sd) ((sd)->battle_status.def)
-	#define pc_rightside_def(sd) ((sd)->battle_status.def2)	
+	#define pc_rightside_def(sd) ((sd)->battle_status.def2)
 	#define pc_leftside_mdef(sd) ((sd)->battle_status.mdef)
 	#define pc_rightside_mdef(sd) ( (sd)->battle_status.mdef2 - ((sd)->battle_status.vit>>1) )
 #endif

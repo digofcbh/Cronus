@@ -109,16 +109,16 @@ void findfile(const char *p, const char *pat, void (func)(const char*))
 	WIN32_FIND_DATAA FindFileData;
 	HANDLE hFind;
 	char tmppath[MAX_PATH+1];
-	
+
 	const char *path    = (p  ==NULL)? "." : p;
 	const char *pattern = (pat==NULL)? "" : pat;
-	
+
 	checkpath(tmppath,path);
 	if( PATHSEP != tmppath[strlen(tmppath)-1])
 		strcat(tmppath, "\\*");
 	else
 		strcat(tmppath, "*");
-	
+
 	hFind = FindFirstFileA(tmppath, &FindFileData);
 	if (hFind != INVALID_HANDLE_VALUE)
 	{

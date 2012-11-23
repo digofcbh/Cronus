@@ -157,7 +157,7 @@ static bool account_db_sql_init(AccountDB* self)
 
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
 		Sql_ShowDebug(sql_handle);
-		
+
 	ShowStatus("Conectado ao banco de dados principal '"CL_WHITE"%s"CL_RESET"'.\n", database);
 	Sql_PrintExtendedInfo(sql_handle);
 

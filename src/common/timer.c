@@ -109,18 +109,18 @@ static __inline uint64 _rdtsc(){
 	} t;
 
 	asm volatile("rdtsc":"=a"(t.dw[0]), "=d"(t.dw[1]) );
-	
+
 	return t.qw;
 }
 
 static void rdtsc_calibrate(){
 	uint64 t1, t2;
 	int32 i;
-	
+
 	ShowStatus("Calibrando Timer da Source, por favor aguarde... ");
-	
+
 	RDTSC_CLOCK = 0;
-	
+
 	for(i = 0; i < 5; i++){
 		t1 = _rdtsc();
 		usleep(1000000); //1000 MS
@@ -128,9 +128,9 @@ static void rdtsc_calibrate(){
 		RDTSC_CLOCK += (t2 - t1) / 1000; 
 	}
 	RDTSC_CLOCK /= 5;
-	
+
 	RDTSC_BEGINTICK = _rdtsc();
-	
+
 	ShowMessage(" finalizado. (Frequência: %u Mhz)\n", (uint32)(RDTSC_CLOCK/1000) );
 }
 
@@ -243,7 +243,7 @@ static int acquire_timer(void)
 int add_timer(unsigned int tick, TimerFunc func, int id, intptr_t data)
 {
 	int tid;
-	
+
 	tid = acquire_timer();
 	timer_data[tid].tick     = tick;
 	timer_data[tid].func     = func;
@@ -267,7 +267,7 @@ int add_timer_interval(unsigned int tick, TimerFunc func, int id, intptr_t data,
 		ShowError("add_timer_interval: invalid interval (tick=%u %p[%s] id=%d data=%d diff_tick=%d)\n", tick, func, search_timer_func_list(func), id, data, DIFF_TICK(tick, gettick()));
 		return INVALID_TIMER;
 	}
-	
+
 	tid = acquire_timer();
 	timer_data[tid].tick     = tick;
 	timer_data[tid].func     = func;
@@ -320,7 +320,7 @@ int addtick_timer(int tid, unsigned int tick)
 int settick_timer(int tid, unsigned int tick)
 {
 	size_t i;
-	
+
 	// search timer position
 	ARR_FIND(0, BHEAP_LENGTH(timer_heap), i, BHEAP_DATA(timer_heap)[i] == tid);
 	if( i == BHEAP_LENGTH(timer_heap) )

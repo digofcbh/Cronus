@@ -282,7 +282,7 @@ bool check_password(const char* md5key, int passwdenc, const char* passwd, const
 	{
 		// password mode set to 1 -> md5(md5key, refpass) enable with <passwordencrypt></passwordencrypt>
 		// password mode set to 2 -> md5(refpass, md5key) enable with <passwordencrypt2></passwordencrypt2>
-		
+
 		return ((passwdenc&0x01) && check_encrypted(md5key, refpass, passwd)) ||
 		       ((passwdenc&0x02) && check_encrypted(refpass, md5key, passwd));
 	}
@@ -351,7 +351,7 @@ int login_lan_config_read(const char *lancfgName)
 			subnet_count++;
 		}
 	}
-	
+
 	if( subnet_count > 1 ) /* only useful if there is more than 1 available */
 		ShowStatus("Lida informação sobre "CL_WHITE"%d"CL_RESET" sub-redes.\n", subnet_count);
 
@@ -1022,7 +1022,7 @@ int mmo_auth(struct login_session_data* sd, bool isServer) {
 				return result;// Failed to make account. [Skotlex].
 		}
 	}
-	
+
 	if( !accounts->load_str(accounts, &acc, sd->userid) ) {
 		ShowNotice("Conta "CL_RED"desconhecida"CL_RESET" (conta: "CL_WHITE"%s"CL_RESET", ip: "CL_WHITE"%s"CL_RESET")\n", sd->userid, ip); //Senha recebida retirada de mensagem por motivos de segurança
 		return 0; // 0 = Unregistered ID
@@ -1049,7 +1049,7 @@ int mmo_auth(struct login_session_data* sd, bool isServer) {
 		ShowNotice("Conexão recusada (conta: "CL_WHITE"%s"CL_RESET", estado: "CL_WHITE"%d"CL_RESET", ip: "CL_WHITE"%s"CL_RESET")\n", sd->userid, acc.state, ip);
 		return acc.state - 1;
 	}
-	
+
 	if( login_config.client_hash_check && !isServer ) {
 		struct client_hash_node *node = login_config.client_hash_nodes;
 		bool match = false;
@@ -1137,7 +1137,7 @@ void login_auth_ok(struct login_session_data* sd)
 		WFIFOW(fd,0) = 0x81;
 		WFIFOB(fd,2) = 1; // 01 = Server closed
 		WFIFOSET(fd,3);
-		return;		
+		return;
 	}
 
 	server_num = 0;
@@ -1351,10 +1351,10 @@ int parse_login(int fd)
 		case 0x0204: // S 0204 <md5 hash>.16B (kRO 2004-05-31aSakexe langtype 0 and 6)
 			if (RFIFOREST(fd) < 18)
 				return 0;
-			
+
 			sd->has_client_hash = 1;
 			memcpy(sd->client_hash, RFIFOP(fd, 2), 16);
-			
+
 			RFIFOSKIP(fd,18);
 		break;
 
@@ -1573,7 +1573,7 @@ void login_set_defaults()
 	login_config.use_dnsbl = false;
 	safestrncpy(login_config.dnsbl_servs, "", sizeof(login_config.dnsbl_servs));
 	safestrncpy(login_config.account_engine, "auto", sizeof(login_config.account_engine));
-	
+
 	login_config.client_hash_check = 0;
 	login_config.client_hash_nodes = NULL;
 }
@@ -1730,7 +1730,7 @@ void do_final(void)
 {
 	int i;
 	struct client_hash_node *hn = login_config.client_hash_nodes;
-	
+
 	while(hn) {
 		struct client_hash_node *tmp = hn;
 		hn = hn->next;
@@ -1757,7 +1757,7 @@ void do_final(void)
 	accounts = NULL; // destroyed in account_engines
 	online_db->destroy(online_db, NULL);
 	auth_db->destroy(auth_db, NULL);
-	
+
 	for( i = 0; i < ARRAYLENGTH(server); ++i )
 		chrif_server_destroy(i);
 
@@ -1818,7 +1818,7 @@ int do_init(int argc, char** argv)
 	login_lan_config_read((argc > 2) ? argv[2] : LAN_CONF_NAME);
 
 	rnd_init();
-	
+
 	for( i = 0; i < ARRAYLENGTH(server); ++i )
 		chrif_server_init(i);
 
@@ -1868,7 +1868,7 @@ int do_init(int argc, char** argv)
 
 	// server port open & binding
 	login_fd = make_listen_bind(login_config.login_ip, login_config.login_port);
-	
+
 	if( runflag != CORE_ST_STOP )
 	{
 		shutdown_callback = do_shutdown;

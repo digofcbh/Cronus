@@ -43,14 +43,14 @@ struct elemental_data {
 	struct status_data base_status, battle_status;
 	struct status_change sc;
 	struct regen_data regen;
-	
+
 	struct s_elemental_db *db;
 	struct s_elemental elemental;
-	
+
 	struct map_session_data *master;
 	int summon_timer;
 	int skill_timer;
-	
+
 	unsigned last_thinktime, last_linktime;
 	short min_chase;
 	int target_id, attacked_id;

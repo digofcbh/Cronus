@@ -22,7 +22,7 @@ struct s_instance {
 	int users;
 
 	struct DBMap* vars; // Instance Variable for scripts
-	
+
 	int progress_timer;
 	time_t progress_timeout;
 

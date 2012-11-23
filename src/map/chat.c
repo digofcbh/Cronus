@@ -61,7 +61,7 @@ static struct chat_data* chat_createchat(struct block_list* bl, const char* titl
 
 	if( bl->type != BL_NPC )
 		cd->kick_list = idb_alloc(DB_OPT_BASE);
-	
+
 	return cd;
 }
 
@@ -162,7 +162,7 @@ int chat_joinchat(struct map_session_data* sd, int chatid, const char* pass)
 	clif_dispchat(cd,0);	// 周囲の人には人数変化報告
 
 	chat_triggerevent(cd); // イベント
-	
+
 	return 0;
 }
 
@@ -205,13 +205,13 @@ int chat_leavechat(struct map_session_data* sd, bool kicked)
 	if( cd->users == 0 && cd->owner->type == BL_PC ) { // Delete empty chatroom
 		struct skill_unit* unit = NULL;
 		struct skill_unit_group* group = NULL;
-	
+
 		clif_clearchat(cd, 0);
 		db_destroy(cd->kick_list);
 		map_deliddb(&cd->bl);
 		map_delblock(&cd->bl);
 		map_freeblock(&cd->bl);
-		
+
 		unit = map_find_skill_unit_oncell(&sd->bl, sd->bl.x, sd->bl.y, AL_WARP, NULL, 0); 
 		group = (unit != NULL) ? unit->group : NULL; 
 		if (group != NULL)
@@ -318,7 +318,7 @@ int chat_kickchat(struct map_session_data* sd, const char* kickusername)
 	nullpo_retr(1, sd);
 
 	cd = (struct chat_data *)map_id2bl(sd->chatID);
-	
+
 	if( cd==NULL || (struct block_list *)sd != cd->owner )
 		return -1;
 
@@ -328,7 +328,7 @@ int chat_kickchat(struct map_session_data* sd, const char* kickusername)
 
 	if (pc_has_permission(cd->usersd[i], PC_PERM_NO_CHAT_KICK))
 		return 0; //gm kick protection [Valaris]
-	
+
 	idb_put(cd->kick_list,cd->usersd[i]->status.char_id,(void*)1);
 
 	chat_leavechat(cd->usersd[i],1);
@@ -370,14 +370,14 @@ int chat_deletenpcchat(struct npc_data* nd)
 	cd = (struct chat_data*)map_id2bl(nd->chat_id);
 	if( cd == NULL )
 		return 0;
-	
+
 	chat_npckickall(cd);
 	clif_clearchat(cd, 0);
 	map_deliddb(&cd->bl);
 	map_delblock(&cd->bl);
 	map_freeblock(&cd->bl);
 	nd->chat_id = 0;
-	
+
 	return 0;
 }
 

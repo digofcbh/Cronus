@@ -83,7 +83,7 @@ void ipban_init(void)
 	}
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
 		Sql_ShowDebug(sql_handle);
-		
+
 	ShowStatus("Conectado ao banco de dados ipban '"CL_WHITE"%s"CL_RESET"'.\n", database);
 	Sql_PrintExtendedInfo(sql_handle);
 
@@ -104,7 +104,7 @@ void ipban_final(void)
 	if( login_config.ipban_cleanup_interval > 0 )
 		// release data
 		delete_timer(cleanup_timer_id, ipban_cleanup);
-	
+
 	ipban_cleanup(0,0,0,0); // always clean up on login-server stop
 
 	// close connections

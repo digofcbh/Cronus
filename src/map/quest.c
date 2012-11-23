@@ -298,7 +298,7 @@ int quest_read_db(void) {
 		ShowError("can't read %s\n", line);
 		return -1;
 	}
-	
+
 	while(fgets(line, sizeof(line), fp)) {
 
 		if (k == MAX_QUEST_DB) {
@@ -339,7 +339,7 @@ int quest_read_db(void) {
 		}
 
 		quest_db[k].num_objectives = i;
-		
+
 		k++;
 	}
 	fclose(fp);

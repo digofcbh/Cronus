@@ -420,7 +420,7 @@ struct auction_data {
 	char seller_name[NAME_LENGTH];
 	int buyer_id;
 	char buyer_name[NAME_LENGTH];
-	
+
 	struct item item;
 	// This data is required for searching, as itemdb is not read by char server
 	char item_name[ITEM_NAME_LENGTH];

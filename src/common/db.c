@@ -1118,7 +1118,7 @@ static void db_release_both(DBKey key, DBData data, DBRelease which)
 DBData* dbit_obj_first(DBIterator* self, DBKey* out_key)
 {
 	DBIterator_impl* it = (DBIterator_impl*)self;
-	
+
 	DB_COUNTSTAT(dbit_first);
 	// position before the first entry
 	it->ht_index = -1;
@@ -1140,7 +1140,7 @@ DBData* dbit_obj_first(DBIterator* self, DBKey* out_key)
 DBData* dbit_obj_last(DBIterator* self, DBKey* out_key)
 {
 	DBIterator_impl* it = (DBIterator_impl*)self;
-	
+
 	DB_COUNTSTAT(dbit_last);
 	// position after the last entry
 	it->ht_index = HASH_SIZE;
@@ -1262,7 +1262,7 @@ DBData* dbit_obj_prev(DBIterator* self, DBKey* out_key)
 			node = &fake;
 		}
 
-		
+
 		while( node )
 		{// next node
 			if( node->left )
@@ -1549,17 +1549,17 @@ static unsigned int db_obj_vgetall(DBMap* self, DBData **buf, unsigned int max, 
 				}
 				va_end(argscopy);
 			}
-			
+
 			if (node->left) {
 				node = node->left;
 				continue;
 			}
-			
+
 			if (node->right) {
 				node = node->right;
 				continue;
 			}
-			
+
 			while (node) {
 				parent = node->parent;
 				if (parent && parent->right && parent->left == node) {

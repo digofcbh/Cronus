@@ -140,16 +140,16 @@ struct auth_node* chrif_search(int account_id) {
 
 struct auth_node* chrif_auth_check(int account_id, int char_id, enum sd_state state) {
 	struct auth_node *node = chrif_search(account_id);
-	
+
 	return( node && node->char_id == char_id && node->state == state ) ? node : NULL;
 }
 
 bool chrif_auth_delete(int account_id, int char_id, enum sd_state state) {
 	struct auth_node *node;
-	
+
 	if( ( node = chrif_auth_check( account_id, char_id, state ) ) ) {
 		int fd = node->sd ? node->sd->fd : node->fd;
-		
+
 		if( session[fd] && session[fd]->session_data == node->sd )
 			session[fd]->session_data = NULL;
 		if( node->char_dat)
@@ -229,7 +229,7 @@ void chrif_checkdefaultlogin(void) {
 // sets char-server's ip address
 int chrif_setip(const char* ip) {
 	char ip_str[16];
-	
+
 	if ( !( char_ip = host2ip( ip ) ) ) {
 		ShowWarning("Falha em desenvolver o IP do char-server! (%s)\n", ip);
 		return 0;
@@ -300,7 +300,7 @@ int chrif_save(struct map_session_data *sd, int flag) {
 	if( sd->md && mercenary_get_lifetime(sd->md) > 0 )
 		mercenary_save(sd->md);
 	if( sd->ed && elemental_get_lifetime(sd->ed) > 0 )
-		elemental_save(sd->ed);	
+		elemental_save(sd->ed);
 	if( sd->save_quest )
 		intif_quest_save(sd);
 
@@ -542,7 +542,7 @@ void chrif_authreq(struct map_session_data *sd) {
 		set_eof(sd->fd);
 		return;
 	}
-	
+
 	if( !chrif_isconnected() )
 		return;
 
@@ -591,7 +591,7 @@ void chrif_authok(int fd) {
 	//Causes problems if the currently connected player tries to quit or this data belongs to an already connected player which is trying to re-auth.
 	if ((sd = map_id2sd(account_id)) != NULL)
 		return;
-	
+
 	if ((node = chrif_search(account_id)) == NULL)
 		return; // should not happen
 
@@ -798,18 +798,18 @@ static void chrif_char_ask_name_answer(int acc, const char* player_name, uint16 
 	struct map_session_data* sd;
 	char action[25];
 	char output[256];
-	
+
 	sd = map_id2sd(acc);
 	if( acc < 0 || sd == NULL ) {
 		ShowError("chrif_char_ask_name_answer failed - player not online.\n");
 		return;
 	}
-	
+
 	if(type>0 && type<=5)
 		snprintf(action,25,"%s",msg_txt(427+type)); //block|ban|unblock|unban|change the sex of
 	else
 		snprintf(action,25,"???");
-	
+
 	switch( answer ) {
 		case 0 : sprintf(output, msg_txt(424), action, NAME_LENGTH, player_name); break;
 		case 1 : sprintf(output, msg_txt(425), NAME_LENGTH, player_name); break;
@@ -817,7 +817,7 @@ static void chrif_char_ask_name_answer(int acc, const char* player_name, uint16 
 		case 3 : sprintf(output, msg_txt(427), action, NAME_LENGTH, player_name); break;
 	default: output[0] = '\0'; break;
 	}
-	
+
 	clif_displaymessage(sd->fd, output);
 }
 
@@ -914,7 +914,7 @@ int chrif_divorceack(int char_id, int partner_id) {
 			if (sd->status.inventory[i].nameid == WEDDING_RING_M || sd->status.inventory[i].nameid == WEDDING_RING_F)
 				pc_delitem(sd, i, 1, 0, 0, LOG_TYPE_OTHER);
 	}
-	
+
 	return 0;
 }
 /*==========================================
@@ -964,7 +964,7 @@ int chrif_accountban(int fd) {
 	sd->login_id1++; // change identify, because if player come back in char within the 5 seconds, he can change its characters
 	if (RFIFOB(fd,6) == 0) { // 0: change of statut, 1: ban
 		int ret_status = RFIFOL(fd,7); // status or final date of a banishment
-		
+
 		if(0<ret_status && ret_status<=9)
 			clif_displaymessage(sd->fd, msg_txt(411+ret_status));
 		else if( ret_status == 100 )
@@ -1122,7 +1122,7 @@ int chrif_save_scdata(struct map_session_data *sd) {	//parses the sc_data of the
 
 	chrif_check(-1);
 	tick = gettick();
-	
+
 	WFIFOHEAD(char_fd, 14 + SC_MAX*sizeof(struct status_change_data));
 	WFIFOW(char_fd,0) = 0x2b1c;
 	WFIFOL(char_fd,4) = sd->status.account_id;
@@ -1166,7 +1166,7 @@ int chrif_load_scdata(int fd) {
 
 	aid = RFIFOL(fd,4); //Player Account ID
 	cid = RFIFOL(fd,8); //Player Char ID
-	
+
 	sd = map_id2sd(aid);
 	if (!sd) {
 		ShowError("chrif_load_scdata: Jogador de AID %d não encontrado!\n", aid);
@@ -1276,7 +1276,7 @@ void chrif_on_disconnect(void) {
 	if( chrif_connected != 1 )
 		ShowWarning("Conexão ao char-server perdida.\n\n");
 	chrif_connected = 0;
-	
+
  	other_mapserver_count = 0; //Reset counter. We receive ALL maps from all map-servers on reconnect.
 	map_eraseallipport();
 
@@ -1492,7 +1492,7 @@ int chrif_removefriend(int char_id, int friend_id) {
 	WFIFOL(char_fd,2) = char_id;
 	WFIFOL(char_fd,6) = friend_id;
 	WFIFOSET(char_fd,10);
-	
+
 	return 0;
 }
 

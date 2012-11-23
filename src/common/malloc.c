@@ -234,7 +234,7 @@ void* _mmalloc(size_t size, const char *file, int line, const char *func )
 		ShowError("_mmalloc: %d\n", size);
 		return NULL;
 	}
-	
+
 	if(size == 0) {
 		return NULL;
 	}

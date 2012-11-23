@@ -103,7 +103,7 @@ int instance_add_map(const char *name, int instance_id, bool usebasename)
 
 	if( m < 0 )
 		return -1; // source map not found
-		
+
 	if( !instance_is_valid(instance_id) )
 	{
 		ShowError("instance_add_map: trying to attach '%s' map to non-existing instance %d.\n", name, instance_id);
@@ -179,7 +179,7 @@ int instance_map2imap(int m, int instance_id)
 	{
 		return -1;
 	}
-	
+
 	for( i = 0; i < instance[instance_id].num_map; i++ )
  	{
 		if( instance[instance_id].map[i] && map[instance[instance_id].map[i]].instance_src_map == m )
@@ -256,7 +256,7 @@ int instance_del_load(struct map_session_data* sd, va_list args)
 /* for npcs behave differently when being unloaded within a instance */
 int instance_cleanup_sub(struct block_list *bl, va_list ap) {
 	nullpo_ret(bl);
-	
+
 	switch(bl->type) {
 		case BL_PC:
 			map_quit((struct map_session_data *) bl);
@@ -277,7 +277,7 @@ int instance_cleanup_sub(struct block_list *bl, va_list ap) {
 			skill_delunit((struct skill_unit *) bl);
 			break;
 	}
-	
+
 	return 1;
 }
 
@@ -323,7 +323,7 @@ void instance_del_map(int m)
 
 	map_removemapdb(&map[m]);
 	memset(&map[m], 0x00, sizeof(map[0]));
-	
+
 	/* for it is default and makes it not try to delete a non-existent timer since we did not delete this entry. */
 	map[m].mob_delete_timer = INVALID_TIMER;
 }
@@ -421,7 +421,7 @@ void instance_set_timeout(int instance_id, unsigned int progress_timeout, unsign
 
 	if( !instance_is_valid(instance_id) )
 		return;
-		
+
 	if( instance[instance_id].progress_timer != INVALID_TIMER )
 		delete_timer( instance[instance_id].progress_timer, instance_destroy_timer);
 	if( instance[instance_id].idle_timer != INVALID_TIMER )
@@ -437,7 +437,7 @@ void instance_set_timeout(int instance_id, unsigned int progress_timeout, unsign
 		instance[instance_id].progress_timeout = 0;
 		instance[instance_id].progress_timer = INVALID_TIMER;
 	}
-		
+
 	if( idle_timeout )
 	{
 		instance[instance_id].idle_timeoutval = idle_timeout;

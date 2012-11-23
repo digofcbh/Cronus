@@ -85,7 +85,7 @@ void config_setting_copy_aggregate(config_setting_t *parent, const config_settin
 		return;
 
 	n = config_setting_length(src);
-	
+
 	for (i = 0; i < n; i++) {
 		if (config_setting_is_group(src)) {
 			config_setting_copy_simple(newAgg, config_setting_get_elem(src, i));            

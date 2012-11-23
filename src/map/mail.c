@@ -56,10 +56,10 @@ int mail_removezeny(struct map_session_data *sd, short flag)
 }
 
 unsigned char mail_setitem(struct map_session_data *sd, int idx, int amount) {
-	
+
 	if( pc_istrading(sd) )
 		return 1;
-	
+
 	if( idx == 0 ) { // Zeny Transfer
 		if( amount < 0 || !pc_can_give_items(sd) )
 			return 1;
@@ -85,7 +85,7 @@ unsigned char mail_setitem(struct map_session_data *sd, int idx, int amount) {
 		sd->mail.index = idx;
 		sd->mail.nameid = sd->status.inventory[idx].nameid;
 		sd->mail.amount = amount;
-		
+
 		return 0;
 	}
 }
@@ -93,7 +93,7 @@ unsigned char mail_setitem(struct map_session_data *sd, int idx, int amount) {
 bool mail_setattachment(struct map_session_data *sd, struct mail_message *msg)
 {
 	int n;
-	
+
 	nullpo_retr(false,sd);
 	nullpo_retr(false,msg);
 
@@ -168,7 +168,7 @@ void mail_deliveryfail(struct map_session_data *sd, struct mail_message *msg)
 	{
 		pc_getzeny(sd,msg->zeny,LOG_TYPE_MAIL, NULL); //Zeny receive (due to failure)
 	}
-	
+
 	clif_Mail_send(sd->fd, true);
 }
 

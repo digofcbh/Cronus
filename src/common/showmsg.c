@@ -682,7 +682,7 @@ int _vShowMessage(enum msg_type flag, const char *string, va_list ap)
 #if defined(DEBUGLOGMAP) || defined(DEBUGLOGCHAR) || defined(DEBUGLOGLOGIN)
 	FILE *fp;
 #endif
-	
+
 	if (!string || *string == '\0') {
 		ShowError("Empty string passed to _vShowMessage().\n");
 		return 1;

@@ -12,12 +12,12 @@ typedef struct mempool_stats{
 	int64	num_nodes_total;
 	int64	num_nodes_free;
 	int64	num_nodes_used;
-	
+
 	int64	num_segments;
 	int64	num_realloc_events;
-	
+
 	int64	peak_nodes_used;
-	
+
 	int64	num_bytes_total;
 } mempool_stats;
 
@@ -49,11 +49,11 @@ mempool mempool_create(const char *name,
 						uint64 elem_size,
 						uint64 initial_count,
 						uint64 realloc_count,
-						
+
 						memPoolOnNodeAllocationProc	onNodeAlloc,
 						memPoolOnNodeDeallocationProc onNodeDealloc);
-						
-						
+
+
 /**
  * Destroys a Mempool
  * 

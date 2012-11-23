@@ -13,7 +13,7 @@ typedef void* (*rAthreadProc)(void*);
 typedef enum RATHREAD_PRIO {
 	RAT_PRIO_LOW = 0,
 	RAT_PRIO_NORMAL,
-	RAT_PRIO_HIGH	
+	RAT_PRIO_HIGH
 } RATHREAD_PRIO;
 
 

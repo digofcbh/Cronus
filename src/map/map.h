@@ -246,7 +246,7 @@ enum bl_type {
 	BL_NPC   = 0x080,
 	BL_CHAT  = 0x100,
 	BL_ELEM  = 0x200,
-	
+
 	BL_ALL   = 0xFFF,
 };
 
@@ -365,7 +365,7 @@ enum _sp {
 
 	// Mercenaries
 	SP_MERCFLEE=165, SP_MERCKILLS=189, SP_MERCFAITH=190,
-	
+
 	// original 1000-
 	SP_ATTACKRANGE=1000,	SP_ATKELE,SP_DEFELE,	// 1000-1002
 	SP_CASTRATE, SP_MAXHPRATE, SP_MAXSPRATE, SP_SPRATE, // 1003-1006
