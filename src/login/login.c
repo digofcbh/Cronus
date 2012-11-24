@@ -1559,7 +1559,7 @@ void login_set_defaults()
 	login_config.console = false;
 	login_config.new_account_flag = true;
 	login_config.new_acc_length_limit = true;
-	login_config.use_md5_passwds = false;
+	login_config.use_md5_passwds = true;
 	login_config.group_id_to_connect = -1;
 	login_config.min_group_id_to_connect = -1;
 	login_config.check_client_version = false;

@@ -49,6 +49,7 @@ _ReSharper.*
 *.vspscc
 .builds
 *.dotCover
+*.bsc
 
 # Linux
 char-server_sql
