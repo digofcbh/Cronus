@@ -1,16 +1,16 @@
-//===== Cronus Script ========================================= 
-//= Cidade de Izlude
-//===== Por: ================================================== 
+//===== Cronus Script ========================================
+//= Izlude Town
+//===== Por: =================================================
 //= kobra_k88
 //= L0ne_W0lf
-//===== Versão Atual: =========================================
-//= 1.8a
-//===== Compatível com: =======================================
-//= eAthena SVN
-//===== Descrição: ============================================
+//===== Versão atual: ========================================
+//= 2.1
+//===== Compatível com: ======================================
+//= Cronus GIT
+//===== Descrição: ===========================================
 //= [Conversão do Aegis]
 //= NPCs da cidade de Izlude
-//===== Comentários Adicionais: ===============================
+//===== Comentários extras: ==================================
 //= Fully working
 //= 1.1 fixed 2 zeny bugs/checks [Lupus]
 //= 1.2 Fixed a lot of typos [Nexon]
@@ -31,12 +31,13 @@
 //=	(even if slightly,) after the five or so lines.
 //= 2.0 Traduzido para o Cronus-Emulator [Squall]
 //= 2.0a Revisão Geral do Script [Asus]
+//= 2.1 Traduzido e duplicado para cada versão do emulador. [MaminhA]
 //============================================================
 
 // Izlude
 //============================================================
-izlude,201,181,2	script	Sailor#izlude	100,{
-	mes "[Sailor]";
+-	script	::Marinheiro_izlude	-1,{
+	mes "[Marinheiro]";
 	mes "Olá, todo mundo!";
 	mes "Atenção, atenção!";
 	mes "Venham passear ao vento";
@@ -45,23 +46,23 @@ izlude,201,181,2	script	Sailor#izlude	100,{
 	next;
 	switch(select("Ilha Byalan -> 150 Zeny.: Marinha de Alberta  -> 500 Zeny.:Cancelar.")) {
 	case 1:
-		if (zeny < 150) {
-			mes "[Sailor]";
-			mes "150 Zeny!";
-			mes "Somente 150 Zeny para partir!";
+		if (Zeny < 150) {
+			mes "[Marinheiro]";
+			mes "150 zenys!";
+			mes "Apenas 150 zenys para partir!";
 			close;
 		}
-		set zeny,zeny-150;
+		set Zeny, Zeny - 150;
 		warp "izlu2dun",107,50;
 		end;
 	case 2:
-		if (zeny < 500) {
-			mes "[Sailor]";
-			mes "500 Zeny!";
-			mes "Somente 500 Zeny para partir!";
+		if (Zeny < 500) {
+			mes "[Marinheiro]";
+			mes "500 zenys!";
+			mes "Apenas 500 zenys para partir!";
 			close;
 		}
-		set zeny,zeny-500;
+		set Zeny, Zeny - 500;
 		warp "alberta",188,169;
 		end;
 	case 3:
@@ -69,7 +70,7 @@ izlude,201,181,2	script	Sailor#izlude	100,{
 	}
 }
 
-izlude,55,74,2	script	Bonne#izlude	90,{
+-	script	::Bonne_izlude	-1,{
 	mes "[Bonne]";
 	mes "Saudações!";
 	mes "Izlude recebe vocês.";
@@ -93,7 +94,7 @@ izlude,55,74,2	script	Bonne#izlude	90,{
 	close;
 }
 
-izlude,135,78,2	script	Charfri#izlude	91,{
+-	script	::Charfri_izlude	-1,{
 	mes "[Charfri]";
 	switch(rand(2)) {
 	case 1:
@@ -124,7 +125,7 @@ izlude,135,78,2	script	Charfri#izlude	91,{
 	}
 }
 
-izlude,119,121,2	script	Cuskoal#izlude	124,{
+-	script	::Cuskoal_izlude	-1,{
 	mes "[Cuskoal]";
 	switch(rand(2)) {
 	case 1:
@@ -148,7 +149,7 @@ izlude,119,121,2	script	Cuskoal#izlude	124,{
 	}
 }
 
-izlude,150,118,2	script	Dega#izlude	84,{
+-	script	::Dega_izlude	-1,{
 	mes "[Dega]";
 	switch(rand(3)) {
 	case 1:
@@ -224,7 +225,7 @@ izlude,150,118,2	script	Dega#izlude	84,{
 	}
 }
 
-izlude,150,143,2	script	Kylick#izlude	97,{
+-	script	::Kylick_izlude	-1,{
 	mes "[Kylick]";
 	switch(rand(2)) {
 	case 1:
@@ -256,7 +257,7 @@ izlude,150,143,2	script	Kylick#izlude	97,{
 	}
 }
 
-izlude,56,126,2	script	Red#izlude::RedCebalis	85,{
+-	script	::Red_izlude	-1,{
 	mes "[Red]";
 	mes "A única habilidade necessária a um Espadachim é o ^FF2400Golpe Fulminante^000000! Golpe Fulminante, Golpe Fulminante e SÓ ^FF2400Golpe Fulminante^000000! Não perca tempo aprimorando outras habilidades insignificantes! O resto é para fracos e covardes!";
 	next;
@@ -325,8 +326,8 @@ izlude,56,126,2	script	Red#izlude::RedCebalis	85,{
 	mes "Certo?! ^EE0000Impacto Explosivo^000000 é A MELHOR!!! Você sabe do que está falando, né? Eu não sei porque você é tãoooo teimoso.";
 	close;
 }
-	
-izlude,58,126,2	script	Cebalis#izlude	98,{
+
+-	script	::Cebalis_izlude	-1,{
 	mes "[Red]";
 	mes "A única habilidade necessária a um Espadachim é o ^FF2400Golpe Fulminante^000000! Golpe Fulminante, Golpe Fulminante e SÓ ^FF2400Golpe Fulminante^000000! Não perca tempo aprimorando outras habilidades insignificantes! O resto é para fracos e covardes!";
 	next;
@@ -403,7 +404,7 @@ izlude,58,126,2	script	Cebalis#izlude	98,{
 	close;
 }
 
-izlude,124,178,2	script	Soldado#izlude	105,{
+-	script	::Soldado_izlude	-1,{
 	mes "[Soldado]";
 	mes "HeHeHeHe..HaHaHaHa ";
 	mes "Huh? Porque estou tão feliz?";
@@ -460,7 +461,7 @@ izlude,124,178,2	script	Soldado#izlude	105,{
 	close;
 }
 
-// Dentro de Izlude	
+// Dentro de Izlude
 //============================================================
 izlude_in,125,164,2	script	Aaron#izlude	65,{
 	mes "[Aaron]";
@@ -502,16 +503,56 @@ izlude_in,125,164,2	script	Aaron#izlude	65,{
 	close;
 }
 
-// Izlude Dungeon
+// Calabouços de Izlude
 //============================================================
-izlu2dun,108,27,0	script	Sailor#2izlude	100,{
-	mes "[Sailor]";
+izlu2dun,108,27,0	script	Marinheiro#2izlude	100,{
+	mes "[Marinheiro]";
 	mes "Quer";
 	mes "voltar?";
 	next;
-	if (select("Sim, estou cansado de morrer.:Não, amo este lugar!") == 1) {
-		warp "izlude",176,182;
+	if (select("Sim, estou muito cansado para morrer.:Não, eu amo este lugar!") == 1) {
+		if(checkre(0))
+			warp "izlude",197,210;
+		else
+			warp "izlude",176,182;
 		end;
 	}
 	close;
+}
+
+// Adicionando NPCs aos mapas
+if(checkre(0)) {
+izlude,197,205,1	duplicate(Marinheiro_izlude)	Marinheiro#izlude	100
+izlude,71,92,2	duplicate(Bonne_izlude)	Bonne#izlude	90
+izlude,172,215,4	duplicate(Charfri_izlude)	Charfri#izlude	91
+izlude,127,175,4	duplicate(Cuskoal_izlude)	Cuskoal#izlude	124
+izlude,85,103,4	duplicate(Dega_izlude)	Dega#izlude	84
+izlude,141,185,4	duplicate(Kylick_izlude)	Kylick#izlude	97
+izlude,56,156,2	duplicate(Red_izlude)	Red#izlude	85
+izlude,58,156,2	duplicate(Cebalis_izlude)	Cebalis#izlude	98
+izlude,165,156,2	duplicate(Soldado_izlude)	Soldado#izlude	105
+izlude,158,130,3	duplicate(bdt)	Tony Mercador de Balas#iz	86
+izlude,155,132,3	duplicate(mdk)	Kenny Mercador de Revistas	83
+
+izlude,147,131,6	script	Forjardor#izlude	726,{
+	end;
+}
+
+prt_fild08,350,219,4	script	Guarda#izlude	105,{
+	mes "[Guarda de Izlude]";
+	mes "Bem vindo à Izlude.";
+	close;
+}
+} else {
+izlude,201,181,2	duplicate(Sailor_izlude)	Sailor#izlude	100
+izlude,55,74,2	duplicate(Bonne_izlude)	Bonne#izlude	90
+izlude,135,78,2	duplicate(Charfri_izlude)	Charfri#izlude	91
+izlude,119,121,2	duplicate(Cuskoal_izlude)	Cuskoal#izlude	124
+izlude,150,118,2	duplicate(Dega_izlude)	Dega#izlude	84
+izlude,150,143,2	duplicate(Kylick_izlude)	Kylick#izlude	97
+izlude,56,126,2	duplicate(Red_izlude)	Red#izlude	85
+izlude,58,126,2	duplicate(Cebalis_izlude)	Cebalis#izlude	98
+izlude,124,178,2	duplicate(Soldier_izlude)	Soldier#izlude	105
+izlude,171,133,3	duplicate(bdt)	Bullet Dealer Tony#iz	86
+izlude,171,127,3	duplicate(mdk)	Magazine Dealer Kenny	83
 }
