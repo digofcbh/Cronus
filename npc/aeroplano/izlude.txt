@@ -49,7 +49,7 @@
 
 // Teste usando função checkre()
 if( checkre(0) ) {
-izlude,204,75,3	duplicate(Assist_do_Aeroporto_iz)	Assist. do Aeroporto#izlude	90
+izlude,204,75,3	duplicate(Assist_do_Aeroporto_iz)	Assist. do Aeroporto#iz	90
 } else {
 izlude,206,55,3	duplicate(Assist_do_Aeroporto_iz)	Assist. do Aeroporto#iz	90
 }
