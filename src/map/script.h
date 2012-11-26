@@ -29,8 +29,8 @@ extern struct Script_Config {
 	const char *baselvup_event_name;
 	const char *joblvup_event_name;
 
-	const char *ontouch_name;
-	const char *ontouch2_name;
+	const char* ontouch_name;
+	const char* ontouch2_name;
 } script_config;
 
 typedef enum c_op {
@@ -77,8 +77,8 @@ typedef enum c_op {
 } c_op;
 
 struct script_retinfo {
-	struct DBMap *var_function;// scope variables
-	struct script_code *script;// script code
+	struct DBMap* var_function;// scope variables
+	struct script_code* script;// script code
 	int pos;// script location
 	int nargs;// argument count
 	int defsp;// default stack pointer
@@ -89,17 +89,17 @@ struct script_data {
 	union script_data_val {
 		int num;
 		char *str;
-		struct script_retinfo *ri;
+		struct script_retinfo* ri;
 	} u;
-	struct DBMap **ref;
+	struct DBMap** ref;
 };
 
 // Moved defsp from script_state to script_stack since
 // it must be saved when script state is RERUNLINE. [Eoe / jA 1094]
 struct script_code {
 	int script_size;
-	unsigned char *script_buf;
-	struct DBMap *script_vars;
+	unsigned char* script_buf;
+	struct DBMap* script_vars;
 };
 
 struct script_stack {
@@ -107,24 +107,24 @@ struct script_stack {
 	int sp_max;// capacity of the stack
 	int defsp;
 	struct script_data *stack_data;// stack
-	struct DBMap *var_function;// scope variables
+	struct DBMap* var_function;// scope variables
 };
 
 
 //
 // Script state
 //
-enum e_script_state { RUN, STOP, END, RERUNLINE, GOTO, RETFUNC };
+enum e_script_state { RUN,STOP,END,RERUNLINE,GOTO,RETFUNC };
 
 struct script_state {
-	struct script_stack *stack;
-	int start, end;
+	struct script_stack* stack;
+	int start,end;
 	int pos;
 	enum e_script_state state;
-	int rid, oid;
+	int rid,oid;
 	struct script_code *script, *scriptroot;
 	struct sleep_data {
-		int tick, timer, charid;
+		int tick,timer,charid;
 	} sleep;
 	int instance_id;
 	//For backing up purposes
@@ -141,7 +141,7 @@ struct script_reg {
 
 struct script_regstr {
 	int index;
-	char *data;
+	char* data;
 };
 
 enum script_parse_options {
@@ -150,48 +150,48 @@ enum script_parse_options {
 	SCRIPT_RETURN_EMPTY_SCRIPT = 0x4// returns the script object instead of NULL for empty scripts
 };
 
-const char *skip_space( const char *p );
-void script_error( const char *src, const char *file, int start_line, const char *error_msg, const char *error_pos );
+const char* skip_space(const char* p);
+void script_error(const char* src, const char* file, int start_line, const char* error_msg, const char* error_pos);
 
-struct script_code *parse_script( const char *src, const char *file, int line, int options );
-void run_script_sub( struct script_code *rootscript, int pos, int rid, int oid, char *file, int lineno );
-void run_script( struct script_code *, int, int, int );
+struct script_code* parse_script(const char* src,const char* file,int line,int options);
+void run_script_sub(struct script_code *rootscript,int pos,int rid,int oid, char* file, int lineno);
+void run_script(struct script_code*,int,int,int);
 
-int set_var( struct map_session_data *sd, char *name, void *val );
-int conv_num( struct script_state *st, struct script_data *data );
-const char *conv_str( struct script_state *st, struct script_data *data );
-int run_script_timer( int tid, unsigned int tick, int id, intptr_t data );
-void run_script_main( struct script_state *st );
+int set_var(struct map_session_data *sd, char *name, void *val);
+int conv_num(struct script_state *st,struct script_data *data);
+const char* conv_str(struct script_state *st,struct script_data *data);
+int run_script_timer(int tid, unsigned int tick, int id, intptr_t data);
+void run_script_main(struct script_state *st);
 
-void script_stop_sleeptimers( int id );
-struct linkdb_node *script_erase_sleepdb( struct linkdb_node *n );
-void script_free_code( struct script_code *code );
-void script_free_vars( struct DBMap *storage );
-struct script_state *script_alloc_state( struct script_code *script, int pos, int rid, int oid );
-void script_free_state( struct script_state *st );
+void script_stop_sleeptimers(int id);
+struct linkdb_node* script_erase_sleepdb(struct linkdb_node *n);
+void script_free_code(struct script_code* code);
+void script_free_vars(struct DBMap *storage);
+struct script_state* script_alloc_state(struct script_code* script, int pos, int rid, int oid);
+void script_free_state(struct script_state* st);
 
-struct DBMap *script_get_label_db( void );
-struct DBMap *script_get_userfunc_db( void );
-void script_run_autobonus( const char *autobonus, int id, int pos );
+struct DBMap* script_get_label_db(void);
+struct DBMap* script_get_userfunc_db(void);
+void script_run_autobonus(const char *autobonus,int id, int pos);
 
-bool script_get_constant( const char *name, int *value );
-void script_set_constant( const char *name, int value, bool isparameter );
+bool script_get_constant(const char* name, int* value);
+void script_set_constant(const char* name, int value, bool isparameter);
 
-void script_cleararray_pc( struct map_session_data *sd, const char *varname, void *value );
-void script_setarray_pc( struct map_session_data *sd, const char *varname, uint8 idx, void *value, int *refcache );
+void script_cleararray_pc(struct map_session_data* sd, const char* varname, void* value);
+void script_setarray_pc(struct map_session_data* sd, const char* varname, uint8 idx, void* value, int* refcache);
 
-int script_config_read( char *cfgName );
-int do_init_script( void );
-int do_final_script( void );
-int add_str( const char *p );
-const char *get_str( int id );
-int script_reload( void );
+int script_config_read(char *cfgName);
+int do_init_script(void);
+int do_final_script(void);
+int add_str(const char* p);
+const char* get_str(int id);
+int script_reload(void);
 
 // @commands (script based)
-void setd_sub( struct script_state *st, TBL_PC *sd, const char *varname, int elem, void *value, struct DBMap **ref );
+void setd_sub(struct script_state *st, TBL_PC *sd, const char *varname, int elem, void *value, struct DBMap **ref);
 
 #ifdef BETA_THREAD_TEST
-void queryThread_log( char *entry, int length );
+void queryThread_log(char * entry, int length);
 #endif
 
 #endif /* _SCRIPT_H_ */

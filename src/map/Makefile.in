@@ -1,5 +1,5 @@
 
-COMMON_H = $( shell ls .. / common/*.h)
+COMMON_H = $(shell ls ../common/*.h)
 
 MT19937AR_OBJ = ../../3rdparty/mt19937ar/mt19937ar.o
 MT19937AR_H = ../../3rdparty/mt19937ar/mt19937ar.h
@@ -103,10 +103,10 @@ obj_sql/%.o: %.c $(MAP_H) $(COMMON_H)  $(MT19937AR_H) $(LIBCONFIG_H)
 # missing object files
 ../common/obj_all/common.a:
 	@$(MAKE) -C ../common sql
-
+    
 ../common/obj_sql/common_sql.a:
 	@$(MAKE) -C ../common sql
-
+        
 MT19937AR_OBJ:
 	@$(MAKE) -C ../../3rdparty/mt19937ar
 

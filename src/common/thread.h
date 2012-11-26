@@ -8,7 +8,7 @@
 #include "../common/cbasetypes.h"
 
 typedef struct rAthread *rAthread;
-typedef void *( *rAthreadProc )( void * );
+typedef void* (*rAthreadProc)(void*);
 
 typedef enum RATHREAD_PRIO {
 	RAT_PRIO_LOW = 0,
@@ -98,7 +98,7 @@ void rathread_prio_set( rAthread handle, RATHREAD_PRIO prio );
  *
  * @param handle - the thread to get the prio for.
  */
-RATHREAD_PRIO rathread_prio_get( rAthread handle );
+RATHREAD_PRIO rathread_prio_get( rAthread handle);
 
 
 /**

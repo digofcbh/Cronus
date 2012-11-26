@@ -84,16 +84,16 @@ enum msg_type {
 	MSG_FATALERROR
 };
 
-extern void ClearScreen( void );
-extern void ShowMessage( const char *, ... );
-extern void ShowStatus( const char *, ... );
-extern void ShowSQL( const char *, ... );
-extern void ShowInfo( const char *, ... );
-extern void ShowNotice( const char *, ... );
-extern void ShowWarning( const char *, ... );
-extern void ShowDebug( const char *, ... );
-extern void ShowError( const char *, ... );
-extern void ShowFatalError( const char *, ... );
-extern void ShowConfigWarning( config_setting_t *config, const char *string, ... );
+extern void ClearScreen(void);
+extern void ShowMessage(const char *, ...);
+extern void ShowStatus(const char *, ...);
+extern void ShowSQL(const char *, ...);
+extern void ShowInfo(const char *, ...);
+extern void ShowNotice(const char *, ...);
+extern void ShowWarning(const char *, ...);
+extern void ShowDebug(const char *, ...);
+extern void ShowError(const char *, ...);
+extern void ShowFatalError(const char *, ...);
+extern void ShowConfigWarning(config_setting_t *config, const char *string, ...);
 
 #endif /* _SHOWMSG_H_ */
