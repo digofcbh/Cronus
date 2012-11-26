@@ -1,5 +1,5 @@
 
-COMMON_H = $(shell ls ../common/*.h)
+COMMON_H = $( shell ls .. / common/*.h)
 
 MT19937AR_OBJ = ../../3rdparty/mt19937ar/mt19937ar.o
 MT19937AR_H = ../../3rdparty/mt19937ar/mt19937ar.h

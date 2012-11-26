@@ -46,8 +46,8 @@
 // 20120307 - 2012-03-07aRagexeRE+ - 0x970
 
 #ifndef PACKETVER
-	#define PACKETVER 20110609
-	//#define PACKETVER 20120410
+#define PACKETVER 20110609
+//#define PACKETVER 20120410
 #endif
 
 //Remove/Comment this line to disable sc_data saving. [Skotlex]
@@ -57,14 +57,14 @@
 #define HOTKEY_SAVING
 
 #if PACKETVER < 20090603
-        // (27 = 9 skills x 3 bars)               (0x02b9,191)
-        #define MAX_HOTKEYS 27
+// (27 = 9 skills x 3 bars)               (0x02b9,191)
+#define MAX_HOTKEYS 27
 #elif PACKETVER < 20090617
-        // (36 = 9 skills x 4 bars)               (0x07d9,254)
-        #define MAX_HOTKEYS 36
+// (36 = 9 skills x 4 bars)               (0x07d9,254)
+#define MAX_HOTKEYS 36
 #else
-        // (38 = 9 skills x 4 bars & 2 Quickslots)(0x07d9,268)
-        #define MAX_HOTKEYS 38
+// (38 = 9 skills x 4 bars & 2 Quickslots)(0x07d9,268)
+#define MAX_HOTKEYS 38
 #endif
 
 #define MAX_MAP_PER_SERVER 1500 // Increased to allow creation of Instance Maps
@@ -212,11 +212,10 @@ struct item {
 
 struct point {
 	unsigned short map;
-	short x,y;
+	short x, y;
 };
 
-enum e_skill_flag
-{
+enum e_skill_flag {
 	SKILL_FLAG_PERMANENT,
 	SKILL_FLAG_TEMPORARY,
 	SKILL_FLAG_PLAGIARIZED,
@@ -282,7 +281,7 @@ struct s_homunculus {	//[orn]
 	int char_id;
 	short class_;
 	short prev_class;
-	int hp,max_hp,sp,max_sp;
+	int hp, max_hp, sp, max_sp;
 	unsigned int intimacy;	//[orn]
 	short hunger;
 	struct s_skill hskill[MAX_HOMUNSKILL]; //albator
@@ -339,17 +338,17 @@ struct mmo_charstatus {
 	int mother;
 	int child;
 
-	unsigned int base_exp,job_exp;
+	unsigned int base_exp, job_exp;
 	int zeny;
 
 	short class_;
-	unsigned int status_point,skill_point;
-	int hp,max_hp,sp,max_sp;
+	unsigned int status_point, skill_point;
+	int hp, max_hp, sp, max_sp;
 	unsigned int option;
 	short manner;
 	unsigned char karma;
-	short hair,hair_color,clothes_color;
-	int party_id,guild_id,pet_id,hom_id,mer_id,ele_id;
+	short hair, hair_color, clothes_color;
+	int party_id, guild_id, pet_id, hom_id, mer_id, ele_id;
 	int fame;
 
 	// Mercenary Guilds Rank
@@ -359,19 +358,19 @@ struct mmo_charstatus {
 
 	short weapon; // enum weapon_type
 	short shield; // view-id
-	short head_top,head_mid,head_bottom;
+	short head_top, head_mid, head_bottom;
 	short robe;
 
 	char name[NAME_LENGTH];
-	unsigned int base_level,job_level;
-	short str,agi,vit,int_,dex,luk;
-	unsigned char slot,sex;
+	unsigned int base_level, job_level;
+	short str, agi, vit, int_, dex, luk;
+	unsigned char slot, sex;
 
 	uint32 mapip;
 	uint16 mapport;
 
-	struct point last_point,save_point,memo_point[MAX_MEMOPOINTS];
-	struct item inventory[MAX_INVENTORY],cart[MAX_CART];
+	struct point last_point, save_point, memo_point[MAX_MEMOPOINTS];
+	struct item inventory[MAX_INVENTORY], cart[MAX_CART];
 	struct storage_data storage;
 	struct s_skill skill[MAX_SKILL];
 
@@ -449,7 +448,7 @@ struct party_member {
 	unsigned short map;
 	unsigned short lv;
 	unsigned leader : 1,
-	         online : 1;
+			 online : 1;
 };
 
 struct party {
@@ -457,17 +456,17 @@ struct party {
 	char name[NAME_LENGTH];
 	unsigned char count; //Count of online characters.
 	unsigned exp : 1,
-				item : 2; //&1: Party-Share (round-robin), &2: pickup style: shared.
+			 item : 2; //&1: Party-Share (round-robin), &2: pickup style: shared.
 	struct party_member member[MAX_PARTY];
 };
 
 struct map_session_data;
 struct guild_member {
 	int account_id, char_id;
-	short hair,hair_color,gender,class_,lv;
+	short hair, hair_color, gender, class_, lv;
 	uint64 exp;
 	int exp_payper;
-	short online,position;
+	short online, position;
 	char name[NAME_LENGTH];
 	struct map_session_data *sd;
 	unsigned char modified;
@@ -493,7 +492,7 @@ struct guild_expulsion {
 };
 
 struct guild_skill {
-	int id,lv;
+	int id, lv;
 };
 
 struct guild {
@@ -502,11 +501,11 @@ struct guild {
 	uint64 exp;
 	unsigned int next_exp;
 	int skill_point;
-	char name[NAME_LENGTH],master[NAME_LENGTH];
+	char name[NAME_LENGTH], master[NAME_LENGTH];
 	struct guild_member member[MAX_GUILD];
 	struct guild_position position[MAX_GUILDPOSITION];
-	char mes1[MAX_GUILDMES1],mes2[MAX_GUILDMES2];
-	int emblem_len,emblem_id;
+	char mes1[MAX_GUILDMES1], mes2[MAX_GUILDMES2];
+	int emblem_len, emblem_id;
 	char emblem_data[2048];
 	struct guild_alliance alliance[MAX_GUILDALLIANCE];
 	struct guild_expulsion expulsion[MAX_GUILDEXPULSION];
@@ -533,7 +532,7 @@ struct guild_castle {
 		unsigned visible : 1;
 		int id; // object id
 	} guardian[MAX_GUARDIANS];
-	int* temp_guardians; // ids of temporary guardians (mobs)
+	int *temp_guardians; // ids of temporary guardians (mobs)
 	int temp_guardians_max;
 };
 
@@ -544,14 +543,14 @@ struct fame_list {
 };
 
 enum {
-	GBI_EXP=1,
+	GBI_EXP = 1,
 	GBI_GUILDLV,
 	GBI_SKILLPOINT,
 	GBI_SKILLLV,
 };
 
 enum {
-	GMI_POSITION=0,
+	GMI_POSITION = 0,
 	GMI_EXP,
 	GMI_HAIR,
 	GMI_HAIR_COLOR,
@@ -561,22 +560,22 @@ enum {
 };
 
 enum {
-	GD_SKILLBASE=10000,
-	GD_APPROVAL=10000,
-	GD_KAFRACONTRACT=10001,
-	GD_GUARDRESEARCH=10002,
-	GD_GUARDUP=10003,
-	GD_EXTENSION=10004,
-	GD_GLORYGUILD=10005,
-	GD_LEADERSHIP=10006,
-	GD_GLORYWOUNDS=10007,
-	GD_SOULCOLD=10008,
-	GD_HAWKEYES=10009,
-	GD_BATTLEORDER=10010,
-	GD_REGENERATION=10011,
-	GD_RESTORE=10012,
-	GD_EMERGENCYCALL=10013,
-	GD_DEVELOPMENT=10014,
+	GD_SKILLBASE = 10000,
+	GD_APPROVAL = 10000,
+	GD_KAFRACONTRACT = 10001,
+	GD_GUARDRESEARCH = 10002,
+	GD_GUARDUP = 10003,
+	GD_EXTENSION = 10004,
+	GD_GLORYGUILD = 10005,
+	GD_LEADERSHIP = 10006,
+	GD_GLORYWOUNDS = 10007,
+	GD_SOULCOLD = 10008,
+	GD_HAWKEYES = 10009,
+	GD_BATTLEORDER = 10010,
+	GD_REGENERATION = 10011,
+	GD_RESTORE = 10012,
+	GD_EMERGENCYCALL = 10013,
+	GD_DEVELOPMENT = 10014,
 	GD_MAX,
 };
 

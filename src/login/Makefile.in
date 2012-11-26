@@ -1,5 +1,5 @@
 
-COMMON_H = $(shell ls ../common/*.h)
+COMMON_H = $( shell ls .. / common/*.h)
 
 MT19937AR_OBJ = ../../3rdparty/mt19937ar/mt19937ar.o
 MT19937AR_H = ../../3rdparty/mt19937ar/mt19937ar.h
@@ -61,7 +61,7 @@ obj_sql:
 login-server_sql: $(LOGIN_SERVER_SQL_DEPENDS)
 	@echo "	LD	$@"
 	@@CC@ @LDFLAGS@ -o ../../login-server_sql@EXEEXT@ $(LOGIN_SQL_OBJ) ../common/obj_sql/common_sql.a ../common/obj_all/common.a $(MT19937AR_OBJ) $(LIBCONFIG_OBJ) @LIBS@ @MYSQL_LIBS@
-	    
+
 
 # login object files
 

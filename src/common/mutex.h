@@ -27,7 +27,7 @@ void ramutex_destroy( ramutex m );
  *
  * @param m - the mutex to lock
  */
-void ramutex_lock( ramutex m);
+void ramutex_lock( ramutex m );
 
 /**
  * Trys to get the Lock
@@ -43,7 +43,7 @@ bool ramutex_trylock( ramutex m );
  *
  * @param m - the mutex to unlock
  */
-void ramutex_unlock( ramutex m);
+void ramutex_unlock( ramutex m );
 
 
 /**
@@ -67,7 +67,7 @@ void racond_destroy( racond c );
  * @param m - the mutex used for syncronization
  * @param timeout_ticks - timeout in ticks ( -1 = INFINITE )
  */
-void racond_wait( racond c,  ramutex m,  sysint timeout_ticks);
+void racond_wait( racond c,  ramutex m,  sysint timeout_ticks );
 
 /**
  * Sets the given condition var to signalled state

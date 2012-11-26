@@ -1,5 +1,5 @@
 
-COMMON_H = $(shell ls ../common/*.h)
+COMMON_H = $( shell ls .. / common/*.h)
 
 MT19937AR_OBJ = ../../3rdparty/mt19937ar/mt19937ar.o
 MT19937AR_H = ../../3rdparty/mt19937ar/mt19937ar.h
@@ -15,7 +15,7 @@ LIBCONFIG_INCLUDE = -I../../3rdparty/libconfig
 TEST_SPINLOCK_OBJ=obj/test_spinlock.o
 TEST_SPINLOCK_H=
 TEST_SPINLOCK_DEPENDS=obj $(TEST_SPINLOCK_OBJ) ../common/obj_sql/common_sql.a ../common/obj_all/common.a $(MT19937AR_OBJ)
-    
+
 @SET_MAKE@
 
 #####################################################################
@@ -25,7 +25,7 @@ all: test_spinlock
 
 clean:
 	@echo "	CLEAN	test"
-	@rm -rf *.o obj ../../test_spinlock@EXEEXT@ 
+	@rm -rf *.o obj ../../test_spinlock@EXEEXT@
 
 #####################################################################
 
@@ -34,7 +34,7 @@ clean:
 obj:
 	@echo "	MKDIR	obj"
 	@-mkdir obj
-	
+
 #executables
 
 test_spinlock: $(TEST_SPINLOCK_DEPENDS)
@@ -50,7 +50,7 @@ obj/%.o: %.c $(COMMON_H) $(MT19937AR_H) $(LIBCONFIG_H)
 # missing object files
 ../common/obj_all/common.a:
 	@$(MAKE) -C ../common sql
-	
+
 ../common/obj_sql/common_sql.a:
 	@$(MAKE) -C ../common sql
 
