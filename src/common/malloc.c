@@ -131,49 +131,49 @@ void aFree_( void *p, const char *file, int line, const char *func ) {
 /* USE_MEMMGR */
 
 /*
- * ÉÅÉÇÉäÉ}ÉlÅ[ÉWÉÉ
- *     malloc , free ÇÃèàóùÇå¯ó¶ìIÇ…èoóàÇÈÇÊÇ§Ç…ÇµÇΩÇ‡ÇÃÅB
- *     ï°éGÇ»èàóùÇçsÇ¡ÇƒÇ¢ÇÈÇÃÇ≈ÅAé·ä±èdÇ≠Ç»ÇÈÇ©Ç‡ÇµÇÍÇ‹ÇπÇÒÅB
+ * ???????}?l?[?W??
+ *     malloc , free ????????????I??o??????????????¥B
+ *     ???G????????s???A????^LA???d?????????????????B
  *
- * ÉfÅ[É^ç\ë¢Ç»Ç«Åiê‡ñæâ∫éËÇ≈Ç∑Ç¢Ç‹ÇπÇÒ^^; Åj
- *     ÅEÉÅÉÇÉäÇï°êîÇÃÅuÉuÉçÉbÉNÅvÇ…ï™ÇØÇƒÅAÇ≥ÇÁÇ…ÉuÉçÉbÉNÇï°êîÇÃÅuÉÜÉjÉbÉgÅv
- *       Ç…ï™ÇØÇƒÇ¢Ç‹Ç∑ÅBÉÜÉjÉbÉgÇÃÉTÉCÉYÇÕÅAÇPÉuÉçÉbÉNÇÃóeó Çï°êîå¬Ç…ãœìôîzï™
- *       ÇµÇΩÇ‡ÇÃÇ≈Ç∑ÅBÇΩÇ∆Ç¶ÇŒÅAÇPÉÜÉjÉbÉg32KBÇÃèÍçáÅAÉuÉçÉbÉNÇPÇ¬ÇÕ32ByteÇÃÉÜ
- *       ÉjÉbÉgÇ™ÅA1024å¬èWÇ‹Ç¡ÇƒèoóàÇƒÇ¢ÇΩÇËÅA64ByteÇÃÉÜÉjÉbÉgÇ™ 512å¬èWÇ‹Ç¡Çƒ
- *       èoóàÇƒÇ¢ÇΩÇËÇµÇ‹Ç∑ÅBÅipadding,unit_head ÇèúÇ≠Åj
+ * ?f?[?^?\?????i?????????l????????^^; ?j
+ *     ?E???????????¥u?u???b?N?v??????aA??????u???b?N?????¥u???j?b?g?v
+ *       ??????A?????B???j?b?g?~T?C?Y??A?P?u???b?N??e???????????z??
+ *       ???????^l??B???????A?P???j?b?g32KB????A?u???b?N?P???32Byte?~?
+ *       ?j?b?g???A1024?èW????do???A??????A64Byte?~??j?b?g?? 512?èW?????
+ *       ?o???A?????????B?ipadding,unit_head ???????j
  *
- *     ÅEÉuÉçÉbÉNìØémÇÕÉäÉìÉNÉäÉXÉg(block_prev,block_next) Ç≈Ç¬Ç»Ç™ÇËÅAìØÇ∂ÉTÉC
- *       ÉYÇéùÇ¬ÉuÉçÉbÉNìØémÇ‡ÉäÉìÉNÉäÉXÉg(hash_prev,hash_nect) Ç≈Ç¬Ç»
- *       Ç™Ç¡ÇƒÇ¢Ç‹Ç∑ÅBÇªÇÍÇ…ÇÊÇËÅAïsóvÇ∆Ç»Ç¡ÇΩÉÅÉÇÉäÇÃçƒóòópÇ™å¯ó¶ìIÇ…çsÇ¶Ç‹Ç∑ÅB
+ *     ?E?u???b?N???m??????N???X?g(block_prev,block_next) ?l??????A?????T?C
+ *       ?Y??????u???b?N???m???????N???X?g(hash_prev,hash_nect) ?l??
+ *       ?????A?????B??????????A?s?v??????????????e??p???????I??s??????B
  */
 
-/* ÉuÉçÉbÉNÇÃÉAÉâÉCÉÅÉìÉg */
+/* ?u???b?N?~A???C?????g */
 #define BLOCK_ALIGNMENT1	16
 #define BLOCK_ALIGNMENT2	64
 
-/* ÉuÉçÉbÉNÇ…ì¸ÇÈÉfÅ[É^ó  */
+/* ?u???b?N??????f?[?^?? */
 #define BLOCK_DATA_COUNT1	128
 #define BLOCK_DATA_COUNT2	608
 
-/* ÉuÉçÉbÉNÇÃëÂÇ´Ç≥: 16*128 + 64*576 = 40KB */
+/* ?u???b?N?????: 16*128 + 64*576 = 40KB */
 #define BLOCK_DATA_SIZE1	( BLOCK_ALIGNMENT1 * BLOCK_DATA_COUNT1 )
 #define BLOCK_DATA_SIZE2	( BLOCK_ALIGNMENT2 * BLOCK_DATA_COUNT2 )
 #define BLOCK_DATA_SIZE		( BLOCK_DATA_SIZE1 + BLOCK_DATA_SIZE2 )
 
-/* àÍìxÇ…ämï€Ç∑ÇÈÉuÉçÉbÉNÇÃêîÅB */
+/* ???x??m??????u???b?N????B */
 #define BLOCK_ALLOC		104
 
-/* ÉuÉçÉbÉN */
+/* ?u???b?N */
 struct block {
-	struct block *block_next;		/* éüÇ…ämï€ÇµÇΩóÃàÊ */
-	struct block *unfill_prev;		/* éüÇÃñÑÇ‹Ç¡ÇƒÇ¢Ç»Ç¢óÃàÊ */
-	struct block *unfill_next;		/* éüÇÃñÑÇ‹Ç¡ÇƒÇ¢Ç»Ç¢óÃàÊ */
-	unsigned short unit_size;		/* ÉÜÉjÉbÉgÇÃëÂÇ´Ç≥ */
-	unsigned short unit_hash;		/* ÉÜÉjÉbÉgÇÃÉnÉbÉVÉÖ */
-	unsigned short unit_count;		/* ÉÜÉjÉbÉgÇÃå¬êî */
-	unsigned short unit_used;		/* égópÉÜÉjÉbÉgêî */
-	unsigned short unit_unfill;		/* ñ¢égópÉÜÉjÉbÉgÇÃèÍèä */
-	unsigned short unit_maxused;	/* égópÉÜÉjÉbÉgÇÃç≈ëÂíl */
+	struct block *block_next;		/* ????m??????®? */
+	struct block *unfill_prev;		/* ?????????A?????®? */
+	struct block *unfill_next;		/* ?????????A?????®? */
+	unsigned short unit_size;		/* ???j?b?g????? */
+	unsigned short unit_hash;		/* ???j?b?g?~n?b?V?? */
+	unsigned short unit_count;		/* ???j?b?g??ê? */
+	unsigned short unit_used;		/* ?g?p???j?b?g?? */
+	unsigned short unit_unfill;		/* ???g?p???j?b?g??? */
+	unsigned short unit_maxused;	/* ?g?p???j?b?g??o??l */
 	char   data[ BLOCK_DATA_SIZE ];
 };
 
@@ -188,7 +188,7 @@ struct unit_head {
 static struct block *hash_unfill[BLOCK_DATA_COUNT1 + BLOCK_DATA_COUNT2 + 1];
 static struct block *block_first, *block_last, block_head;
 
-/* ÉÅÉÇÉäÇégÇ¢âÒÇπÇ»Ç¢óÃàÊópÇÃÉfÅ[É^ */
+/* ?????????g????????®??p?~f?[?^ */
 struct unit_head_large {
 	size_t                  size;
 	struct unit_head_large *prev;
@@ -212,7 +212,7 @@ static unsigned short size2hash( size_t size ) {
 		return ( unsigned short )( size - BLOCK_DATA_SIZE1 + BLOCK_ALIGNMENT2 - 1 ) / BLOCK_ALIGNMENT2
 			   + BLOCK_DATA_COUNT1;
 	} else {
-		return 0xffff;	// ÉuÉçÉbÉNí∑Çí¥Ç¶ÇÈèÍçáÇÕ hash Ç…ÇµÇ»Ç¢
+		return 0xffff;	// ?u???b?N???????????? hash ??????
 	}
 }
 
@@ -240,8 +240,8 @@ void *_mmalloc( size_t size, const char *file, int line, const char *func ) {
 
 	memmgr_usage_bytes += size;
 
-	/* ÉuÉçÉbÉNí∑Çí¥Ç¶ÇÈóÃàÊÇÃämï€Ç…ÇÕÅAmalloc() ÇópÇ¢ÇÈ */
-	/* ÇªÇÃç€ÅAunit_head.block Ç… NULL Çë„ì¸ÇµÇƒãÊï Ç∑ÇÈ */
+	/* ?u???b?N?????????®??∞m????Amalloc() ???p???? */
+	/* ?????Aunit_head.block ?? NULL ?????????c?????? */
 	if( hash2size( size_hash ) > BLOCK_DATA_SIZE - sizeof( struct unit_head ) ) {
 		struct unit_head_large *p = ( struct unit_head_large * )MALLOC( sizeof( struct unit_head_large ) + size, file, line, func );
 
@@ -269,7 +269,7 @@ void *_mmalloc( size_t size, const char *file, int line, const char *func ) {
 		}
 	}
 
-	/* ìØàÍÉTÉCÉYÇÃÉuÉçÉbÉNÇ™ämï€Ç≥ÇÍÇƒÇ¢Ç»Ç¢éûÅAêVÇΩÇ…ämï€Ç∑ÇÈ */
+	/* ?????T?C?Y?~u???b?N???m??????A???????A?V????m????? */
 	if( hash_unfill[size_hash] ) {
 		block = hash_unfill[size_hash];
 	} else {
@@ -277,7 +277,7 @@ void *_mmalloc( size_t size, const char *file, int line, const char *func ) {
 	}
 
 	if( block->unit_unfill == 0xFFFF ) {
-		// freeçœÇ›óÃàÊÇ™écÇ¡ÇƒÇ¢Ç»Ç¢
+		// free???®??c???A????
 		memmgr_assert( block->unit_used <  block->unit_count );
 		memmgr_assert( block->unit_used == block->unit_maxused );
 		head = block2unit( block, block->unit_maxused );
@@ -290,7 +290,7 @@ void *_mmalloc( size_t size, const char *file, int line, const char *func ) {
 	}
 
 	if( block->unit_unfill == 0xFFFF && block->unit_maxused >= block->unit_count ) {
-		// ÉÜÉjÉbÉgÇégÇ¢â ÇΩÇµÇΩÇÃÇ≈ÅAunfillÉäÉXÉgÇ©ÇÁçÌèú
+		// ???j?b?g???g??????????^LAunfill???X?g??????
 		if( block->unfill_prev == &block_head ) {
 			hash_unfill[ size_hash ] = block->unfill_next;
 		} else {
@@ -351,10 +351,10 @@ void *_mrealloc( void *memblock, size_t size, const char *file, int line, const 
 	}
 
 	if( old_size > size ) {
-		// ÉTÉCÉYèkè¨ -> ÇªÇÃÇ‹Ç‹ï‘Ç∑ÅiéËî≤Ç´Åj
+		// ?T?C?Y?k?? -> ???^?????i?????j
 		return memblock;
 	}  else {
-		// ÉTÉCÉYägëÂ
+		// ?T?C?Y?g??
 		void *p = _mmalloc( size, file, line, func );
 
 		if( p != NULL ) {
@@ -386,7 +386,7 @@ void _mfree( void *ptr, const char *file, int line, const char *func ) {
 	head = ( struct unit_head * )( ( char * )ptr - sizeof( struct unit_head ) + sizeof( long ) );
 
 	if( head->size == 0 ) {
-		/* malloc() Ç≈íºÇ…ämï€Ç≥ÇÍÇΩóÃàÊ */
+		/* malloc() ?å???m??????®? */
 		struct unit_head_large *head_large = ( struct unit_head_large * )( ( char * )ptr - sizeof( struct unit_head_large ) + sizeof( long ) );
 
 		if(
@@ -414,7 +414,7 @@ void _mfree( void *ptr, const char *file, int line, const char *func ) {
 			FREE( head_large, file, line, func );
 		}
 	} else {
-		/* ÉÜÉjÉbÉgâï˙ */
+		/* ???j?b?g???? */
 		struct block *block = head->block;
 
 		if( ( char * )head - ( char * )block > sizeof( struct block ) ) {
@@ -434,11 +434,11 @@ void _mfree( void *ptr, const char *file, int line, const char *func ) {
 			memmgr_assert( block->unit_used > 0 );
 
 			if( --block->unit_used == 0 ) {
-				/* ÉuÉçÉbÉNÇÃâï˙ */
+				/* ?u???b?N????? */
 				block_free( block );
 			} else {
 				if( block->unfill_prev == NULL ) {
-					// unfill ÉäÉXÉgÇ…í«â¡
+					// unfill ???X?g????
 					if( hash_unfill[ block->unit_hash ] ) {
 						hash_unfill[ block->unit_hash ]->unfill_prev = block;
 					}
@@ -455,17 +455,17 @@ void _mfree( void *ptr, const char *file, int line, const char *func ) {
 	}
 }
 
-/* ÉuÉçÉbÉNÇämï€Ç∑ÇÈ */
+/* ?u???b?N???m????? */
 static struct block *block_malloc( unsigned short hash ) {
 	int i;
 	struct block *p;
 
 	if( hash_unfill[0] != NULL ) {
-		/* ÉuÉçÉbÉNópÇÃóÃàÊÇÕämï€çœÇ› */
+		/* ?u???b?N?p??®???m???? */
 		p = hash_unfill[0];
 		hash_unfill[0] = hash_unfill[0]->unfill_next;
 	} else {
-		/* ÉuÉçÉbÉNópÇÃóÃàÊÇêVÇΩÇ…ämï€Ç∑ÇÈ */
+		/* ?u???b?N?p??®????V????m????? */
 		p = ( struct block * )MALLOC( sizeof( struct block ) * ( BLOCK_ALLOC ), __FILE__, __LINE__, __func__ );
 
 		if( p == NULL ) {
@@ -474,7 +474,7 @@ static struct block *block_malloc( unsigned short hash ) {
 		}
 
 		if( block_first == NULL ) {
-			/* èââÒämï€ */
+			/* ?????m?? */
 			block_first = p;
 		} else {
 			block_last->block_next = p;
@@ -483,10 +483,10 @@ static struct block *block_malloc( unsigned short hash ) {
 		block_last = &p[BLOCK_ALLOC - 1];
 		block_last->block_next = NULL;
 
-		/* ÉuÉçÉbÉNÇòAåãÇ≥ÇπÇÈ */
+		/* ?u???b?N???A???????? */
 		for( i = 0; i < BLOCK_ALLOC; i++ ) {
 			if( i != 0 ) {
-				// p[0] ÇÕÇ±ÇÍÇ©ÇÁégÇ§ÇÃÇ≈ÉäÉìÉNÇ…ÇÕâ¡Ç¶Ç»Ç¢
+				// p[0] ????????g???^N????N?????????
 				p[i].unfill_next = hash_unfill[0];
 				hash_unfill[0]   = &p[i];
 				p[i].unfill_prev = NULL;
@@ -499,7 +499,7 @@ static struct block *block_malloc( unsigned short hash ) {
 		}
 	}
 
-	// unfill Ç…í«â¡
+	// unfill ????
 	memmgr_assert( hash_unfill[ hash ] == NULL );
 	hash_unfill[ hash ] = p;
 	p->unfill_prev  = &block_head;
@@ -671,7 +671,7 @@ static void memmgr_final ( void ) {
 static void memmgr_init ( void ) {
 #ifdef LOG_MEMMGR
 	sprintf( memmer_logfile, "log/%s.leaks", SERVER_NAME );
-	ShowStatus( "Gerenciador de memÛria inicializado: "CL_WHITE"%s"CL_RESET"\n", memmer_logfile );
+	ShowStatus( "Gerenciador de mem?ria inicializado: "CL_WHITE"%s"CL_RESET"\n", memmer_logfile );
 	memset( hash_unfill, 0, sizeof( hash_unfill ) );
 #endif /* LOG_MEMMGR */
 }
