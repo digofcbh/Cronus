@@ -2182,592 +2182,559 @@ void mob_damage (struct mob_data *md, struct block_list *src, int damage)
  * Signals death of mob.
  * type&1 -> no drops, type&2 -> no exp
  *------------------------------------------*/
-int mob_dead (struct mob_data *md, struct block_list *src, int type)
+int mob_dead(struct mob_data *md, struct block_list *src, int type)
 {
-	struct status_data *status;
-	struct map_session_data *sd = NULL, *tmpsd[DAMAGELOG_SIZE];
-	struct map_session_data *mvp_sd = NULL, *second_sd = NULL, *third_sd = NULL;
-	struct {
-		struct party_data *p;
-		int id, zeny;
-		unsigned int base_exp, job_exp;
-	} pt[DAMAGELOG_SIZE];
-	int i, temp, count, pnum = 0, m = md->bl.m;
-	int dmgbltypes = 0;  // bitfield of all bl types, that caused damage to the mob and are elligible for exp distribution
-	unsigned int mvp_damage, tick = gettick();
-	bool rebirth, homkillonly;
-	status = &md->status;
+    struct status_data *status;
+    struct map_session_data *sd = NULL, *tmpsd[DAMAGELOG_SIZE];
+    struct map_session_data *mvp_sd = NULL, *second_sd = NULL, *third_sd = NULL;
 
-	if (src && src->type == BL_PC) {
-		sd = (struct map_session_data *) src;
-		mvp_sd = sd;
-	}
+    struct {
+        struct party_data *p;
+        int id,zeny;
+        unsigned int base_exp,job_exp;
+    } pt[DAMAGELOG_SIZE];
+    int i,temp,count,pnum=0,m=md->bl.m;
+    int dmgbltypes = 0;  // bitfield of all bl types, that caused damage to the mob and are elligible for exp distribution
+    unsigned int mvp_damage, tick = gettick();
+    bool rebirth, homkillonly;
 
-	if (md->guardian_data && md->guardian_data->number >= 0 && md->guardian_data->number < MAX_GUARDIANS)
-		guild_castledatasave (md->guardian_data->castle->castle_id, 10 + md->guardian_data->number, 0);
+    status = &md->status;
 
-	if (src) {
-		// Use Dead skill only if not killed by Script or Command
-		md->state.skillstate = MSS_DEAD;
-		mobskill_use (md, tick, -1);
-	}
+    if (src && src->type == BL_PC) {
+        sd = (struct map_session_data *)src;
+        mvp_sd = sd;
+    }
 
-	map_freeblock_lock();
-	memset (pt, 0, sizeof (pt));
+    if (md->guardian_data && md->guardian_data->number >= 0 && md->guardian_data->number < MAX_GUARDIANS)
+        guild_castledatasave(md->guardian_data->castle->castle_id, 10+md->guardian_data->number,0);
 
-	if (src && src->type == BL_MOB)
-		mob_unlocktarget ( (struct mob_data *) src, tick);
+    if (src) {
+        // Use Dead skill only if not killed by Script or Command
+        md->state.skillstate = MSS_DEAD;
+        mobskill_use(md,tick,-1);
+    }
 
-	// filter out entries not eligible for exp distribution
-	memset (tmpsd, 0, sizeof (tmpsd));
+    map_freeblock_lock();
 
-	for (i = 0, count = 0, mvp_damage = 0; i < DAMAGELOG_SIZE && md->dmglog[i].id; i++) {
-		struct map_session_data *tsd = map_charid2sd (md->dmglog[i].id);
+    memset(pt,0,sizeof(pt));
 
-		if (tsd == NULL)
-			continue; // skip empty entries
+    if (src && src->type == BL_MOB)
+        mob_unlocktarget((struct mob_data *)src,tick);
 
-		if (tsd->bl.m != m)
-			continue; // skip players not on this map
+    // filter out entries not eligible for exp distribution
+    memset(tmpsd,0,sizeof(tmpsd));
+    for (i = 0, count = 0, mvp_damage = 0; i < DAMAGELOG_SIZE && md->dmglog[i].id; i++) {
+        struct map_session_data *tsd = map_charid2sd(md->dmglog[i].id);
 
-		count++; //Only logged into same map chars are counted for the total.
+        if (tsd == NULL)
+            continue; // skip empty entries
+        if (tsd->bl.m != m)
+            continue; // skip players not on this map
+        count++; //Only logged into same map chars are counted for the total.
+        if (pc_isdead(tsd))
+            continue; // skip dead players
+        if (md->dmglog[i].flag == MDLF_HOMUN && !merc_is_hom_active(tsd->hd))
+            continue; // skip homunc's share if inactive
+        if (md->dmglog[i].flag == MDLF_PET && (!tsd->status.pet_id || !tsd->pd))
+            continue; // skip pet's share if inactive
 
-		if (pc_isdead (tsd))
-			continue; // skip dead players
+        if (md->dmglog[i].dmg > mvp_damage) {
+            third_sd = second_sd;
+            second_sd = mvp_sd;
+            mvp_sd = tsd;
+            mvp_damage = md->dmglog[i].dmg;
+        }
 
-		if (md->dmglog[i].flag == MDLF_HOMUN && !merc_is_hom_active (tsd->hd))
-			continue; // skip homunc's share if inactive
+        tmpsd[i] = tsd; // record as valid damage-log entry
 
-		if (md->dmglog[i].flag == MDLF_PET && (!tsd->status.pet_id || !tsd->pd))
-			continue; // skip pet's share if inactive
+        switch (md->dmglog[i].flag) {
+            case MDLF_NORMAL:
+                dmgbltypes|= BL_PC;
+                break;
+            case MDLF_HOMUN:
+                dmgbltypes|= BL_HOM;
+                break;
+            case MDLF_PET:
+                dmgbltypes|= BL_PET;
+                break;
+        }
+    }
 
-		if (md->dmglog[i].dmg > mvp_damage) {
-			third_sd = second_sd;
-			second_sd = mvp_sd;
-			mvp_sd = tsd;
-			mvp_damage = md->dmglog[i].dmg;
-		}
+    // determines, if the monster was killed by homunculus' damage only
+    homkillonly = (bool)((dmgbltypes&BL_HOM) && !(dmgbltypes&~BL_HOM));
 
-		tmpsd[i] = tsd; // record as valid damage-log entry
+    if (!battle_config.exp_calc_type && count > 1) {
+        //Apply first-attacker 200% exp share bonus
+        //TODO: Determine if this should go before calculating the MVP player instead of after.
+        if (UINT_MAX - md->dmglog[0].dmg > md->tdmg) {
+            md->tdmg += md->dmglog[0].dmg;
+            md->dmglog[0].dmg<<=1;
+        } else {
+            md->dmglog[0].dmg+= UINT_MAX - md->tdmg;
+            md->tdmg = UINT_MAX;
+        }
+    }
 
-		switch (md->dmglog[i].flag) {
-			case MDLF_NORMAL: dmgbltypes |= BL_PC;  break;
+    if (!(type&2) && //No exp
+        (!map[m].flag.pvp || battle_config.pvp_exp) && //Pvp no exp rule [MouseJstr]
+        (!md->master_id || !md->special_state.ai) && //Only player-summoned mobs do not give exp. [Skotlex]
+        (!map[m].flag.nobaseexp || !map[m].flag.nojobexp) //Gives Exp
+       ) { //Experience calculation.
+        int bonus = 100; //Bonus on top of your share (common to all attackers).
+        if (md->sc.data[SC_RICHMANKIM])
+            bonus += md->sc.data[SC_RICHMANKIM]->val2;
+        if (sd) {
+            temp = status_get_class(&md->bl);
+            if (sd->sc.data[SC_MIRACLE]) i = 2; //All mobs are Star Targets
+            else
+                ARR_FIND(0, MAX_PC_FEELHATE, i, temp == sd->hate_mob[i] &&
+                         (battle_config.allow_skill_without_day || sg_info[i].day_func()));
+            if (i<MAX_PC_FEELHATE && (temp=pc_checkskill(sd,sg_info[i].bless_id)))
+                bonus += (i==2?20:10)*temp;
+        }
+        if (battle_config.mobs_level_up && md->level > md->db->lv) // [Valaris]
+            bonus += (md->level-md->db->lv)*battle_config.mobs_level_up_exp_rate;
 
-			case MDLF_HOMUN:  dmgbltypes |= BL_HOM; break;
+        for (i = 0; i < DAMAGELOG_SIZE && md->dmglog[i].id; i++) {
+            int flag=1,zeny=0;
+            unsigned int base_exp, job_exp;
+            double per; //Your share of the mob's exp
 
-			case MDLF_PET:    dmgbltypes |= BL_PET; break;
-		}
-	}
+            if (!tmpsd[i]) continue;
 
-	// determines, if the monster was killed by homunculus' damage only
-	homkillonly = (bool) ( (dmgbltypes & BL_HOM) && ! (dmgbltypes&~BL_HOM));
+            if (!battle_config.exp_calc_type && md->tdmg)
+                //jAthena's exp formula based on total damage.
+                per = (double)md->dmglog[i].dmg/(double)md->tdmg;
+            else {
+                //eAthena's exp formula based on max hp.
+                per = (double)md->dmglog[i].dmg/(double)status->max_hp;
+                if (per > 2) per = 2; // prevents unlimited exp gain
+            }
 
-	if (!battle_config.exp_calc_type && count > 1) {
-		//Apply first-attacker 200% exp share bonus
-		//TODO: Determine if this should go before calculating the MVP player instead of after.
-		if (UINT_MAX - md->dmglog[0].dmg > md->tdmg) {
-			md->tdmg += md->dmglog[0].dmg;
-			md->dmglog[0].dmg <<= 1;
-		} else {
-			md->dmglog[0].dmg += UINT_MAX - md->tdmg;
-			md->tdmg = UINT_MAX;
-		}
-	}
+            if (count>1 && battle_config.exp_bonus_attacker) {
+                //Exp bonus per additional attacker.
+                if (count > battle_config.exp_bonus_max_attacker)
+                    count = battle_config.exp_bonus_max_attacker;
+                per += per*((count-1)*battle_config.exp_bonus_attacker)/100.;
+            }
 
-	if (! (type & 2) && //No exp
-			(!map[m].flag.pvp || battle_config.pvp_exp) && //Pvp no exp rule [MouseJstr]
-			(!md->master_id || !md->special_state.ai) && //Only player-summoned mobs do not give exp. [Skotlex]
-			(!map[m].flag.nobaseexp || !map[m].flag.nojobexp) //Gives Exp
-	   ) { //Experience calculation.
-		int bonus = 100; //Bonus on top of your share (common to all attackers).
+            // change experience for different sized monsters [Valaris]
+            if (battle_config.mob_size_influence) {
+                if (md->special_state.size == SZ_MEDIUM)
+                    per /= 2.;
+                else if (md->special_state.size == SZ_BIG)
+                    per *= 2.;
+            }
 
-		if (md->sc.data[SC_RICHMANKIM])
-			bonus += md->sc.data[SC_RICHMANKIM]->val2;
+            if (md->dmglog[i].flag == MDLF_PET)
+                per *= battle_config.pet_attack_exp_rate/100.;
 
-		if (sd) {
-			temp = status_get_class (&md->bl);
+            if (battle_config.zeny_from_mobs && md->level) {
+                // zeny calculation moblv + random moblv [Valaris]
+                zeny=(int)((md->level+rnd()%md->level)*per*bonus/100.);
+                if (md->db->mexp > 0)
+                    zeny*=rnd()%250;
+            }
 
-			if (sd->sc.data[SC_MIRACLE]) i = 2; //All mobs are Star Targets
-			else
-				ARR_FIND (0, MAX_PC_FEELHATE, i, temp == sd->hate_mob[i] &&
-						  (battle_config.allow_skill_without_day || sg_info[i].day_func()));
+            if (map[m].flag.nobaseexp || !md->db->base_exp)
+                base_exp = 0;
+            else
+                base_exp = (unsigned int)cap_value(md->db->base_exp * per * bonus/100. * map[m].bexp/100., 1, UINT_MAX);
 
-			if (i < MAX_PC_FEELHATE && (temp = pc_checkskill (sd, sg_info[i].bless_id)))
-				bonus += (i == 2 ? 20 : 10) * temp;
-		}
+            if (map[m].flag.nojobexp || !md->db->job_exp || md->dmglog[i].flag == MDLF_HOMUN) //Homun earned job-exp is always lost.
+                job_exp = 0;
+            else
+                job_exp = (unsigned int)cap_value(md->db->job_exp * per * bonus/100. * map[m].jexp/100., 1, UINT_MAX);
 
-		if (battle_config.mobs_level_up && md->level > md->db->lv) // [Valaris]
-			bonus += (md->level - md->db->lv) * battle_config.mobs_level_up_exp_rate;
+            if ((temp = tmpsd[i]->status.party_id)>0 /*&& !md->dmglog[i].flag == MDLF_HOMUN*/) { //Homun-done damage (flag 1) is given to party
+                int j;
+                for (j=0; j<pnum && pt[j].id!=temp; j++); //Locate party.
 
-		for (i = 0; i < DAMAGELOG_SIZE && md->dmglog[i].id; i++) {
-			int flag = 1, zeny = 0;
-			unsigned int base_exp, job_exp;
-			double per; //Your share of the mob's exp
+                if (j==pnum) { //Possibly add party.
+                    pt[pnum].p = party_search(temp);
+                    if (pt[pnum].p && pt[pnum].p->party.exp) {
+                        pt[pnum].id=temp;
+                        pt[pnum].base_exp=base_exp;
+                        pt[pnum].job_exp=job_exp;
+                        pt[pnum].zeny=zeny; // zeny share [Valaris]
+                        pnum++;
+                        flag=0;
+                    }
+                } else { //Add to total
+                    if (pt[j].base_exp > UINT_MAX - base_exp)
+                        pt[j].base_exp=UINT_MAX;
+                    else
+                        pt[j].base_exp+=base_exp;
 
-			if (!tmpsd[i]) continue;
+                    if (pt[j].job_exp > UINT_MAX - job_exp)
+                        pt[j].job_exp=UINT_MAX;
+                    else
+                        pt[j].job_exp+=job_exp;
 
-			if (!battle_config.exp_calc_type && md->tdmg)
-				//jAthena's exp formula based on total damage.
-				per = (double) md->dmglog[i].dmg / (double) md->tdmg;
-			else {
-				//eAthena's exp formula based on max hp.
-				per = (double) md->dmglog[i].dmg / (double) status->max_hp;
-
-				if (per > 2) per = 2; // prevents unlimited exp gain
-			}
-
-			if (count > 1 && battle_config.exp_bonus_attacker) {
-				//Exp bonus per additional attacker.
-				if (count > battle_config.exp_bonus_max_attacker)
-					count = battle_config.exp_bonus_max_attacker;
-
-				per += per * ( (count - 1) * battle_config.exp_bonus_attacker) / 100.;
-			}
-
-			// change experience for different sized monsters [Valaris]
-			if (battle_config.mob_size_influence) {
-				if (md->special_state.size == SZ_MEDIUM)
-					per /= 2.;
-				else if (md->special_state.size == SZ_BIG)
-					per *= 2.;
-			}
-
-			if (md->dmglog[i].flag == MDLF_PET)
-				per *= battle_config.pet_attack_exp_rate / 100.;
-
-			if (battle_config.zeny_from_mobs && md->level) {
-				// zeny calculation moblv + random moblv [Valaris]
-				zeny = (int) ( (md->level + rnd() % md->level) * per * bonus / 100.);
-
-				if (md->db->mexp > 0)
-					zeny *= rnd() % 250;
-			}
-
-			if (map[m].flag.nobaseexp || !md->db->base_exp)
-				base_exp = 0;
-			else
-				base_exp = (unsigned int) cap_value (md->db->base_exp * per * bonus / 100. * map[m].bexp / 100., 1, UINT_MAX);
-
-			if (map[m].flag.nojobexp || !md->db->job_exp || md->dmglog[i].flag == MDLF_HOMUN) //Homun earned job-exp is always lost.
-				job_exp = 0;
-			else
-				job_exp = (unsigned int) cap_value (md->db->job_exp * per * bonus / 100. * map[m].jexp / 100., 1, UINT_MAX);
-
-			if ( (temp = tmpsd[i]->status.party_id) > 0 /*&& !md->dmglog[i].flag == MDLF_HOMUN*/) { //Homun-done damage (flag 1) is given to party
-				{
-					int j;
-
-					for (j = 0; j < pnum && pt[j].id != temp; j++); //Locate party.
-
-					if (j == pnum) { //Possibly add party.
-						pt[pnum].p = party_search (temp);
-
-						if (pt[pnum].p && pt[pnum].p->party.exp) {
-							pt[pnum].id = temp;
-							pt[pnum].base_exp = base_exp;
-							pt[pnum].job_exp = job_exp;
-							pt[pnum].zeny = zeny; // zeny share [Valaris]
-							pnum++;
-							flag = 0;
-						}
-					} else {	//Add to total
-						if (pt[j].base_exp > UINT_MAX - base_exp)
-							pt[j].base_exp = UINT_MAX;
-						else
-							pt[j].base_exp += base_exp;
-
-						if (pt[j].job_exp > UINT_MAX - job_exp)
-							pt[j].job_exp = UINT_MAX;
-						else
-							pt[j].job_exp += job_exp;
-
-						pt[j].zeny += zeny; // zeny share [Valaris]
-						flag = 0;
-					}
-				}
-
-				if (flag) {
-					if (base_exp && md->dmglog[i].flag == MDLF_HOMUN) //tmpsd[i] is null if it has no homunc.
-						merc_hom_gainexp (tmpsd[i]->hd, base_exp);
-
-					if (base_exp || job_exp) {
-						if (md->dmglog[i].flag != MDLF_PET || battle_config.pet_attack_exp_to_master) {
+                    pt[j].zeny+=zeny;  // zeny share [Valaris]
+                    flag=0;
+                }
+            }
+            if (flag) {
+                if (base_exp && md->dmglog[i].flag == MDLF_HOMUN) //tmpsd[i] is null if it has no homunc.
+                    merc_hom_gainexp(tmpsd[i]->hd, base_exp);
+                if (base_exp || job_exp) {
+                    if (md->dmglog[i].flag != MDLF_PET || battle_config.pet_attack_exp_to_master) {
 #ifdef RENEWAL_EXP
-							int rate = pc_level_penalty_mod (tmpsd[i], md, 1);
-							base_exp = (unsigned int) cap_value (base_exp * rate / 100, 1, UINT_MAX);
-							job_exp = (unsigned int) cap_value (job_exp * rate / 100, 1, UINT_MAX);
+                        int rate = pc_level_penalty_mod(tmpsd[i], md, 1);
+                        base_exp = (unsigned int)cap_value(base_exp * rate / 100, 1, UINT_MAX);
+                        job_exp = (unsigned int)cap_value(job_exp * rate / 100, 1, UINT_MAX);
 #endif
-							pc_gainexp (tmpsd[i], &md->bl, base_exp, job_exp, false);
-						}
-					}
+                        pc_gainexp(tmpsd[i], &md->bl, base_exp, job_exp, false);
+                    }
+                }
+                if (zeny) // zeny from mobs [Valaris]
+                    pc_getzeny(tmpsd[i], zeny, LOG_TYPE_PICKDROP_MONSTER, NULL);
+            }
+        }
 
-					if (zeny) // zeny from mobs [Valaris]
-						pc_getzeny (tmpsd[i], zeny, LOG_TYPE_PICKDROP_MONSTER, NULL);
-				}
-			}
+        for (i=0; i<pnum; i++) //Party share.
+            party_exp_share(pt[i].p, &md->bl, pt[i].base_exp,pt[i].job_exp,pt[i].zeny);
 
-			for (i = 0; i < pnum; i++) //Party share.
-				party_exp_share (pt[i].p, &md->bl, pt[i].base_exp, pt[i].job_exp, pt[i].zeny);
-		} //End EXP giving.
+    } //End EXP giving.
 
-		if (! (type & 1) && !map[m].flag.nomobloot && !md->state.rebirth && (
-					!md->special_state.ai || //Non special mob
-					battle_config.alchemist_summon_reward == 2 || //All summoned give drops
-					(md->special_state.ai == 2 && battle_config.alchemist_summon_reward == 1) //Marine Sphere Drops items.
-				)) {
-			// Item Drop
-			struct item_drop_list *dlist = ers_alloc (item_drop_list_ers, struct item_drop_list);
-			struct item_drop *ditem;
-			struct item_data *it = NULL;
-			int drop_rate;
+    if (!(type&1) && !map[m].flag.nomobloot && !md->state.rebirth && (
+            !md->special_state.ai || //Non special mob
+            battle_config.alchemist_summon_reward == 2 || //All summoned give drops
+            (md->special_state.ai==2 && battle_config.alchemist_summon_reward == 1) //Marine Sphere Drops items.
+        )) {
+        // Item Drop
+        struct item_drop_list *dlist = ers_alloc(item_drop_list_ers, struct item_drop_list);
+        struct item_drop *ditem;
+        struct item_data *it = NULL;
+        int drop_rate;
 #ifdef RENEWAL_DROP
-			int drop_modifier = mvp_sd ? pc_level_penalty_mod (mvp_sd, md, 2) :
-								second_sd ? pc_level_penalty_mod (second_sd, md, 2) :
-								third_sd  ? pc_level_penalty_mod (third_sd, md, 2) :
-								100;/* no player was attached, we dont use any modifier (100 = rates are not touched) */
+        int drop_modifier = mvp_sd    ? pc_level_penalty_mod(mvp_sd, md, 2)   :
+                            second_sd ? pc_level_penalty_mod(second_sd, md, 2):
+                            third_sd  ? pc_level_penalty_mod(third_sd, md, 2) :
+                            100;/* no player was attached, we dont use any modifier (100 = rates are not touched) */
 #endif
-			dlist->m = md->bl.m;
-			dlist->x = md->bl.x;
-			dlist->y = md->bl.y;
-			dlist->first_charid = (mvp_sd ? mvp_sd->status.char_id : 0);
-			dlist->second_charid = (second_sd ? second_sd->status.char_id : 0);
-			dlist->third_charid = (third_sd ? third_sd->status.char_id : 0);
-			dlist->item = NULL;
+        dlist->m = md->bl.m;
+        dlist->x = md->bl.x;
+        dlist->y = md->bl.y;
+        dlist->first_charid = (mvp_sd ? mvp_sd->status.char_id : 0);
+        dlist->second_charid = (second_sd ? second_sd->status.char_id : 0);
+        dlist->third_charid = (third_sd ? third_sd->status.char_id : 0);
+        dlist->item = NULL;
 
-			for (i = 0; i < MAX_MOB_DROP; i++) {
-				if (md->db->dropitem[i].nameid <= 0)
-					continue;
+        for (i = 0; i < MAX_MOB_DROP; i++) {
+            if (md->db->dropitem[i].nameid <= 0)
+                continue;
+            if (!(it = itemdb_exists(md->db->dropitem[i].nameid)))
+                continue;
+            drop_rate = md->db->dropitem[i].p;
+            if (drop_rate <= 0) {
+                if (battle_config.drop_rate0item)
+                    continue;
+                drop_rate = 1;
+            }
 
-				if (! (it = itemdb_exists (md->db->dropitem[i].nameid)))
-					continue;
+            // change drops depending on monsters size [Valaris]
+            if (battle_config.mob_size_influence) {
+                if (md->special_state.size == SZ_MEDIUM && drop_rate >= 2)
+                    drop_rate /= 2;
+                else if (md->special_state.size == SZ_BIG)
+                    drop_rate *= 2;
+            }
 
-				drop_rate = md->db->dropitem[i].p;
+            if (src) {
+                //Drops affected by luk as a fixed increase [Valaris]
+                if (battle_config.drops_by_luk)
+                    drop_rate += status_get_luk(src)*battle_config.drops_by_luk/100;
+                //Drops affected by luk as a % increase [Skotlex]
+                if (battle_config.drops_by_luk2)
+                    drop_rate += (int)(0.5+drop_rate*status_get_luk(src)*battle_config.drops_by_luk2/10000.);
+            }
+            if (sd && battle_config.pk_mode &&
+                (int)(md->level - sd->status.base_level) >= 20)
+                drop_rate = (int)(drop_rate*1.25); // pk_mode increase drops if 20 level difference [Valaris]
 
-				if (drop_rate <= 0) {
-					if (battle_config.drop_rate0item)
-						continue;
-
-					drop_rate = 1;
-				}
-
-				// change drops depending on monsters size [Valaris]
-				if (battle_config.mob_size_influence) {
-					if (md->special_state.size == SZ_MEDIUM && drop_rate >= 2)
-						drop_rate /= 2;
-					else if (md->special_state.size == SZ_BIG)
-						drop_rate *= 2;
-				}
-
-				if (src) {
-					//Drops affected by luk as a fixed increase [Valaris]
-					if (battle_config.drops_by_luk)
-						drop_rate += status_get_luk (src) * battle_config.drops_by_luk / 100;
-
-					//Drops affected by luk as a % increase [Skotlex]
-					if (battle_config.drops_by_luk2)
-						drop_rate += (int) (0.5 + drop_rate * status_get_luk (src) * battle_config.drops_by_luk2 / 10000.);
-				}
-
-				if (sd && battle_config.pk_mode &&
-						(int) (md->level - sd->status.base_level) >= 20)
-					drop_rate = (int) (drop_rate * 1.25); // pk_mode increase drops if 20 level difference [Valaris]
-
-				// Increase drop rate if user has SC_ITEMBOOST
-				if (sd && sd->sc.data[SC_ITEMBOOST]) // now rig the drop rate to never be over 90% unless it is originally >90%.
-					drop_rate = max (drop_rate, cap_value ( (int) (0.5 + drop_rate * (sd->sc.data[SC_ITEMBOOST]->val1) / 100.), 0, 9000));
-
+            // Increase drop rate if user has SC_ITEMBOOST
+            if (sd && sd->sc.data[SC_ITEMBOOST]) // now rig the drop rate to never be over 90% unless it is originally >90%.
+                drop_rate = max(drop_rate,cap_value((int)(0.5+drop_rate*(sd->sc.data[SC_ITEMBOOST]->val1)/100.),0,9000));
 #ifdef RENEWAL_DROP
-
-				if (drop_modifier != 100) {
-					drop_rate = drop_rate * drop_modifier / 100;
-
-					if (drop_rate < 1)
-						drop_rate = 1;
-				}
-
+            if (drop_modifier != 100) {
+                drop_rate = drop_rate * drop_modifier / 100;
+                if (drop_rate < 1)
+                    drop_rate = 1;
+            }
 #endif
+            // attempt to drop the item
+            if (rnd() % 10000 >= drop_rate)
+                continue;
 
-				// attempt to drop the item
-				if (rnd() % 10000 >= drop_rate)
-					continue;
+            if (mvp_sd && it->type == IT_PETEGG) {
+                pet_create_egg(mvp_sd, md->db->dropitem[i].nameid);
+                continue;
+            }
 
-				if (mvp_sd && it->type == IT_PETEGG) {
-					pet_create_egg (mvp_sd, md->db->dropitem[i].nameid);
-					continue;
-				}
+            ditem = mob_setdropitem(md->db->dropitem[i].nameid, 1);
 
-				ditem = mob_setdropitem (md->db->dropitem[i].nameid, 1);
+            //A Rare Drop Global Announce by Lupus
+            if (mvp_sd && drop_rate <= battle_config.rare_drop_announce) {
+                char message[128];
+                sprintf(message, msg_txt(541), mvp_sd->status.name, md->name, it->jname, (float)drop_rate/100);
+                //MSG: "'%s' won %s's %s (chance: %0.02f%%)"
+                intif_broadcast(message,strlen(message)+1,0);
+            }
+            // Announce first, or else ditem will be freed. [Lance]
+            // By popular demand, use base drop rate for autoloot code. [Skotlex]
+            mob_item_drop(md, dlist, ditem, 0, md->db->dropitem[i].p, homkillonly);
+        }
 
-				//A Rare Drop Global Announce by Lupus
-				if (mvp_sd && drop_rate <= battle_config.rare_drop_announce) {
-					char message[128];
-					sprintf (message, msg_txt (541), mvp_sd->status.name, md->name, it->jname, (float) drop_rate / 100);
-					//MSG: "'%s' won %s's %s (chance: %0.02f%%)"
-					intif_broadcast (message, strlen (message) + 1, 0);
-				}
+        // Ore Discovery [Celest]
+        if (sd == mvp_sd && pc_checkskill(sd,BS_FINDINGORE)>0 && battle_config.finding_ore_rate/10 >= rnd()%10000) {
+            ditem = mob_setdropitem(itemdb_searchrandomid(IG_FINDINGORE), 1);
+            mob_item_drop(md, dlist, ditem, 0, battle_config.finding_ore_rate/10, homkillonly);
+        }
 
-				// Announce first, or else ditem will be freed. [Lance]
-				// By popular demand, use base drop rate for autoloot code. [Skotlex]
-				mob_item_drop (md, dlist, ditem, 0, md->db->dropitem[i].p, homkillonly);
-			}
+        if (sd) {
+            // process script-granted extra drop bonuses
+            int itemid = 0;
+            for (i = 0; i < ARRAYLENGTH(sd->add_drop) && (sd->add_drop[i].id || sd->add_drop[i].group); i++) {
+                if (sd->add_drop[i].race == -md->class_ ||
+                    (sd->add_drop[i].race > 0 && (
+                         sd->add_drop[i].race & (1<<status->race) ||
+                         sd->add_drop[i].race & (1<<(status->mode&MD_BOSS?RC_BOSS:RC_NONBOSS))
+                     ))) {
+                    //check if the bonus item drop rate should be multiplied with mob level/10 [Lupus]
+                    if (sd->add_drop[i].rate < 0) {
+                        //it's negative, then it should be multiplied. e.g. for Mimic,Myst Case Cards, etc
+                        // rate = base_rate * (mob_level/10) + 1
+                        drop_rate = -sd->add_drop[i].rate*(md->level/10)+1;
+                        drop_rate = cap_value(drop_rate, battle_config.item_drop_adddrop_min, battle_config.item_drop_adddrop_max);
+                        if (drop_rate > 10000) drop_rate = 10000;
+                    } else
+                        //it's positive, then it goes as it is
+                        drop_rate = sd->add_drop[i].rate;
 
-			// Ore Discovery [Celest]
-			if (sd == mvp_sd && pc_checkskill (sd, BS_FINDINGORE) > 0 && battle_config.finding_ore_rate / 10 >= rnd() % 10000) {
-				ditem = mob_setdropitem (itemdb_searchrandomid (IG_FINDINGORE), 1);
-				mob_item_drop (md, dlist, ditem, 0, battle_config.finding_ore_rate / 10, homkillonly);
-			}
+                    if (rnd()%10000 >= drop_rate)
+                        continue;
+                    itemid = (sd->add_drop[i].id > 0) ? sd->add_drop[i].id : itemdb_searchrandomid(sd->add_drop[i].group);
+                    mob_item_drop(md, dlist, mob_setdropitem(itemid,1), 0, drop_rate, homkillonly);
+                }
+            }
 
-			if (sd) {
-				// process script-granted extra drop bonuses
-				int itemid = 0;
+            // process script-granted zeny bonus (get_zeny_num) [Skotlex]
+            if (sd->bonus.get_zeny_num && rnd()%100 < sd->bonus.get_zeny_rate) {
+                i = sd->bonus.get_zeny_num > 0 ? sd->bonus.get_zeny_num : -md->level * sd->bonus.get_zeny_num;
+                if (!i) i = 1;
+                pc_getzeny(sd, 1+rnd()%i, LOG_TYPE_PICKDROP_MONSTER, NULL);
+            }
+        }
 
-				for (i = 0; i < ARRAYLENGTH (sd->add_drop) && (sd->add_drop[i].id || sd->add_drop[i].group); i++) {
-					if (sd->add_drop[i].race == -md->class_ ||
-							(sd->add_drop[i].race > 0 && (
-								 sd->add_drop[i].race & (1 << status->race) ||
-								 sd->add_drop[i].race & (1 << (status->mode & MD_BOSS ? RC_BOSS : RC_NONBOSS))
-							 ))) {
-						//check if the bonus item drop rate should be multiplied with mob level/10 [Lupus]
-						if (sd->add_drop[i].rate < 0) {
-							//it's negative, then it should be multiplied. e.g. for Mimic,Myst Case Cards, etc
-							// rate = base_rate * (mob_level/10) + 1
-							drop_rate = -sd->add_drop[i].rate * (md->level / 10) + 1;
-							drop_rate = cap_value (drop_rate, battle_config.item_drop_adddrop_min, battle_config.item_drop_adddrop_max);
+        // process items looted by the mob
+        if (md->lootitem) {
+            for (i = 0; i < md->lootitem_count; i++)
+                mob_item_drop(md, dlist, mob_setlootitem(&md->lootitem[i]), 1, 10000, homkillonly);
+        }
+        if (dlist->item) //There are drop items.
+            add_timer(tick + (!battle_config.delay_battle_damage?500:0), mob_delay_item_drop, 0, (intptr_t)dlist);
+        else //No drops
+            ers_free(item_drop_list_ers, dlist);
+    } else if (md->lootitem && md->lootitem_count) {    //Loot MUST drop!
+        struct item_drop_list *dlist = ers_alloc(item_drop_list_ers, struct item_drop_list);
+        dlist->m = md->bl.m;
+        dlist->x = md->bl.x;
+        dlist->y = md->bl.y;
+        dlist->first_charid = (mvp_sd ? mvp_sd->status.char_id : 0);
+        dlist->second_charid = (second_sd ? second_sd->status.char_id : 0);
+        dlist->third_charid = (third_sd ? third_sd->status.char_id : 0);
+        dlist->item = NULL;
+        for (i = 0; i < md->lootitem_count; i++)
+            mob_item_drop(md, dlist, mob_setlootitem(&md->lootitem[i]), 1, 10000, homkillonly);
+        add_timer(tick + (!battle_config.delay_battle_damage?500:0), mob_delay_item_drop, 0, (intptr_t)dlist);
+    }
 
-							if (drop_rate > 10000) drop_rate = 10000;
-						} else
-							//it's positive, then it goes as it is
-							drop_rate = sd->add_drop[i].rate;
+    if (mvp_sd && md->db->mexp > 0 && !md->special_state.ai) {
+        int log_mvp[2] = {0};
+        unsigned int mexp;
+        struct item item;
+        double exp;
 
-						if (rnd() % 10000 >= drop_rate)
-							continue;
+        //mapflag: noexp check [Lorky]
+        if (map[m].flag.nobaseexp || type&2)
+            exp =1;
+        else {
+            exp = md->db->mexp;
+            if (count > 1)
+                exp += exp*(battle_config.exp_bonus_attacker*(count-1))/100.; //[Gengar]
+        }
 
-						itemid = (sd->add_drop[i].id > 0) ? sd->add_drop[i].id : itemdb_searchrandomid (sd->add_drop[i].group);
-						mob_item_drop (md, dlist, mob_setdropitem (itemid, 1), 0, drop_rate, homkillonly);
-					}
-				}
+        mexp = (unsigned int)cap_value(exp, 1, UINT_MAX);
 
-				// process script-granted zeny bonus (get_zeny_num) [Skotlex]
-				if (sd->bonus.get_zeny_num && rnd() % 100 < sd->bonus.get_zeny_rate) {
-					i = sd->bonus.get_zeny_num > 0 ? sd->bonus.get_zeny_num : -md->level * sd->bonus.get_zeny_num;
+        clif_mvp_effect(mvp_sd);
+        clif_mvp_exp(mvp_sd,mexp);
+        pc_gainexp(mvp_sd, &md->bl, mexp,0, false);
+        log_mvp[1] = mexp;
 
-					if (!i) i = 1;
+        if (!(map[m].flag.nomvploot || type&1)) {
+            /* pose them randomly in the list -- so on 100% drop servers it wont always drop the same item */
+            int mdrop_id[MAX_MVP_DROP];
+            int mdrop_p[MAX_MVP_DROP];
 
-					pc_getzeny (sd, 1 + rnd() % i, LOG_TYPE_PICKDROP_MONSTER, NULL);
-				}
-			}
+            memset(&mdrop_id,0,MAX_MVP_DROP*sizeof(int));
 
-			// process items looted by the mob
-			if (md->lootitem) {
-				for (i = 0; i < md->lootitem_count; i++)
-					mob_item_drop (md, dlist, mob_setlootitem (&md->lootitem[i]), 1, 10000, homkillonly);
-			}
+            for (i = 0; i < MAX_MVP_DROP; i++) {
+                while (1) {
+                    int va = rand()%MAX_MVP_DROP;
+                    if (!mdrop_id[va] || !md->db->mvpitem[i].nameid) {
+                        mdrop_id[va] = md->db->mvpitem[i].nameid;
+                        mdrop_p[va]  = md->db->mvpitem[i].p;
+                        break;
+                    }
+                }
+            }
 
-			if (dlist->item) //There are drop items.
-				add_timer (tick + (!battle_config.delay_battle_damage ? 500 : 0), mob_delay_item_drop, 0, (intptr_t) dlist);
-			else //No drops
-				ers_free (item_drop_list_ers, dlist);
-		} else if (md->lootitem && md->lootitem_count) {	//Loot MUST drop!
-			struct item_drop_list *dlist = ers_alloc (item_drop_list_ers, struct item_drop_list);
-			dlist->m = md->bl.m;
-			dlist->x = md->bl.x;
-			dlist->y = md->bl.y;
-			dlist->first_charid = (mvp_sd ? mvp_sd->status.char_id : 0);
-			dlist->second_charid = (second_sd ? second_sd->status.char_id : 0);
-			dlist->third_charid = (third_sd ? third_sd->status.char_id : 0);
-			dlist->item = NULL;
+            for (i = 0; i < MAX_MVP_DROP; i++) {
+                if (mdrop_id[i] <= 0)
+                    continue;
+                if (!itemdb_exists(mdrop_id[i]))
+                    continue;
 
-			for (i = 0; i < md->lootitem_count; i++)
-				mob_item_drop (md, dlist, mob_setlootitem (&md->lootitem[i]), 1, 10000, homkillonly);
+                temp = mdrop_p[i];
+                if (temp <= 0 && !battle_config.drop_rate0item)
+                    temp = 1;
+                if (temp <= rnd()%10000+1) //if ==0, then it doesn't drop
+                    continue;
 
-			add_timer (tick + (!battle_config.delay_battle_damage ? 500 : 0), mob_delay_item_drop, 0, (intptr_t) dlist);
-		}
+                memset(&item,0,sizeof(item));
+                item.nameid=mdrop_id[i];
+                item.identify= itemdb_isidentified(item.nameid);
+                clif_mvp_item(mvp_sd,item.nameid);
+                log_mvp[0] = item.nameid;
 
-		if (mvp_sd && md->db->mexp > 0 && !md->special_state.ai) {
-			int log_mvp[2] = {0};
-			unsigned int mexp;
-			struct item item;
-			double exp;
+                //A Rare MVP Drop Global Announce by Lupus
+                if (temp<=battle_config.rare_drop_announce) {
+                    struct item_data *i_data;
+                    char message[128];
+                    i_data = itemdb_exists(item.nameid);
+                    sprintf(message, msg_txt(541), mvp_sd->status.name, md->name, i_data->jname, temp/100.);
+                    //MSG: "'%s' won %s's %s (chance: %0.02f%%)"
+                    intif_broadcast(message,strlen(message)+1,0);
+                }
 
-			//mapflag: noexp check [Lorky]
-			if (map[m].flag.nobaseexp || type & 2)
-				exp = 1;
-			else {
-				exp = md->db->mexp;
+                if ((temp = pc_additem(mvp_sd,&item,1,LOG_TYPE_PICKDROP_PLAYER)) != 0) {
+                    clif_additem(mvp_sd,0,0,temp);
+                    map_addflooritem(&item,1,mvp_sd->bl.m,mvp_sd->bl.x,mvp_sd->bl.y,mvp_sd->status.char_id,(second_sd?second_sd->status.char_id:0),(third_sd?third_sd->status.char_id:0),1);
+                }
 
-				if (count > 1)
-					exp += exp * (battle_config.exp_bonus_attacker * (count - 1)) / 100.; //[Gengar]
-			}
+                //Logs items, MVP prizes [Lupus]
+                log_pick_mob(md, LOG_TYPE_MVP, -1, &item);
+                break;
+            }
+        }
 
-			mexp = (unsigned int) cap_value (exp, 1, UINT_MAX);
-			clif_mvp_effect (mvp_sd);
-			clif_mvp_exp (mvp_sd, mexp);
-			pc_gainexp (mvp_sd, &md->bl, mexp, 0, false);
-			log_mvp[1] = mexp;
+        log_mvpdrop(mvp_sd, md->class_, log_mvp);
+    }
 
-			if (! (map[m].flag.nomvploot || type & 1)) {
-				/* pose them randomly in the list -- so on 100% drop servers it wont always drop the same item */
-				int mdrop_id[MAX_MVP_DROP];
-				int mdrop_p[MAX_MVP_DROP];
-				memset (&mdrop_id, 0, MAX_MVP_DROP * sizeof (int));
+    if (type&2 && !sd && md->class_ == MOBID_EMPERIUM)
+        //Emperium destroyed by script. Discard mvp character. [Skotlex]
+        mvp_sd = NULL;
 
-				for (i = 0; i < MAX_MVP_DROP; i++) {
-					while (1) {
-						int va = rand() % MAX_MVP_DROP;
+    rebirth = (md->sc.data[SC_KAIZEL] || (md->sc.data[SC_REBIRTH] && !md->state.rebirth));
+    if (!rebirth) {  // Only trigger event on final kill
+        md->status.hp = 0; //So that npc_event invoked functions KNOW that mob is dead
+        if (src) {
+            switch (src->type) {
+                case BL_PET:
+                    sd = ((TBL_PET *)src)->msd;
+                    break;
+                case BL_HOM:
+                    sd = ((TBL_HOM *)src)->master;
+                    break;
+                case BL_MER:
+                    sd = ((TBL_MER *)src)->master;
+                    break;
+                case BL_ELEM:
+                    sd = ((TBL_ELEM *)src)->master;
+                    break;
+            }
+        }
 
-						if (!mdrop_id[va] || !md->db->mvpitem[i].nameid) {
-							mdrop_id[va] = md->db->mvpitem[i].nameid;
-							mdrop_p[va]  = md->db->mvpitem[i].p;
-							break;
-						}
-					}
-				}
+        if (sd) {
+            if (sd->mission_mobid == md->class_) { //TK_MISSION [Skotlex]
+                if (++sd->mission_count >= 100 && (temp = mob_get_random_id(0, 0xE, sd->status.base_level))) {
+                    pc_addfame(sd, 1);
+                    sd->mission_mobid = temp;
+                    pc_setglobalreg(sd,"TK_MISSION_ID", temp);
+                    sd->mission_count = 0;
+                    clif_mission_info(sd, temp, 0);
+                }
+                pc_setglobalreg(sd,"TK_MISSION_COUNT", sd->mission_count);
+            }
 
-				for (i = 0; i < MAX_MVP_DROP; i++) {
-					if (mdrop_id[i] <= 0)
-						continue;
+            if (sd->status.party_id)
+                map_foreachinrange(quest_update_objective_sub,&md->bl,AREA_SIZE,BL_PC,sd->status.party_id,md->class_);
+            else if (sd->avail_quests)
+                quest_update_objective(sd, md->class_);
 
-					if (!itemdb_exists (mdrop_id[i]))
-						continue;
+            if (sd->md && src && src->type != BL_HOM && mob_db(md->class_)->lv > sd->status.base_level/2)
+                mercenary_kills(sd->md);
+        }
 
-					temp = mdrop_p[i];
+        if (md->npc_event[0] && !md->state.npc_killmonster) {
+            if (sd && battle_config.mob_npc_event_type) {
+                pc_setparam(sd, SP_KILLERRID, sd->bl.id);
+                npc_event(sd,md->npc_event,0);
+            } else if (mvp_sd) {
+                pc_setparam(mvp_sd, SP_KILLERRID, sd?sd->bl.id:0);
+                npc_event(mvp_sd,md->npc_event,0);
+            } else
+                npc_event_do(md->npc_event);
+        } else if (mvp_sd && !md->state.npc_killmonster) {
+            pc_setparam(mvp_sd, SP_KILLEDRID, md->class_);
+            npc_script_event(mvp_sd, NPCE_KILLNPC); // PCKillNPC [Lance]
+        }
 
-					if (temp <= 0 && !battle_config.drop_rate0item)
-						temp = 1;
+        md->status.hp = 1;
+    }
 
-					if (temp <= rnd() % 10000 + 1) //if ==0, then it doesn't drop
-						continue;
+    if (md->deletetimer != INVALID_TIMER) {
+        delete_timer(md->deletetimer,mob_timer_delete);
+        md->deletetimer = INVALID_TIMER;
+    }
+    /**
+     * Only loops if necessary (e.g. a poring would never need to loop)
+     **/
+    if (md->can_summon)
+        mob_deleteslave(md);
 
-					memset (&item, 0, sizeof (item));
-					item.nameid = mdrop_id[i];
-					item.identify = itemdb_isidentified (item.nameid);
-					clif_mvp_item (mvp_sd, item.nameid);
-					log_mvp[0] = item.nameid;
+    map_freeblock_unlock();
 
-					//A Rare MVP Drop Global Announce by Lupus
-					if (temp <= battle_config.rare_drop_announce) {
-						struct item_data *i_data;
-						char message[128];
-						i_data = itemdb_exists (item.nameid);
-						sprintf (message, msg_txt (541), mvp_sd->status.name, md->name, i_data->jname, temp / 100.);
-						//MSG: "'%s' won %s's %s (chance: %0.02f%%)"
-						intif_broadcast (message, strlen (message) + 1, 0);
-					}
+    if (!rebirth) {
 
-					if ( (temp = pc_additem (mvp_sd, &item, 1, LOG_TYPE_PICKDROP_PLAYER)) != 0) {
-						clif_additem (mvp_sd, 0, 0, temp);
-						map_addflooritem (&item, 1, mvp_sd->bl.m, mvp_sd->bl.x, mvp_sd->bl.y, mvp_sd->status.char_id, (second_sd ? second_sd->status.char_id : 0), (third_sd ? third_sd->status.char_id : 0), 1);
-					}
+        if (pcdb_checkid(md->vd->class_)) { //Player mobs are not removed automatically by the client.
+            /* first we set them dead, then we delay the outsight effect */
+            clif_clearunit_area(&md->bl,CLR_DEAD);
+            clif_clearunit_delayed(&md->bl, CLR_OUTSIGHT,tick+3000);
+        } else
+            /**
+             * We give the client some time to breath and this allows it to display anything it'd like with the dead corpose
+             * For example, this delay allows it to display soul drain effect
+             **/
+            clif_clearunit_delayed(&md->bl, CLR_DEAD, tick+250);
 
-					//Logs items, MVP prizes [Lupus]
-					log_pick_mob (md, LOG_TYPE_MVP, -1, &item);
-					break;
-				}
-			}
+    }
 
-			log_mvpdrop (mvp_sd, md->class_, log_mvp);
-		}
+    if (!md->spawn) //Tell status_damage to remove it from memory.
+        return 5; // Note: Actually, it's 4. Oh well...
 
-		if (type & 2 && !sd && md->class_ == MOBID_EMPERIUM)
-			//Emperium destroyed by script. Discard mvp character. [Skotlex]
-			mvp_sd = NULL;
+    // MvP tomb [GreenBox]
+    if (battle_config.mvp_tomb_enabled && md->spawn->state.boss)
+        mvptomb_create(md, mvp_sd ? mvp_sd->status.name : NULL, time(NULL));
 
-		rebirth = (md->sc.data[SC_KAIZEL] || (md->sc.data[SC_REBIRTH] && !md->state.rebirth));
+    if (!rebirth)
+        mob_setdelayspawn(md); //Set respawning.
+    return 3; //Remove from map.
+}
 
-		if (!rebirth) {  // Only trigger event on final kill
-			md->status.hp = 0; //So that npc_event invoked functions KNOW that mob is dead
-
-			if (src) {
-				switch (src->type) {
-					case BL_PET: sd = ( (TBL_PET *) src)->msd; break;
-
-					case BL_HOM: sd = ( (TBL_HOM *) src)->master; break;
-
-					case BL_MER: sd = ( (TBL_MER *) src)->master; break;
-
-					case BL_ELEM: sd = ( (TBL_ELEM *) src)->master; break;
-				}
-			}
-
-			if (sd) {
-				if (sd->mission_mobid == md->class_) { //TK_MISSION [Skotlex]
-					if (++sd->mission_count >= 100 && (temp = mob_get_random_id (0, 0xE, sd->status.base_level))) {
-						pc_addfame (sd, 1);
-						sd->mission_mobid = temp;
-						pc_setglobalreg (sd, "TK_MISSION_ID", temp);
-						sd->mission_count = 0;
-						clif_mission_info (sd, temp, 0);
-					}
-
-					pc_setglobalreg (sd, "TK_MISSION_COUNT", sd->mission_count);
-				}
-
-				if (sd->status.party_id)
-					map_foreachinrange (quest_update_objective_sub, &md->bl, AREA_SIZE, BL_PC, sd->status.party_id, md->class_);
-				else if (sd->avail_quests)
-					quest_update_objective (sd, md->class_);
-
-				if (sd->md && src && src->type != BL_HOM && mob_db (md->class_)->lv > sd->status.base_level / 2)
-					mercenary_kills (sd->md);
-			}
-
-			if (md->npc_event[0] && !md->state.npc_killmonster) {
-				if (sd && battle_config.mob_npc_event_type) {
-					pc_setparam (sd, SP_KILLERRID, sd->bl.id);
-					npc_event (sd, md->npc_event, 0);
-				} else if (mvp_sd) {
-					pc_setparam (mvp_sd, SP_KILLERRID, sd ? sd->bl.id : 0);
-					npc_event (mvp_sd, md->npc_event, 0);
-				} else
-					npc_event_do (md->npc_event);
-			} else if (mvp_sd && !md->state.npc_killmonster) {
-				pc_setparam (mvp_sd, SP_KILLEDRID, md->class_);
-				npc_script_event (mvp_sd, NPCE_KILLNPC); // PCKillNPC [Lance]
-			}
-
-			md->status.hp = 1;
-		}
-
-		if (md->deletetimer != INVALID_TIMER) {
-			delete_timer (md->deletetimer, mob_timer_delete);
-			md->deletetimer = INVALID_TIMER;
-		}
-
-		/**
-		 * Only loops if necessary (e.g. a poring would never need to loop)
-		 **/
-		if (md->can_summon)
-			mob_deleteslave (md);
-
-		map_freeblock_unlock();
-
-		if (!rebirth) {
-			if (pcdb_checkid (md->vd->class_)) {//Player mobs are not removed automatically by the client.
-				/* first we set them dead, then we delay the outsight effect */
-				clif_clearunit_area (&md->bl, CLR_DEAD);
-				clif_clearunit_delayed (&md->bl, CLR_OUTSIGHT, tick + 3000);
-			} else
-				/**
-				 * We give the client some time to breath and this allows it to display anything it'd like with the dead corpose
-				 * For example, this delay allows it to display soul drain effect
-				 **/
-				clif_clearunit_delayed (&md->bl, CLR_DEAD, tick + 250);
-		}
-
-		if (!md->spawn) //Tell status_damage to remove it from memory.
-			return 5; // Note: Actually, it's 4. Oh well...
-
-		// MvP tomb [GreenBox]
-		if (battle_config.mvp_tomb_enabled && md->spawn->state.boss)
-			mvptomb_create (md, mvp_sd ? mvp_sd->status.name : NULL, time (NULL));
-
-		if (!rebirth)
-			mob_setdelayspawn (md); //Set respawning.
-
-		return 3; //Remove from map.
-	}
-
-	void mob_revive (struct mob_data * md, unsigned int hp) {
+void mob_revive (struct mob_data * md, unsigned int hp) {
 		unsigned int tick = gettick();
 		md->state.skillstate = MSS_IDLE;
 		md->last_thinktime = tick;
@@ -2787,7 +2754,7 @@ int mob_dead (struct mob_data *md, struct block_list *src, int type)
 		if (battle_config.show_mob_info & 3)
 			clif_charnameack (0, &md->bl);
 	}
-	int mob_guardian_guildchange (struct mob_data * md) {
+int mob_guardian_guildchange (struct mob_data * md) {
 		struct guild *g;
 		nullpo_ret (md);
 
@@ -2833,7 +2800,7 @@ int mob_dead (struct mob_data *md, struct block_list *src, int type)
 	/*==========================================
 	 * Pick a random class for the mob
 	 *------------------------------------------*/
-	int mob_random_class (int * value, size_t count) {
+int mob_random_class (int * value, size_t count) {
 		nullpo_ret (value);
 
 		// no count specified, look into the array manually, but take only max 5 elements
@@ -2856,7 +2823,7 @@ int mob_dead (struct mob_data *md, struct block_list *src, int type)
 	/*==========================================
 	 * Change mob base class
 	 *------------------------------------------*/
-	int mob_class_change (struct mob_data * md, int class_) {
+int mob_class_change (struct mob_data * md, int class_) {
 		unsigned int tick = gettick();
 		int i, c, hp_rate;
 		nullpo_ret (md);
@@ -2922,14 +2889,14 @@ int mob_dead (struct mob_data *md, struct block_list *src, int type)
 	/*==========================================
 	 * mob‰ñ•œ
 	 *------------------------------------------*/
-	void mob_heal (struct mob_data * md, unsigned int heal) {
+void mob_heal (struct mob_data * md, unsigned int heal) {
 		if (battle_config.show_mob_info & 3)
 			clif_charnameack (0, &md->bl);
 	}
 	/*==========================================
 	 * Added by RoVeRT
 	 *------------------------------------------*/
-	int mob_warpslave_sub (struct block_list * bl, va_list ap) {
+int mob_warpslave_sub (struct block_list * bl, va_list ap) {
 		struct mob_data *md = (struct mob_data *) bl;
 		struct block_list *master;
 		short x, y, range = 0;
@@ -2948,7 +2915,7 @@ int mob_dead (struct mob_data *md, struct block_list *src, int type)
 	 * Warps slaves. Range is the area around the master that they can
 	 * appear in randomly.
 	 *------------------------------------------*/
-	int mob_warpslave (struct block_list * bl, int range) {
+int mob_warpslave (struct block_list * bl, int range) {
 		if (range < 1)
 			range = 1; //Min range needed to avoid crashes and stuff. [Skotlex]
 
@@ -2957,7 +2924,7 @@ int mob_dead (struct mob_data *md, struct block_list *src, int type)
 	/*==========================================
 	 * Count slave sub, curently chking if mob master is the given id
 	 *------------------------------------------*/
-	int mob_countslave_sub (struct block_list * bl, va_list ap) {
+int mob_countslave_sub (struct block_list * bl, va_list ap) {
 		int id;
 		struct mob_data *md;
 		id = va_arg (ap, int);
@@ -2971,13 +2938,13 @@ int mob_dead (struct mob_data *md, struct block_list *src, int type)
 	/*==========================================
 	 * Cout how many slave a mob got on map
 	 *------------------------------------------*/
-	int mob_countslave (struct block_list * bl) {
+int mob_countslave (struct block_list * bl) {
 		return map_foreachinmap (mob_countslave_sub, bl->m, BL_MOB, bl->id);
 	}
 	/*==========================================
 	 * Summons amount slaves contained in the value[5] array using round-robin. [adapted by Skotlex]
 	 *------------------------------------------*/
-	int mob_summonslave (struct mob_data * md2, int * value, int amount, int skill_id) {
+int mob_summonslave (struct mob_data * md2, int * value, int amount, int skill_id) {
 		struct mob_data *md;
 		struct spawn_data data;
 		int count = 0, k = 0, hp_rate = 0;
@@ -3077,12 +3044,12 @@ int mob_dead (struct mob_data *md, struct block_list *src, int type)
 		}
 
 		return 0;
-	}
+}
 	/*==========================================
 	 * MOBskill lookup (get skillindex trough skillid)
 	 * return -1 if not found
 	 *------------------------------------------*/
-	int mob_skillid2skillidx (int class_, int skillid) {
+int mob_skillid2skillidx (int class_, int skillid) {
 		int i, max = mob_db (class_)->maxskill;
 		struct mob_skill *ms = mob_db (class_)->skill;
 
@@ -3091,11 +3058,11 @@ int mob_dead (struct mob_data *md, struct block_list *src, int type)
 
 		ARR_FIND (0, max, i, ms[i].skill_id == skillid);
 		return (i < max) ? i : -1;
-	}
+}
 	/*==========================================
 	 * Friendly Mob whose HP is decreasing by a nearby MOB is looked for.
 	 *------------------------------------------*/
-	int mob_getfriendhprate_sub (struct block_list * bl, va_list ap) {
+int mob_getfriendhprate_sub (struct block_list * bl, va_list ap) {
 		int min_rate, max_rate, rate;
 		struct block_list **fr;
 		struct mob_data *md;
