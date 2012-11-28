@@ -90,7 +90,7 @@ typedef struct eri {
 	 * @param self Interface of the entry manager
 	 * @return An entry
 	 */
-	void *(*alloc)(struct eri *self);
+	void * (*alloc) (struct eri *self);
 
 	/**
 	 * Free an entry allocated from this manager.
@@ -99,14 +99,14 @@ typedef struct eri {
 	 * @param self Interface of the entry manager
 	 * @param entry Entry to be freed
 	 */
-	void (*free)(struct eri *self, void *entry);
+	void (*free) (struct eri *self, void *entry);
 
 	/**
 	 * Return the size of the entries allocated from this manager.
 	 * @param self Interface of the entry manager
 	 * @return Size of the entries of this manager in bytes
 	 */
-	size_t (*entry_size)(struct eri *self);
+	size_t (*entry_size) (struct eri *self);
 
 	/**
 	 * Destroy this instance of the manager.
@@ -115,7 +115,7 @@ typedef struct eri {
 	 * missing/extra entries.
 	 * @param self Interface of the entry manager
 	 */
-	void (*destroy)(struct eri *self);
+	void (*destroy) (struct eri *self);
 
 } *ERS;
 
@@ -147,7 +147,7 @@ typedef struct eri {
  * @param The requested size of the entry in bytes
  * @return Interface of the object
  */
-ERS ers_new(uint32 size, char *name, enum ERSOptions options);
+ERS ers_new (uint32 size, char *name, enum ERSOptions options);
 
 /**
  * Print a report about the current state of the Entry Reusage System.
@@ -156,7 +156,7 @@ ERS ers_new(uint32 size, char *name, enum ERSOptions options);
  * entries are found.
  * The extra entries are included in the count of reusable entries.
  */
-void ers_report(void);
+void ers_report (void);
 
 /**
  * Forcibly destroy all the entry managers, checking for nothing.
@@ -166,7 +166,7 @@ void ers_report(void);
  * It should only be used in extreme situations to make shure all the memory
  * allocated by this system is released.
  */
-void ers_force_destroy_all(void);
+void ers_force_destroy_all (void);
 #endif /* DISABLE_ERS / not DISABLE_ERS */
 
 #endif /* _ERS_H_ */

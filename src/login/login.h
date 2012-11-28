@@ -7,8 +7,7 @@
 #include "../common/mmo.h" // NAME_LENGTH,SEX_*
 #include "../common/core.h" // CORE_ST_LAST
 
-enum E_LOGINSERVER_ST
-{
+enum E_LOGINSERVER_ST {
 	LOGINSERVER_ST_RUNNING = CORE_ST_LAST,
 	LOGINSERVER_ST_SHUTDOWN,
 	LOGINSERVER_ST_LAST
@@ -27,7 +26,7 @@ struct login_session_data {
 	char sex;// 'F','M','S'
 
 	char userid[NAME_LENGTH];
-	char passwd[32+1]; // 23+1 for plaintext, 32+1 for md5-ed passwords
+	char passwd[32 + 1]; // 23+1 for plaintext, 32+1 for md5-ed passwords
 	int passwdenc;
 	char md5key[20];
 	uint16 md5keylen;
@@ -69,7 +68,7 @@ struct Login_Config {
 	bool log_login;                                 // whether to log login server actions or not
 	char date_format[32];                           // date format used in messages
 	bool console;                                   // console input system enabled?
-	bool new_account_flag,new_acc_length_limit;     // autoregistration via _M/_F ? / if yes minimum length is 4?
+	bool new_account_flag, new_acc_length_limit;    // autoregistration via _M/_F ? / if yes minimum length is 4?
 	int start_limited_time;                         // new account expiration time (-1: unlimited)
 	bool use_md5_passwds;                           // work with password hashes instead of plaintext passwords?
 	int group_id_to_connect;                        // required group id to connect

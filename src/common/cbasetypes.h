@@ -201,23 +201,23 @@ typedef uintptr_t uintptr;
 // Add a 'sysint' Type which has the width of the platform we're compiled for.
 //////////////////////////////////////////////////////////////////////////
 #if defined(__GNUC__)
-	#if defined(__x86_64__)
-		typedef int64 sysint;
-		typedef uint64 usysint;
-	#else
-		typedef int32 sysint;
-		typedef uint32 usysint;
-	#endif
-#elif defined(_MSC_VER)
-	#if defined(_M_X64)
-		typedef int64 sysint;
-		typedef uint64 usysint;
-	#else
-		typedef int32 sysint;
-		typedef uint32 usysint;
-	#endif
+#if defined(__x86_64__)
+typedef int64 sysint;
+typedef uint64 usysint;
 #else
-	#error Compiler / Platform is unsupported.
+typedef int32 sysint;
+typedef uint32 usysint;
+#endif
+#elif defined(_MSC_VER)
+#if defined(_M_X64)
+typedef int64 sysint;
+typedef uint64 usysint;
+#else
+typedef int32 sysint;
+typedef uint32 usysint;
+#endif
+#else
+#error Compiler / Platform is unsupported.
 #endif
 
 
@@ -369,15 +369,15 @@ typedef char bool;
 // Set a pointer variable to a pointer value.
 #ifdef __cplusplus
 template <typename T1, typename T2>
-void SET_POINTER(T1*&var, T2* p)
+void SET_POINTER (T1 *&var, T2 *p)
 {
-	var = static_cast<T1*>(p);
+	var = static_cast<T1 *> (p);
 }
 template <typename T1, typename T2>
-void SET_FUNCPOINTER(T1& var, T2 p)
+void SET_FUNCPOINTER (T1 &var, T2 p)
 {
-	char ASSERT_POINTERSIZE[sizeof(T1) == sizeof(void*) && sizeof(T2) == sizeof(void*)?1:-1];// 1 if true, -1 if false
-	union{ T1 out; T2 in; } tmp;// /!\ WARNING casting a pointer to a function pointer is against the C++ standard
+	char ASSERT_POINTERSIZE[sizeof (T1) == sizeof (void *) && sizeof (T2) == sizeof (void *) ? 1 : -1];         // 1 if true, -1 if false
+	union { T1 out; T2 in; } tmp; // /!\ WARNING casting a pointer to a function pointer is against the C++ standard
 	tmp.in = p;
 	var = tmp.out;
 }
