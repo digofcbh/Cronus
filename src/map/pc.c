@@ -8013,6 +8013,19 @@ int pc_percentheal (struct map_session_data *sd, int hp, int sp)
 	return 0;
 }
 
+static int jobchange_killclone(struct block_list *bl, va_list ap)
+{
+    struct mob_data *md;
+	int flag;
+    md = (struct mob_data *)bl;
+    nullpo_ret(md);
+    flag = va_arg(ap, int);
+
+    if (md->master_id && md->special_state.clone && md->master_id == flag)
+        status_kill(&md->bl);
+    return 1;
+}
+
 /*==========================================
  * Called when player changing job
  * Rewrote to make it tidider [Celest]
@@ -8131,6 +8144,12 @@ int pc_jobchange (struct map_session_data *sd, int job, int upper)
 	//Update skill tree.
 	pc_calc_skilltree (sd);
 	clif_skillinfoblock (sd);
+
+	if (sd->ed)
+		elemental_delete(sd->ed, 0);
+	if (sd->state.vending)
+		vending_closevending(sd);
+
 	//Remove peco/cart/falcon
 	i = sd->sc.option;
 
