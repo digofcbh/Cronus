@@ -5187,7 +5187,7 @@ struct Damage battle_calc_misc_attack (struct block_list *src, struct block_list
 			md.dmg_lv = ATK_FLEE;
 		}
 	}
-	
+
 	md.damage =  battle_calc_cardfix(BF_MISC, src, target, nk, s_ele, 0, md.damage, 0, md.flag);
 
 	if (sd && (i = pc_skillatk_bonus (sd, skill_num)))

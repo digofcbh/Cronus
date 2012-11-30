@@ -472,32 +472,32 @@ int skill_calc_heal (struct block_list *src, struct block_list *target, int skil
 		case NPC_EVILLAND:
 			break;
 		default:
-			{ 
-				struct status_data *status = status_get_status_data(src); 
-				int min, max, wMatk, variance; 
+			{
+				struct status_data *status = status_get_status_data(src);
+				int min, max, wMatk, variance;
 
-				min = max = status_base_matk(status, status_get_lv(src)); 
-				if( status->rhw.matk > 0 ){ 
-				        wMatk = status->rhw.matk; 
-				        variance = wMatk * status->rhw.wlv / 10; 
-				        min += wMatk - variance; 
-				        max += wMatk + variance; 
-				} 
+				min = max = status_base_matk(status, status_get_lv(src));
+				if( status->rhw.matk > 0 ){
+				        wMatk = status->rhw.matk;
+				        variance = wMatk * status->rhw.wlv / 10;
+				        min += wMatk - variance;
+				        max += wMatk + variance;
+				}
 
-				if( sc && sc->data[SC_RECOGNIZEDSPELL] ) 
-				        min = max; 
-				
-				if( sd && sd->right_weapon.overrefine > 0 ){ 
-				        min++; 
-				        max += sd->right_weapon.overrefine - 1; 
-				} 
+				if( sc && sc->data[SC_RECOGNIZEDSPELL] )
+				        min = max;
 
-				if(max > min) 
-				        hp += min+rnd()%(max-min); 
-				else 
+				if( sd && sd->right_weapon.overrefine > 0 ){
+				        min++;
+				        max += sd->right_weapon.overrefine - 1;
+				}
+
+				if(max > min)
+				        hp += min+rnd()%(max-min);
+				else
 				        hp += min;
 			}
-	} 
+	}
 #endif
 
 	return hp;

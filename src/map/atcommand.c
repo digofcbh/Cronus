@@ -1017,7 +1017,7 @@ ACMD_FUNC (jobchange)
 
 	if (!message || !*message || sscanf (message, "%d %d", &job, &upper) < 1) {
 		int i, found = 0;
-		
+
 		for (i = JOB_NOVICE; i < JOB_MAX; ++i) {
 			if (strncmpi(message, job_name(i), 16) == 0) {
 				job = i;

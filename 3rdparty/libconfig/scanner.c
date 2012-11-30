@@ -945,7 +945,7 @@ yy_find_action:
 			int yyl;
 			for ( yyl = 0; yyl < yyleng; ++yyl )
 				if ( yytext[yyl] == '\n' )
-					
+
     do{ yylineno++;
         yycolumn=0;
     }while(0)
@@ -1627,7 +1627,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = (c == '\n');
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_at_bol )
-		
+
     do{ yylineno++;
         yycolumn=0;
     }while(0)
@@ -1886,7 +1886,7 @@ static void libconfig_yyensure_buffer_stack (yyscan_t yyscanner)
 								, yyscanner);
 		if ( ! yyg->yy_buffer_stack )
 			YY_FATAL_ERROR( "out of dynamic memory in libconfig_yyensure_buffer_stack()" );
-								
+
 		memset(yyg->yy_buffer_stack, 0, num_to_alloc * sizeof(struct yy_buffer_state*));
 
 		yyg->yy_buffer_stack_max = num_to_alloc;

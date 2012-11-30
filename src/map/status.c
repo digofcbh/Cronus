@@ -3971,11 +3971,11 @@ void status_calc_bl_main (struct block_list *bl, /*enum scb_flag*/int flag)
 		status->matk_max = status_base_matk_max(status) + (sd?sd->bonus.ematk:0);
 
 #else
-		/** 
-		 * RE MATK Formula (from irowiki:http://irowiki.org/wiki/MATK) 
-		 * MATK = (sMATK + wMATK + eMATK) * Multiplicative Modifiers 
-		 **/ 
-		status->matk_min = status->matk_max = status_base_matk(status, status_get_lv(bl)); 
+		/**
+		 * RE MATK Formula (from irowiki:http://irowiki.org/wiki/MATK)
+		 * MATK = (sMATK + wMATK + eMATK) * Multiplicative Modifiers
+		 **/
+		status->matk_min = status->matk_max = status_base_matk(status, status_get_lv(bl));
 		if( bl->type&BL_PC ){
 			//  Any +MATK you get from skills and cards, including cards in weapon, is added here.
 			if( sd->bonus.ematk > 0 ){
@@ -3989,8 +3989,8 @@ void status_calc_bl_main (struct block_list *bl, /*enum scb_flag*/int flag)
 				int wMatk = status->rhw.matk;
 				int variance = wMatk * status->rhw.wlv / 10;
 				status->matk_min += wMatk - variance;
-				status->matk_max += wMatk + variance; 
-			} 
+				status->matk_max += wMatk + variance;
+			}
 		}
 #endif
 
@@ -4000,18 +4000,18 @@ void status_calc_bl_main (struct block_list *bl, /*enum scb_flag*/int flag)
 
 		status->matk_min = status_calc_matk (bl, sc, status->matk_min);
 		status->matk_max = status_calc_matk (bl, sc, status->matk_max);
-		
+
 		if ((bl->type&BL_HOM && battle_config.hom_setting&0x20)  //Hom Min Matk is always the same as Max Matk
 			|| sc->data[SC_RECOGNIZEDSPELL])
-			status->matk_min = status->matk_max; 
-		 
+			status->matk_min = status->matk_max;
+
 #ifdef RENEWAL
 		if( sd && sd->right_weapon.overrefine > 0){
 			status->matk_min++;
 			status->matk_max += sd->right_weapon.overrefine - 1;
 		}
 #endif
-	
+
 	}
 
 	if (flag & SCB_ASPD) {
@@ -4977,36 +4977,36 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 
 #ifndef RENEWAL
 	// take note fixed value first before % modifiers
-	if (sc->data[SC_MATKPOTION]) 
-	    matk += sc->data[SC_MATKPOTION]->val1; 
-	if (sc->data[SC_MATKFOOD]) 
-	    matk += sc->data[SC_MATKFOOD]->val1; 
-	if (sc->data[SC_MANA_PLUS]) 
-	    matk += sc->data[SC_MANA_PLUS]->val1; 
-	if (sc->data[SC_AQUAPLAY_OPTION]) 
-	    matk += sc->data[SC_AQUAPLAY_OPTION]->val2; 
-	if (sc->data[SC_CHILLY_AIR_OPTION]) 
-	    matk += sc->data[SC_CHILLY_AIR_OPTION]->val2; 
-	if (sc->data[SC_WATER_BARRIER]) 
-	    matk -= sc->data[SC_WATER_BARRIER]->val3; 
-	if (sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 3) 
-	    matk += 50; 
-	if (sc->data[SC_ODINS_POWER]) 
-	    matk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1; //70 lvl1, 100lvl2 
-	if (sc->data[SC_IZAYOI]) 
+	if (sc->data[SC_MATKPOTION])
+	    matk += sc->data[SC_MATKPOTION]->val1;
+	if (sc->data[SC_MATKFOOD])
+	    matk += sc->data[SC_MATKFOOD]->val1;
+	if (sc->data[SC_MANA_PLUS])
+	    matk += sc->data[SC_MANA_PLUS]->val1;
+	if (sc->data[SC_AQUAPLAY_OPTION])
+	    matk += sc->data[SC_AQUAPLAY_OPTION]->val2;
+	if (sc->data[SC_CHILLY_AIR_OPTION])
+	    matk += sc->data[SC_CHILLY_AIR_OPTION]->val2;
+	if (sc->data[SC_WATER_BARRIER])
+	    matk -= sc->data[SC_WATER_BARRIER]->val3;
+	if (sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 3)
+	    matk += 50;
+	if (sc->data[SC_ODINS_POWER])
+	    matk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1; //70 lvl1, 100lvl2
+	if (sc->data[SC_IZAYOI])
 	    matk += 50 * sc->data[SC_IZAYOI]->val1;
 #endif
-	if (sc->data[SC_MAGICPOWER]) 
-	    matk += matk * sc->data[SC_MAGICPOWER]->val3/100; 
-	if (sc->data[SC_MINDBREAKER]) 
-	    matk += matk * sc->data[SC_MINDBREAKER]->val2/100; 
-	if (sc->data[SC_INCMATKRATE]) 
-	    matk += matk * sc->data[SC_INCMATKRATE]->val1/100; 
-	if (sc->data[SC_MOONLITSERENADE]) 
-	    matk += matk * sc->data[SC_MOONLITSERENADE]->val2/100; 
-	if (sc->data[SC_MELODYOFSINK]) 
-	    matk += matk * sc->data[SC_MELODYOFSINK]->val3/100; 
-	if (sc->data[SC_BEYONDOFWARCRY]) 
+	if (sc->data[SC_MAGICPOWER])
+	    matk += matk * sc->data[SC_MAGICPOWER]->val3/100;
+	if (sc->data[SC_MINDBREAKER])
+	    matk += matk * sc->data[SC_MINDBREAKER]->val2/100;
+	if (sc->data[SC_INCMATKRATE])
+	    matk += matk * sc->data[SC_INCMATKRATE]->val1/100;
+	if (sc->data[SC_MOONLITSERENADE])
+	    matk += matk * sc->data[SC_MOONLITSERENADE]->val2/100;
+	if (sc->data[SC_MELODYOFSINK])
+	    matk += matk * sc->data[SC_MELODYOFSINK]->val3/100;
+	if (sc->data[SC_BEYONDOFWARCRY])
 	    matk -= matk * sc->data[SC_BEYONDOFWARCRY]->val3/100;
 
 	if (sc->data[SC_ZANGETSU])
@@ -7017,16 +7017,16 @@ int status_get_sc_def (struct block_list *bl, enum sc_type type, int rate, int t
 			//No defense against it (buff).
 			rate -= (status_get_lv (bl) / 5 + status->vit / 4 + status->agi / 10) * 100; // Lineal Reduction of Rate
 			break;
-		
-		case SC_MARSHOFABYSS: 
-			//5 second (Fixed) + 25 second - {( INT + LUK ) / 20 second } 
-			tick -= (status->int_ + status->luk) / 20 * 1000; 
-			break; 
-		case SC_STASIS: 
-			//5 second (fixed) + { Stasis Skill level * 5 - (Targets VIT + DEX) / 20 } 
-			tick -= (status->vit + status->dex) / 20 * 1000; 
+
+		case SC_MARSHOFABYSS:
+			//5 second (Fixed) + 25 second - {( INT + LUK ) / 20 second }
+			tick -= (status->int_ + status->luk) / 20 * 1000;
 			break;
-		
+		case SC_STASIS:
+			//5 second (fixed) + { Stasis Skill level * 5 - (Targets VIT + DEX) / 20 }
+			tick -= (status->vit + status->dex) / 20 * 1000;
+			break;
+
 		case SC_WHITEIMPRISON:
 			if (tick == 5000)  // 100% on caster
 				break;
@@ -12342,17 +12342,17 @@ int status_change_clear_buffs (struct block_list *bl, int type)
 			case SC_DEEPSLEEP:
 			case SC_BURNING:
 			case SC_FREEZING:
-			case SC_CRYSTALIZE: 
-			case SC_TOXIN: 
-			case SC_PARALYSE: 
-			case SC_VENOMBLEED: 
-			case SC_MAGICMUSHROOM: 
-			case SC_DEATHHURT: 
-			case SC_PYREXIA: 
-			case SC_OBLIVIONCURSE: 
-			case SC_LEECHESEND: 
-			case SC_MARSHOFABYSS: 
-			case SC_MANDRAGORA: 
+			case SC_CRYSTALIZE:
+			case SC_TOXIN:
+			case SC_PARALYSE:
+			case SC_VENOMBLEED:
+			case SC_MAGICMUSHROOM:
+			case SC_DEATHHURT:
+			case SC_PYREXIA:
+			case SC_OBLIVIONCURSE:
+			case SC_LEECHESEND:
+			case SC_MARSHOFABYSS:
+			case SC_MANDRAGORA:
 				if(!(type&4))
 					continue;
 				break;
