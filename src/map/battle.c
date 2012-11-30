@@ -4049,7 +4049,8 @@ struct Damage battle_calc_magic_attack (struct block_list *src, struct block_lis
 	short s_ele = 0;
 	unsigned int skillratio = 100;	//Skill dmg modifiers.
 
-	struct map_session_data *sd, *tsd;
+	TBL_PC *sd;
+	TBL_PC *tsd;
 	struct Damage ad;
 	struct status_data *sstatus = status_get_status_data (src);
 	struct status_data *tstatus = status_get_status_data (target);
