@@ -57,7 +57,10 @@ jawaii,239,112,7	script	Marinheiro#toizu	100,{
 		mes "Então, deixe-me";
 		mes "guiar-te para Izlude";
 		close2;
-		warp "izlude",176,182;
+		if(checkre(0))
+			warp "izlude",195,212;
+		else
+			warp "izlude",176,182;
 		end;
 	}
 	mes "[Marinheiro]";
