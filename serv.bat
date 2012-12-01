@@ -2,8 +2,8 @@
 chcp 1252
 IF "%1"=="" GOTO DIRETO
 IF "%2"=="" GOTO DIRETO
-IF NOT EXIST "%1" GOTO NOTFOUND
-GOTO START
+IF NOT EXIST "%1" GOTO NAOENCONTRADO
+GOTO INICIO
 
 REM == How RESTART_9X and RESTART_NT works =========================
 REM On Windows 9x only the first 8 characters are significant for
@@ -18,8 +18,8 @@ REM Windows 95, 98, ME
 REM Old Ctrl+C in PING does not work, because that only stops ping,
 REM not the batch file.
 CHOICE /C:rc /N /T:R,15 Reiniciando em 15 segundos, pressione 'C' para cancelar.
-IF NOT ERRORLEVEL 2 GOTO START
-GOTO END
+IF NOT ERRORLEVEL 2 GOTO INICIO
+GOTO FIM
 
 REM Windows 2000, XP, Vista, 7
 :RESTART_NT
@@ -28,7 +28,7 @@ REM abort the batch file, when pressing Ctrl+C in PING.
 ECHO Reiniciando em 15 segundos, pressione 'Ctrl+C' para cancelar.
 PING -n 15 127.0.0.1 > NUL
 
-:START
+:INICIO
 %1
 ECHO.
 REM Return value > 1 is exception&~0xC0000000
@@ -52,16 +52,16 @@ ECHO.
 ECHO Não inicie este arquivo diretamente. Ele é usado pelo logserv-sql.bat,
 ECHO charserv-sql.bat e mapserv-sql.bat.
 ECHO.
-GOTO END
+GOTO FIM
 
-:NOTFOUND
+:NAOENCONTRADO
 ECHO.
 ECHO O %2 não foi encontrado.
 ECHO Muito provavelmente, você esqueceu de compilar o emulador.
 ECHO Por favor, leia na seção Guias e Tutoriais do Cronus para
 ECHO saber como compilar.
 ECHO.
-GOTO END
+GOTO FIM
 
-:END
+:FIM
 PAUSE
