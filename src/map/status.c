@@ -65,7 +65,7 @@ static struct {
 	int randombonus_max[MAX_REFINE]; // cumulative maximum random bonus damage
 } refine_info[REFINE_TYPE_MAX];
 
-static int atkmods[3][MAX_WEAPON_TYPE];	// ����ATK�T�C�Y�C��(size_fix.txt)
+static int atkmods[3][MAX_WEAPON_TYPE];	// ????ATK?T?C?Y?C??(size_fix.txt)
 static char job_bonus[CLASS_COUNT][MAX_LEVEL];
 
 static struct eri *sc_data_ers; //For sc_data entries
@@ -2394,7 +2394,7 @@ int status_calc_pc_ (struct map_session_data *sd, bool first)
 	b_weight = sd->weight;
 	b_max_weight = sd->max_weight;
 	b_cart_weight_max = sd->cart_weight_max;
-	pc_calc_skilltree (sd);	// �X�L���c��?�̌v�Z
+	pc_calc_skilltree (sd);	// ?X?L???c?????v?Z
 	sd->max_weight = max_weight_base[pc_class2idx (sd->status.class_)] + sd->status.str * 300;
 
 	if (first) {
@@ -6350,8 +6350,8 @@ const char *status_get_name (struct block_list *bl)
 }
 
 /*==========================================
- * �Ώۂ�Class��Ԃ�(�ėp)
- * �߂�͐�����0�ȏ�
+ * ????Class????(?ep)
+ * ?????????0???
  *------------------------------------------*/
 int status_get_class (struct block_list *bl)
 {
@@ -6376,8 +6376,8 @@ int status_get_class (struct block_list *bl)
 	return 0;
 }
 /*==========================================
- * �Ώۂ̃��x����Ԃ�(�ėp)
- * �߂�͐�����0�ȏ�
+ * ???~??x??????(?ep)
+ * ?????????0???
  *------------------------------------------*/
 int status_get_lv (struct block_list *bl)
 {
@@ -7023,7 +7023,7 @@ int status_get_sc_def (struct block_list *bl, enum sc_type type, int rate, int t
 			tick -= (status->int_ + status->luk) / 20 * 1000;
 			break;
 		case SC_STASIS:
-			//5 second (fixed) + { Stasis Skill level * 5 - (Targets VIT + DEX) / 20 }
+			//5 second (fixed) + { Stasis Skill level * 5 - (Target?s VIT + DEX) / 20 }
 			tick -= (status->vit + status->dex) / 20 * 1000;
 			break;
 
@@ -8459,7 +8459,7 @@ int status_change_start (struct block_list *bl, enum sc_type type, int rate, int
 				}
 
 				// fall through
-			case SC_POISON:				/* �� */
+			case SC_POISON:				/* ?? */
 				val3 = tick / 1000; //Damage iterations
 
 				if (val3 < 1) val3 = 1;
@@ -8559,7 +8559,7 @@ int status_change_start (struct block_list *bl, enum sc_type type, int rate, int
 
 				break;
 
-			case SC_SIGHT:			/* �T�C�g/���A�t */
+			case SC_SIGHT:			/* ?T?C?g/???A?t */
 			case SC_RUWACH:
 			case SC_SIGHTBLASTER:
 				val3 = skill_get_splash (val2, val1); //Val2 should bring the skill-id.
@@ -9640,10 +9640,10 @@ int status_change_start (struct block_list *bl, enum sc_type type, int rate, int
 			case SC_GT_CHANGE: {
 				// take note there is no def increase as skill desc says. [malufett]
 				struct block_list *src;
-				val3 = status->agi * val1 / 60; // ASPD increase: [(Target�s AGI x Skill Level) / 60] %
+				val3 = status->agi * val1 / 60; // ASPD increase: [(Target?s AGI x Skill Level) / 60] %
 
 				if ( (src = map_id2bl (val2)))
-					val4 = (200 / status_get_int (src)) * val1; // MDEF decrease: MDEF [(200 / Caster�s INT) x Skill Level]
+					val4 = (200 / status_get_int (src)) * val1; // MDEF decrease: MDEF [(200 / Caster?s INT) x Skill Level]
 			}
 			break;
 
@@ -9653,7 +9653,7 @@ int status_change_start (struct block_list *bl, enum sc_type type, int rate, int
 				val3 = val1 * 30 + 150; // Natural HP recovery increase: [(Skill Level x 30) + 50] %
 
 				if ( (src = map_id2bl (val2))) // the stat def is not shown in the status window and it is process differently
-					val4 = (status_get_vit (src) / 4) * val1; // STAT DEF increase: [(Caster�s VIT / 4) x Skill Level]
+					val4 = (status_get_vit (src) / 4) * val1; // STAT DEF increase: [(Caster?s VIT / 4) x Skill Level]
 			}
 			break;
 
@@ -10313,7 +10313,7 @@ int status_change_start (struct block_list *bl, enum sc_type type, int rate, int
 	return 1;
 }
 /*==========================================
- * �X�e�[�^�X�ُ�S��
+ * ?X?e?[?^?X???S??
  * type:
  * 0 - ???
  * 1 - ???
@@ -10422,7 +10422,7 @@ int status_change_clear (struct block_list *bl, int type)
 }
 
 /*==========================================
- * �X�e�[�^�X�ُ�I��
+ * ?X?e?[?^?X???I??
  *------------------------------------------*/
 int status_change_end_ (struct block_list *bl, enum sc_type type, int tid, const char *file, int line)
 {
@@ -11256,7 +11256,7 @@ int kaahi_heal_timer (int tid, unsigned int tick, int id, intptr_t data)
 }
 
 /*==========================================
- * �X�e�[�^�X�ُ�I���^�C�}�[
+ * ?X?e?[?^?X???I???^?C?}?[
  *------------------------------------------*/
 int status_change_timer (int tid, unsigned int tick, int id, intptr_t data)
 {
@@ -11483,7 +11483,7 @@ int status_change_timer (int tid, unsigned int tick, int id, intptr_t data)
 
 			break;
 
-		case SC_DANCING: { //�_���X�X�L���̎���SP���
+		case SC_DANCING: { //?_???X?X?L???"???SP???
 			int s = 0;
 			int sp = 1;
 
@@ -12180,7 +12180,7 @@ int status_change_timer (int tid, unsigned int tick, int id, intptr_t data)
 }
 
 /*==========================================
- * �X�e�[�^�X�ُ�^�C�}�[�͈͏���
+ * ?X?e?[?^?X???^?C?}?[??????
  *------------------------------------------*/
 int status_change_timer_sub (struct block_list *bl, va_list ap)
 {
@@ -12196,7 +12196,7 @@ int status_change_timer_sub (struct block_list *bl, va_list ap)
 	tsc = status_get_sc (bl);
 
 	switch (type) {
-		case SC_SIGHT:	/* �T�C�g */
+		case SC_SIGHT:	/* ?T?C?g */
 			if (tsc && tsc->data[SC__SHADOWFORM] && (sce && sce->val4 > 0 && sce->val4 % 2000 == 0) && // for every 2 seconds do the checking
 					rnd() % 100 < 100 - tsc->data[SC__SHADOWFORM]->val1 * 10) // [100 - (Skill Level x 10)] %
 				status_change_end (bl, SC__SHADOWFORM, INVALID_TIMER);
@@ -12209,7 +12209,7 @@ int status_change_timer_sub (struct block_list *bl, va_list ap)
 			status_change_end (bl, SC__INVISIBILITY, INVALID_TIMER);
 			break;
 
-		case SC_RUWACH:	/* ���A�t */
+		case SC_RUWACH:	/* ???A?t */
 			if (tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] ||
 						tsc->data[SC_CAMOUFLAGE] || tsc->data[SC_CLOAKINGEXCEED] ||
 						tsc->data[SC__INVISIBILITY])) {
@@ -12887,7 +12887,7 @@ int status_readdb (void)
 }
 
 /*==========================================
- * �X�L���֌W������
+ * ?X?L????W??????
  *------------------------------------------*/
 int do_init_status (void)
 {
