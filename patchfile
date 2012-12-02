@@ -1,0 +1,14 @@
+diff --git npc/scripts_monstros.conf npc/scripts_monstros.conf
+index 6807954..3085616 100644
+--- npc/scripts_monstros.conf
++++ npc/scripts_monstros.conf
+@@ -12,6 +12,4 @@
+ npc: npc/monstros/cidades.txt
+ npc: npc/monstros/pvp.txt
+ npc: npc/monstros/prisao.txt
+-npc: npc/monstros/bossnia.txt
+-
+-//Teste
+\ No newline at end of file
++npc: npc/monstros/bossnia.txt
+\ No newline at end of file
